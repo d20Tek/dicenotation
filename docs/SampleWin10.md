@@ -1,8 +1,6 @@
-# Sample: DiceRoller - Win10
+# Sample: DiceRoller - Win10/UWP
 
-This sample code shows you how to use the OnePlat.DiceNotation library in your very own Windows 10 application. The sample was simply created from creating a new VS Win10 project, and then installing the OnePlat.DiceNotation.1.0.4 NuGet package.
-
-The source code can be found in this repository ([/Samples/DiceRoller.Win10](../Samples/DiceRoller.Win10)), and it is pretty easy to digest. The bulk of the interesting code is in MainPage.xaml.cs.
+This sample code shows you how to use the d20Tek.DiceNotation library in your very own UWP application. The sample was simply created from creating a new VS UWP project, and then installing the d20Tek.DiceNotation NuGet package.
 
 #### 1 - Dice Input
 
@@ -63,11 +61,11 @@ The other important method takes a dice expression string and uses the Dice clas
     }
 ```
 
-And there is a DiceService that these methods use to do the work. That DiceService is no other than the IDice implementation from our OnePlat.DiceNotation library. Pretty straightforward.
+And there is a DiceService that these methods use to do the work. That DiceService is no other than the IDice implementation from our d20Tek.DiceNotation library. Pretty straightforward.
 
 #### 3 - DiceResult Value Converters
 
-Also, notice in the MainPage.xaml file the definition of the results listview. It uses a couple of IValueConverters to format the DiceResult and ResultsList into the appropriate string representation. These converters are part of OnePlat.DiceNotation v1.0.4. You can use them if you'd like to share the formatting. If not, you're free to display the results however you would like.
+Also, notice in the MainPage.xaml file the definition of the results listview. It uses a couple of IValueConverters to format the DiceResult and ResultsList into the appropriate string representation. These converters are part of d20TEk.DiceNotation package. You can use them if you'd like to share the formatting. If not, you're free to display the results however you would like.
 
 ``` xaml
 

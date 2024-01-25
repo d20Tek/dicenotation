@@ -1,6 +1,11 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
+### Current release (4.0):
+Upgrade libraries to .NET 8.
+* Minor breaking changes to upgrade library design to .NET standards and use latest language features.
+* Added simplified DiceRoll method using a DiceRequest.
+
 ### Current release (3.4):
 Upgrade libraries to .NET 7.
 

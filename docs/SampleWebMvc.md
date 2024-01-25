@@ -1,8 +1,6 @@
 # Sample: DiceRoller - Web MVC
 
-This sample code shows you how to incorporate the OnePlat.DiceNotation library into your own ASP.NET MVC web application. The sample was created using the VS WebApp - MVC 5 project teamplate, and then installing the OnePlat.DiceNotation.1.0.4 NuGet package.
-
-The source code can be found in this repository ([/Samples/DiceRoller.Mvc](../Samples/DiceRoller.Mvc)), and it is pretty easy to digest. The bulk of the interesting code is in RollController.cs file.
+This sample code shows you how to incorporate the d20Tek.DiceNotation library into your own ASP.NET MVC web application. The sample was created using the VS WebApp - MVC 5 project teamplate, and then installing the d29Tek.DiceNotation NuGet package.
 
 #### 1 - Dice Expression Input
 
@@ -98,7 +96,7 @@ This uses the following view model class to provide properties to the roll page 
 ```
 
 #### 2 - Dice Results Display
-Also, notice in the Create.cshtml file the definition of the results list. It uses an HTML helper method to format the ResultsList into the appropriate string representation. This helper uses the value converters are part of OnePlat.DiceNotation v1.0.4. You can use them if you'd like to share the formatting. If not, you're free to display the results however you would like.
+Also, notice in the Create.cshtml file the definition of the results list. It uses an HTML helper method to format the ResultsList into the appropriate string representation. This helper uses the value converters are part of d20Tek.DiceNotation. You can use them if you'd like to share the formatting. If not, you're free to display the results however you would like.
 
 ```csharp
   /// <summary>
