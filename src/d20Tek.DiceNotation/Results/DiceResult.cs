@@ -28,7 +28,7 @@ public class DiceResult
                 Results.ToList(),
                 typeof(string),
                 "",
-                "en-us") as string ?? string.Empty;
+                "en-us").ToString()!;
         }
     }
 

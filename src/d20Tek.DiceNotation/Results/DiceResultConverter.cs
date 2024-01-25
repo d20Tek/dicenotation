@@ -12,7 +12,7 @@ public class DiceResultConverter
             throw new ArgumentException("Unexpected type passed to converter.", nameof(targetType));
         }
 
-        ArgumentNullException.ThrowIfNull(nameof(value));
+        ArgumentNullException.ThrowIfNull(value, nameof(value));
 
         if (value is not DiceResult dr)
         {

@@ -12,7 +12,7 @@ public class TermResultListConverter
             throw new ArgumentException("Unexpected type passed to converter.", nameof(targetType));
         }
 
-        ArgumentNullException.ThrowIfNull(nameof(value));
+        ArgumentNullException.ThrowIfNull(value, nameof(value));
 
         if (value is not List<TermResult> list)
         {

@@ -41,9 +41,9 @@ public class DiceTerm : IExpressionTerm
             ArgumentOutOfRangeException.ThrowIfEqual(choose.Value, 0, nameof(choose));
         }
 
-        if (exploding != null)
+        if (exploding is not null)
         {
-            ArgumentOutOfRangeException.ThrowIfLessThan(exploding.Value, -numberDice, nameof(exploding));
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(exploding.Value, 0, nameof(exploding));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(exploding.Value, sides, nameof(exploding));
         }
 

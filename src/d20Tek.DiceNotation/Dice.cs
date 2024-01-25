@@ -63,7 +63,6 @@ public class Dice : IDice
 
     public DiceResult Roll(string expression, IDieRoller? dieRoller = null)
     {
-        dieRoller ??= Configuration.DefaultDieRoller;
         return parser.Parse(
             expression,
             Configuration,

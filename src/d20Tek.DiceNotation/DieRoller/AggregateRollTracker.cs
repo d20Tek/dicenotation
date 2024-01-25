@@ -89,7 +89,8 @@ public class AggregateRollTracker : IAggregateRollTracker
     /// <inheritdoc/>
     public void LoadFromJson(string jsonText)
     {
-        aggRollData = JsonSerializer.Deserialize<List<AggregateDieTrackingData>>(jsonText) ?? [];
+        if (string.IsNullOrEmpty(jsonText)) return;
+        aggRollData = JsonSerializer.Deserialize<List<AggregateDieTrackingData>>(jsonText)!;
     }
 
     /// <inheritdoc/>

@@ -69,7 +69,9 @@ public class DieRollTracker : IDieRollTracker
     {
         await Task.Run(() =>
         {
-            var data = JsonSerializer.Deserialize<List<DieTrackingData>>(jsonText) ?? [];
+            if (string.IsNullOrEmpty(jsonText)) return;
+
+            var data = JsonSerializer.Deserialize<List<DieTrackingData>>(jsonText)!;
             rollData = data.Take(TrackerDataLimit).ToList();
         });
     }
