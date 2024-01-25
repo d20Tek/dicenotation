@@ -30,15 +30,7 @@ jobs:
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
-    - name: Publish D20Tek.Minimal.Result
-      run: dotnet nuget push D20Tek.Minimal.Result.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Publish D20Tek.Minimal.Result.AspNetCore
-      run: dotnet nuget push D20Tek.Minimal.Result.AspNetCore.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Publish D20Tek.Minimal.Result.Extensions
-      run: dotnet nuget push D20Tek.Minimal.Result.Extensions.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
+    - name: Publish d20Tek.DiceNotation
+      run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

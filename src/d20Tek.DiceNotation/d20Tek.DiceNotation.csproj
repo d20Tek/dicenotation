@@ -4,6 +4,47 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<Version>4.0</Version>
+	<Authors>DarthPedro</Authors>
+	<Product>DiceNotation Parsing and Rolling</Product>
+	<Description>Library to parse and roll any dice notation. Use this library in your applications to roll random dice without having to write all of the code yourself.</Description>
+	<Copyright>Copyright (c) 2024 d20Tek. All rights reserved.</Copyright>
+	<PackageProjectUrl>https://github.com/d20Tek/dicenotation</PackageProjectUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageTags>Dice DiceNotation d20 DiceRolls DiceRoller</PackageTags>
+	<PackageReleaseNotes>
+		Current release:
+		Upgrade library packages to .NET 8.
+
+		Release 1.0.5:
+		* Add dice notation for keep lowest by using L token in the notation. Changed drop lowest notation to use P token.
+
+		Release 1.0.4:
+		* Added tracking service to keep track of die rolls to provide statistical data.
+		* Added abstract RandomDieRollerBase class for shared code between all random rollers, so those classes can just implement minimally the number generation.
+
+		Release 1.0.3:
+		* Added value converters for DiceResult and TermResultList to help with default display of these classes as text.
+		* Two bug fixes:
+		- Added IDice.Clear method to allow dice to be reused with new expressions (without needing to recreating instance).
+		- Dice.Parse now throws an exception if null or empty string is used.
+
+		Release 1.0.2:
+		* Added support percentile (d%) notation.
+		* Added support for dropping lowest N dice (similar to keeping highest N dice).
+		* Added support for Fudge/FATE dice notation.
+		* Added support for exploding or pentrating dice rolls.
+		* Added support for default dice sides (3d =&gt;3d6), and ability to set default number of sides as dice config.
+
+		Release 1.0.1:
+		* Added general purpose parser to handle more math and dice expressions.
+		* Added support for grouping using ( ). Now you can parse dice expressions like - (2+1)d4 - (4-2).
+		* Test validation for new expressions and grouping.
+	</PackageReleaseNotes>
+	<RepositoryUrl>https://github.com/d20Tek/dicenotation</RepositoryUrl>
+	<PackageId>d20tek-dicenotation</PackageId>
+	<Title>d20Tek DiceNotation Parsing and Rolling</Title>
   </PropertyGroup>
 
   <ItemGroup>
