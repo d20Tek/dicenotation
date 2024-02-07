@@ -27,11 +27,12 @@ namespace d20Tek.DiceNotation.UnitTests
             // arrange
 
             // act
-            var request = new DiceRequest(4, 6, 1, 3, 1);
+            var request = new DiceRequest(4, 6, 2, 1, 3, 1);
 
             // assert
             Assert.AreEqual(request.NumberDice, 4);
             Assert.AreEqual(request.Sides, 6);
+            Assert.AreEqual(request.Bonus, 2);
             Assert.AreEqual(request.Scalar, 1);
             Assert.AreEqual(request.Choose, 3);
             Assert.AreEqual(request.Exploding, 1);

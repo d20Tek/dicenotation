@@ -71,37 +71,43 @@ public class Dice : IDice
 
     public DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null)
     {
-        dieRoller ??= Configuration.DefaultDieRoller;
-        var term = new DiceTerm(
+        var terms = new List<IExpressionTerm>();
+        var diceTerm = new DiceTerm(
                 diceRequest.NumberDice,
                 diceRequest.Sides,
                 diceRequest.Scalar,
                 diceRequest.Choose,
                 diceRequest.Exploding);
+        terms.Add(diceTerm);
+        if (diceRequest.Bonus != 0)
+        {
+            terms.Add(new ConstantTerm(diceRequest.Bonus));
+        }
 
-        var termResults = term.CalculateResults(dieRoller).ToList();
-
-        return new DiceResult(
-            term.ToString(),
-            termResults,
-            dieRoller.GetType().ToString(),
-            Configuration);
+        return RollTerms(terms, dieRoller);
     }
 
-    public DiceResult Roll(IDieRoller? dieRoller = null)
-    {
-        dieRoller ??= Configuration.DefaultDieRoller;
-        List<TermResult> termResults = terms.SelectMany(t => t.CalculateResults(dieRoller))
-                                            .ToList();
-        return new DiceResult(
-            ToString(),
-            termResults,
-            dieRoller.GetType().ToString(),
-            Configuration);
-    }
+    public DiceResult Roll(IDieRoller? dieRoller = null) =>
+        RollTerms(terms, dieRoller);
 
     public override string ToString()
     {
         return string.Join("+", terms).Replace("+-", "-");
+    }
+
+    private DiceResult RollTerms(
+        IList<IExpressionTerm> expresssionTerms,
+        IDieRoller? dieRoller = null)
+    {
+        dieRoller ??= Configuration.DefaultDieRoller;
+        var termResults = expresssionTerms.SelectMany(t => t.CalculateResults(dieRoller))
+                                          .ToList();
+
+        var expression = string.Join("+", expresssionTerms).Replace("+-", "-");
+        return new DiceResult(
+            expression,
+            termResults,
+            dieRoller.GetType().ToString(),
+            Configuration);
     }
 }

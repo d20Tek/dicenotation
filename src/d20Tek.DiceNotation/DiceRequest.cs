@@ -9,6 +9,8 @@ public class DiceRequest
 
     public int Sides { get; private init; }
 
+    public int Bonus { get; private init; }
+
     public double Scalar { get; private init; }
 
     public int? Choose { get; private init; }
@@ -18,6 +20,7 @@ public class DiceRequest
     public DiceRequest(
         int numberDice,
         int sides,
+        int bonus = 0,
         double scalar = 1,
         int? choose = null,
         int? exploding = null)
@@ -41,6 +44,7 @@ public class DiceRequest
 
         NumberDice = numberDice;
         Sides = sides;
+        Bonus = bonus;
         Scalar = scalar;
         Choose = choose;
         Exploding = exploding;

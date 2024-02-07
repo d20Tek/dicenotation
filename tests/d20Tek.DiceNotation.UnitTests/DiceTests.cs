@@ -543,6 +543,31 @@ namespace d20Tek.DiceNotation.UnitTests
         }
 
         [TestMethod]
+        public void Dice_RollDiceRequest_BonusTest()
+        {
+            // setup test
+            var request = new DiceRequest(1, 20, 5);
+            IDice dice = new Dice();
+
+            // run test
+            DiceResult result = dice.Roll(request);
+
+            // validate results
+            Assert.IsNotNull(result);
+            Assert.AreEqual("d20Tek.DiceNotation.DieRoller.RandomDieRoller", result.DieRollerUsed);
+            AssertHelpers.IsWithinRangeInclusive(6, 25, result.Value);
+            Assert.AreEqual(2, result.Results.Count);
+            int sum = 0;
+            foreach (TermResult r in result.Results)
+            {
+                AssertHelpers.IsWithinRangeInclusive(1, 20, r.Value);
+                sum += r.Value;
+            }
+            Assert.AreEqual(sum, result.Value);
+            Assert.AreEqual("1d20+5", result.DiceExpression);
+        }
+
+        [TestMethod]
         public void Dice_RollDiceRequest_ChooseDiceTest()
         {
             // setup test
