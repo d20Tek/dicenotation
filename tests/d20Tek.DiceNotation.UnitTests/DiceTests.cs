@@ -59,6 +59,25 @@ namespace d20Tek.DiceNotation.UnitTests
         }
 
         [TestMethod]
+        public void Dice_ConstructorWithConfigurationTest()
+        {
+            // setup test
+            var config = new DiceConfiguration();
+
+            // run test
+            IDice dice = new Dice(config);
+
+            // validate results
+            Assert.IsNotNull(dice);
+            Assert.IsInstanceOfType(dice, typeof(IDice));
+            Assert.IsInstanceOfType(dice, typeof(Dice));
+            Assert.IsTrue(string.IsNullOrEmpty(dice.ToString()));
+            Assert.AreEqual(config, dice.Configuration);
+            Assert.IsTrue(dice.Configuration.HasBoundedResult);
+            Assert.AreEqual(1, dice.Configuration.BoundedResultMinimum);
+        }
+
+        [TestMethod]
         public void Dice_ConstantTest()
         {
             // setup test

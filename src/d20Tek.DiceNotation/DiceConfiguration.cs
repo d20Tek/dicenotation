@@ -16,18 +16,10 @@ public class DiceConfiguration : IDiceConfiguration
 
     public int DefaultDieSides
     {
-        get
-        {
-            return defaultDieSides;
-        }
-
+        get => defaultDieSides;
         set
         {
-            if (value < 2)
-            {
-                throw new ArgumentOutOfRangeException("DefaultDieSides");
-            }
-
+            ArgumentOutOfRangeException.ThrowIfLessThan(value, 2);
             defaultDieSides = value;
         }
     }
@@ -37,7 +29,7 @@ public class DiceConfiguration : IDiceConfiguration
         get => defaultDieRoller;
         set
         {
-            _ = value ?? throw new ArgumentNullException(nameof(DefaultDieRoller));
+            ArgumentNullException.ThrowIfNull(value, nameof(DefaultDieRoller));
             defaultDieRoller = value;
         }
     }
