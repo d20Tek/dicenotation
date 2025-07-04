@@ -37,6 +37,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish d20Tek.DiceNotation (nuget.org)
-      run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
+      run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
       env:
         GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
