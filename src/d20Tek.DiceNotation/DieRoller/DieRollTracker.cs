@@ -27,7 +27,7 @@ public class DieRollTracker : IDieRollTracker
 
         if (typeof(IDieRoller).GetTypeInfo().IsAssignableFrom(dieRoller.GetTypeInfo()) is false)
         {
-            throw new ArgumentException(nameof(dieRoller));
+            throw new ArgumentException("DieRoller is not of type IDieRoller.", nameof(dieRoller));
         }
 
         // create tracking data entry
@@ -46,27 +46,19 @@ public class DieRollTracker : IDieRollTracker
 
     public async Task<IList<DieTrackingData>> GetTrackingDataAsync(
         string? dieType = null,
-        string? dieSides = null)
-    {
-        return await Task.Run(() => GetTrackingData(dieType, dieSides));
-    }
+        string? dieSides = null) =>
+        await Task.Run(() => GetTrackingData(dieType, dieSides));
 
-    public void Clear()
-    {
-        rollData.Clear();
-    }
+    public void Clear() => rollData.Clear();
 
-    public async Task<string> ToJsonAsync()
-    {
-        return await Task.Run(() =>
+    public async Task<string> ToJsonAsync() =>
+        await Task.Run(() =>
         {
-            rollData = GetTrimmedData().ToList();
+            rollData = [.. GetTrimmedData()];
             return JsonSerializer.Serialize(rollData);
         });
-    }
 
-    public async Task LoadFromJsonAsync(string jsonText)
-    {
+    public async Task LoadFromJsonAsync(string jsonText) =>
         await Task.Run(() =>
         {
             if (string.IsNullOrEmpty(jsonText)) return;
@@ -74,7 +66,6 @@ public class DieRollTracker : IDieRollTracker
             var data = JsonSerializer.Deserialize<List<DieTrackingData>>(jsonText)!;
             rollData = data.Take(TrackerDataLimit).ToList();
         });
-    }
 
     public async Task<IList<AggregateDieTrackingData>> GetFrequencyDataViewAsync()
     {
@@ -137,8 +128,6 @@ public class DieRollTracker : IDieRollTracker
         return results;
     }
 
-    private IEnumerable<DieTrackingData> GetTrimmedData()
-    {
-        return rollData.OrderByDescending(d => d.Timpstamp).Take(TrackerDataLimit);
-    }
+    private IEnumerable<DieTrackingData> GetTrimmedData() =>
+        rollData.OrderByDescending(d => d.Timpstamp).Take(TrackerDataLimit);
 }

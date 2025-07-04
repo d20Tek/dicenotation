@@ -14,10 +14,7 @@ public class CryptoDieRoller : RandomDieRollerBase
     {
     }
 
-    protected override int GetNextRandom(int sides)
-    {
-        return NumberBetween(1, sides);
-    }
+    protected override int GetNextRandom(int sides) => NumberBetween(1, sides);
 
     private int NumberBetween(int minValue, int maxValue)
     {

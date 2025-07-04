@@ -10,20 +10,14 @@ public class MathNetDieRoller : RandomDieRollerBase
     private static RandomSource randomSource = new MersenneTwister();
 
     public MathNetDieRoller(IAllowRollTrackerEntry? tracker = null)
-        : this(new MersenneTwister(), tracker)
-    {
-    }
+        : this(new MersenneTwister(), tracker) { }
 
     public MathNetDieRoller(RandomSource source, IAllowRollTrackerEntry? tracker = null)
-        : base(tracker)
-    {
-        randomSource = source;
-    }
+        : base(tracker) => randomSource = source;
 
     protected override int GetNextRandom(int sides)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(sides, 2);
-
         return randomSource.Next(0, sides) + 1;
     }
 }

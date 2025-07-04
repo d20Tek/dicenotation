@@ -24,7 +24,7 @@ public class AggregateRollTracker : IAggregateRollTracker
 
         if (typeof(IDieRoller).GetTypeInfo().IsAssignableFrom(dieRoller.GetTypeInfo()) is false)
         {
-            throw new ArgumentException(nameof(dieRoller));
+            throw new ArgumentException("DieRoller is not of type IDieRoller.", nameof(dieRoller));
         }
 
         var entry = aggRollData.Find(
@@ -48,10 +48,7 @@ public class AggregateRollTracker : IAggregateRollTracker
         entry.Count++;
     }
 
-    public void Clear()
-    {
-        aggRollData.Clear();
-    }
+    public void Clear() => aggRollData.Clear();
 
     public IList<AggregateDieTrackingData> GetFrequencyDataView()
     {
@@ -94,8 +91,5 @@ public class AggregateRollTracker : IAggregateRollTracker
     }
 
     /// <inheritdoc/>
-    public string ToJson()
-    {
-        return JsonSerializer.Serialize(aggRollData);
-    }
+    public string ToJson() => JsonSerializer.Serialize(aggRollData);
 }

@@ -8,10 +8,7 @@ public class ConstantDieRoller : IDieRoller
     private const int DefaultRollValue = 1;
     private readonly int constantRollValue;
 
-    public ConstantDieRoller(int rollValue = DefaultRollValue)
-    {
-        constantRollValue = rollValue;
-    }
+    public ConstantDieRoller(int rollValue = DefaultRollValue) => constantRollValue = rollValue;
 
     /// <inheritdoc/>
     public int Roll(int sides, int? factor = null) => constantRollValue;
