@@ -23,14 +23,20 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
     - name: Test
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
+
     - name: Publish d20Tek.DiceNotation
       run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish d20Tek.DiceNotation (nuget.org)
+      run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
+      env:
+        GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
