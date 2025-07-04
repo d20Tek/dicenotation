@@ -10,7 +10,7 @@ namespace d20Tek.DiceNotation
     {
         private const string PercentileNotation = "d%";
         private const string D100EquivalentNotation = "d100";
-        private static readonly Regex WhitespaceRegex = new Regex(@"\s+");
+        private static readonly Regex WhitespaceRegex = new(@"\s+");
         private static readonly string DecimalSeparator =
             CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 

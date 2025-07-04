@@ -7,7 +7,7 @@ public partial class DiceParser
 {
     public List<string> Tokenize(string expression)
     {
-        List<string> tokens = new List<string>();
+        List<string> tokens = [];
         string vector = string.Empty;
 
         // first clean up expression

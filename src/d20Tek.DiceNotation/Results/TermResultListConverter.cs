@@ -5,6 +5,8 @@ namespace d20Tek.DiceNotation.Results;
 
 public class TermResultListConverter
 {
+    private const int _maxTerms = 100;
+
     public virtual object Convert(object value, Type targetType, object parameter, string language)
     {
         if (targetType != typeof(string))
@@ -22,30 +24,13 @@ public class TermResultListConverter
         return DiceRollsToString(list);
     }
 
-    public virtual object ConvertBack(object value, Type targetType, object parameter, string language)
-    {
+    public virtual object ConvertBack(object value, Type targetType, object parameter, string language) => 
         throw new NotSupportedException();
-    }
 
-    private string DiceRollsToString(List<TermResult> results)
-    {
-        var list = from r in results.Take(100)
-                   where r.Type.Contains("DiceTerm")
-                   select r;
-
-        string res = string.Empty;
-        foreach (TermResult item in list)
-        {
-            if (item.AppliesToResultCalculation)
-            {
-                res += item.Value.ToString() + ", ";
-            }
-            else
-            {
-                res += item.Value.ToString() + "*, ";
-            }
-        }
-
-        return res.Trim().TrimEnd(',');
-    }
+    private static string DiceRollsToString(List<TermResult> results) =>
+        string.Join(
+            ", ",
+            results.Take(_maxTerms)
+                   .Where(r => r.Type.Contains("DiceTerm"))
+                   .Select(r => r.AppliesToResultCalculation ? $"{r.Value}" : $"{r.Value}*"));
 }

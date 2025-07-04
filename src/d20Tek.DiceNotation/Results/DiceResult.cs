@@ -14,33 +14,17 @@ public class DiceResult
 
     public string DieRollerUsed { get; set; } = string.Empty;
 
-    [JsonIgnore]
-    public string RollsDisplayText
-    {
-        get
-        {
-            if (Results == null)
-            {
-                return string.Empty;
-            }
-
-            return Converter.Convert(
-                Results.ToList(),
-                typeof(string),
-                "",
-                "en-us").ToString()!;
-        }
-    }
-
-    public IReadOnlyList<TermResult> Results { get; set; } = new List<TermResult>();
+    public IReadOnlyList<TermResult> Results { get; set; } = [];
 
     public int Value { get; set; }
 
-    public DiceResult(
-        string expression,
-        List<TermResult> results,
-        string rollerUsed,
-        IDiceConfiguration config)
+    [JsonIgnore]
+    public string RollsDisplayText =>
+        (Results == null) ?
+            string.Empty :
+            Converter.Convert(Results.ToList(), typeof(string), string.Empty, "en-us").ToString()!;
+
+    public DiceResult(string expression, List<TermResult> results, string rollerUsed, IDiceConfiguration config)
         : this(
               expression,
               results.Sum(r => (int)Math.Round(
@@ -51,16 +35,11 @@ public class DiceResult
     {
     }
 
-    public DiceResult(
-        string expression,
-        int value,
-        List<TermResult> results,
-        string rollerUsed,
-        IDiceConfiguration config)
+    public DiceResult(string expression, int value, List<TermResult> results, string roller, IDiceConfiguration config)
     {
         DiceExpression = expression;
-        DieRollerUsed = rollerUsed;
-        Results = results.ToList();
+        DieRollerUsed = roller;
+        Results = [.. results];
 
         bool boundedResult = !expression.Contains(FudgeDiceIdentifier) && config.HasBoundedResult;
         Value = boundedResult ? Math.Max(value, config.BoundedResultMinimum) : value;

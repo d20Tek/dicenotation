@@ -22,9 +22,6 @@ public class DiceResultConverter
         return string.Format("{0} ({1})", dr.Value, dr.DiceExpression);
     }
 
-    public virtual object ConvertBack(object value, Type targetType, object parameter, string language)
-    {
-        // the reverse conversion is not supported.
+    public virtual object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
-    }
 }
