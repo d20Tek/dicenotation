@@ -11,7 +11,7 @@ To build the source code, please read [Building Code](docs/BuildProject.md) page
 # Installation
 This library is a NuGet package so it is easy to add to your project. To install these packages into your solution, you can use the Package Manager. In PM, please use the following commands:
 ```  
-PM > Install-Package d20tek-dicenotation -Version 4.0
+PM > Install-Package d20tek-dicenotation -Version 4.0.6
 ``` 
 
 To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for d20Tek.dicenotation and install it from there.
