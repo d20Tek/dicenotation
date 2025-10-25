@@ -8,191 +8,152 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace d20Tek.DiceNotation.UnitTests.DiceTerms
+namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
+
+[TestClass]
+public class FudgeDiceTermTests
 {
+    private readonly IDieRoller roller = new RandomDieRoller();
 
-    /// <summary>
-    /// Summary description for FudgeDiceTermTests
-    /// </summary>
-    [TestClass]
-    public class FudgeDiceTermTests
+    [TestMethod]
+    public void FudgeDiceTerm_ConstructorTest()
     {
-        private readonly IDieRoller roller = new RandomDieRoller();
+        // arrange
 
-        public FudgeDiceTermTests()
+        // act
+        IExpressionTerm term = new FudgeDiceTerm(3);
+
+        // assert
+        Assert.IsNotNull(term);
+        Assert.IsInstanceOfType<IExpressionTerm>(term);
+        Assert.IsInstanceOfType<FudgeDiceTerm>(term);
+    }
+
+    [TestMethod]
+    public void DiceTerm_CalculateResultsTest()
+    {
+        // arrange
+        var term = new FudgeDiceTerm(1);
+
+        // act
+        IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+
+        // assert
+        Assert.IsNotNull(results);
+        Assert.HasCount(1, results);
+        TermResult r = results[0];
+        Assert.IsNotNull(r);
+        Assert.AreEqual(1, r.Scalar);
+        AssertHelpers.IsWithinRangeInclusive(-1, 1, r.Value);
+        Assert.AreEqual("FudgeDiceTerm.dF", r.Type);
+    }
+
+    [TestMethod]
+    public void DiceTerm_CalculateResultsMultipleDiceTest()
+    {
+        // arrange
+        var term = new FudgeDiceTerm(3);
+
+        // act
+        IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+
+        // assert
+        Assert.IsNotNull(results);
+        Assert.HasCount(3, results);
+        foreach (TermResult r in results)
         {
-        }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
-        [TestMethod]
-        public void FudgeDiceTerm_ConstructorTest()
-        {
-            // setup test
-
-            // run test
-            IExpressionTerm term = new FudgeDiceTerm(3);
-
-            // validate results
-            Assert.IsNotNull(term);
-            Assert.IsInstanceOfType(term, typeof(IExpressionTerm));
-            Assert.IsInstanceOfType(term, typeof(FudgeDiceTerm));
-        }
-
-        [TestMethod]
-        public void DiceTerm_CalculateResultsTest()
-        {
-            // setup test
-            IExpressionTerm term = new FudgeDiceTerm(1);
-
-            // run test
-            IReadOnlyList<TermResult> results = term.CalculateResults(roller);
-
-            // validate results
-            Assert.IsNotNull(results);
-            Assert.AreEqual(1, results.Count);
-            TermResult r = results.FirstOrDefault();
             Assert.IsNotNull(r);
             Assert.AreEqual(1, r.Scalar);
             AssertHelpers.IsWithinRangeInclusive(-1, 1, r.Value);
             Assert.AreEqual("FudgeDiceTerm.dF", r.Type);
         }
+    }
 
-        [TestMethod]
-        public void DiceTerm_CalculateResultsMultipleDiceTest()
+    [TestMethod]
+    public void DiceTerm_CalculateResultsChooseDiceTest()
+    {
+        // arrange
+        var term = new FudgeDiceTerm(5, 3);
+
+        // act
+        IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+
+        // assert
+        Assert.IsNotNull(results);
+        Assert.HasCount(5, results);
+        int included = 0;
+        foreach (TermResult r in results)
         {
-            // setup test
-            IExpressionTerm term = new FudgeDiceTerm(3);
+            Assert.IsNotNull(r);
+            Assert.AreEqual(1, r.Scalar);
+            AssertHelpers.IsWithinRangeInclusive(-1, 1, r.Value);
+            Assert.AreEqual("FudgeDiceTerm.dF", r.Type);
+            if (r.AppliesToResultCalculation) included++;
+        }
+        Assert.AreEqual(3, included);
+    }
 
-            // run test
-            IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+    [TestMethod]
+    public void FudgeDiceTerm_CalculateResultsNullDieRollerTest()
+    {
+        // arrange
+        var term = new FudgeDiceTerm(1);
 
-            // validate results
-            Assert.IsNotNull(results);
-            Assert.AreEqual(3, results.Count);
-            foreach (TermResult r in results)
-            {
-                Assert.IsNotNull(r);
-                Assert.AreEqual(1, r.Scalar);
-                AssertHelpers.IsWithinRangeInclusive(-1, 1, r.Value);
-                Assert.AreEqual("FudgeDiceTerm.dF", r.Type);
-            }
+        // act - assert
+        Assert.ThrowsExactly<ArgumentNullException>([ExcludeFromCodeCoverage] () => term.CalculateResults(null));
+    }
+
+    [TestMethod]
+    public void FudgeDiceTerm_ToStringTest()
+    {
+        // arrange
+        var term = new FudgeDiceTerm(2);
+
+        // act
+        string result = term.ToString();
+
+        // assert
+        Assert.IsFalse(string.IsNullOrEmpty(result));
+        Assert.AreEqual("2f", result);
+    }
+
+    [TestMethod]
+    public void FudgeDiceTerm_ToStringChooseTest()
+    {
+        // arrange
+        var term = new FudgeDiceTerm(5, 3);
+
+        // act
+        string result = term.ToString();
+
+        // assert
+        Assert.IsFalse(string.IsNullOrEmpty(result));
+        Assert.AreEqual("5fk3", result);
+    }
+
+    [TestClass]
+    [ExcludeFromCodeCoverage]
+    public class FudgeDiceTermErrorTests
+    {
+        [TestMethod]
+        public void FudgeDiceTerm_ConstructorInvalidNumDiceTest()
+        {
+            // arrange
+
+            // act - assert
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(0));
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(-5));
         }
 
         [TestMethod]
-        public void DiceTerm_CalculateResultsChooseDiceTest()
+        public void FudgeDiceTerm_ConstructorInvalidChooseTest()
         {
-            // setup test
-            IExpressionTerm term = new FudgeDiceTerm(5, 3);
+            // arrange
 
-            // run test
-            IReadOnlyList<TermResult> results = term.CalculateResults(roller);
-
-            // validate results
-            Assert.IsNotNull(results);
-            Assert.AreEqual(5, results.Count);
-            int included = 0;
-            foreach (TermResult r in results)
-            {
-                Assert.IsNotNull(r);
-                Assert.AreEqual(1, r.Scalar);
-                AssertHelpers.IsWithinRangeInclusive(-1, 1, r.Value);
-                Assert.AreEqual("FudgeDiceTerm.dF", r.Type);
-                if (r.AppliesToResultCalculation) included++;
-            }
-            Assert.AreEqual(3, included);
-        }
-
-        [TestMethod]
-        [ExcludeFromCodeCoverage]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void FudgeDiceTerm_CalculateResultsNullDieRollerTest()
-        {
-            // setup test
-            IExpressionTerm term = new FudgeDiceTerm(1);
-
-            // run test
-            term.CalculateResults(null);
-
-            // validate results
-        }
-
-        [TestMethod]
-        public void FudgeDiceTerm_ToStringTest()
-        {
-            // setup test
-            IExpressionTerm term = new FudgeDiceTerm(2);
-
-            // run test
-            string result = term.ToString();
-
-            // validate results
-            Assert.IsFalse(string.IsNullOrEmpty(result));
-            Assert.AreEqual("2f", result);
-        }
-
-        [TestMethod]
-        public void FudgeDiceTerm_ToStringChooseTest()
-        {
-            // setup test
-            IExpressionTerm term = new FudgeDiceTerm(5, 3);
-
-            // run test
-            string result = term.ToString();
-
-            // validate results
-            Assert.IsFalse(string.IsNullOrEmpty(result));
-            Assert.AreEqual("5fk3", result);
-        }
-
-        [TestClass]
-        [ExcludeFromCodeCoverage]
-        public class FudgeDiceTermErrorTests
-        {
-            [TestMethod]
-            public void FudgeDiceTerm_ConstructorInvalidNumDiceTest()
-            {
-                // setup test
-
-                // run test
-                Assert.ThrowsException<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(0));
-                Assert.ThrowsException<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(-5));
-
-                // validate results
-            }
-
-            [TestMethod]
-            public void FudgeDiceTerm_ConstructorInvalidChooseTest()
-            {
-                // setup test
-
-                // run test
-                Assert.ThrowsException<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(3, choose: 0));
-                Assert.ThrowsException<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(3, choose: -4));
-                Assert.ThrowsException<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(3, choose: 4));
-
-                // validate results
-            }
+            // act - assert
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(3, choose: 0));
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(3, choose: -4));
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new FudgeDiceTerm(3, choose: 4));
         }
     }
 }

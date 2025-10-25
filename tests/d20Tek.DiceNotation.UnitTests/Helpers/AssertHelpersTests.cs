@@ -1,46 +1,43 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics.CodeAnalysis;
 
-namespace D20Tek.DiceNotation.UnitTests.Helpers
+namespace D20Tek.DiceNotation.UnitTests.Helpers;
+
+[TestClass]
+public class AssertHelpersTests
 {
-    [TestClass]
-    public class AssertHelpersTests
+    [TestMethod]
+    public void IsWithinRangeInclusive_Valid()
     {
-        [TestMethod]
-        public void IsWithinRangeInclusive_Valid()
-        {
-            // setup test
+        // arrange
 
-            // run test
+        // act
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 20, 5);
-        }
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 20, 5);
+    }
 
-        [TestMethod]
-        [ExpectedException(typeof(AssertFailedException))]
-        [ExcludeFromCodeCoverage]
-        public void IsWithinRangeInclusive_LessThanMin()
-        {
-            // setup test
+    [TestMethod]
+    public void IsWithinRangeInclusive_LessThanMin()
+    {
+        // arrange
 
-            // run test
+        // act
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 20, -2);
-        }
+        // assert
+        Assert.Throws<AssertFailedException>(
+            [ExcludeFromCodeCoverage] () => AssertHelpers.IsWithinRangeInclusive(1, 20, -2));
+    }
 
-        [TestMethod]
-        [ExpectedException(typeof(AssertFailedException))]
-        [ExcludeFromCodeCoverage]
-        public void IsWithinRangeInclusive_GreaterThanMax()
-        {
-            // setup test
+    [TestMethod]
+    public void IsWithinRangeInclusive_GreaterThanMax()
+    {
+        // arrange
 
-            // run test
+        // act
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 20, 25);
-        }
+        // assert
+        Assert.Throws<AssertFailedException>(
+            [ExcludeFromCodeCoverage] () => AssertHelpers.IsWithinRangeInclusive(1, 20, 25));
     }
 }

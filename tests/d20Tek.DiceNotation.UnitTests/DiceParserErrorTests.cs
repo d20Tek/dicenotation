@@ -3,147 +3,95 @@ using d20Tek.DiceNotation.DieRoller;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace d20Tek.DiceNotation.UnitTests
+namespace d20Tek.DiceNotation.UnitTests;
+
+[TestClass]
+[ExcludeFromCodeCoverage]
+public class DiceParserErrorTests
 {
-    /// <summary>
-    /// Summary description for DiceParserErrorTests
-    /// </summary>
-    [TestClass]
-    [ExcludeFromCodeCoverage]
-    public class DiceParserErrorTests
+    private readonly DiceConfiguration _config = new();
+    private readonly IDieRoller _roller = new ConstantDieRoller(2);
+    private readonly DiceParser _parser = new();
+
+    [TestMethod]
+    public void DiceParser_UnrecognizedOperatorTest()
     {
-        private readonly DiceConfiguration config = new DiceConfiguration();
-        readonly IDieRoller roller = new ConstantDieRoller(2);
+        // arrange
 
-        public DiceParserErrorTests()
-        {
-        }
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("1d20g4", _config, _roller));
+    }
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
+    [TestMethod]
+    public void DiceParser_ParseDiceDropNumberErrorTest()
+    {
+        // arrange
 
-        [TestMethod]
-        public void DiceParser_UnrecognizedOperatorTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("4d6p4", _config, _roller));
+    }
 
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("1d20g4", this.config, roller));
+    [TestMethod]
+    public void DiceParser_ParseDiceOperatorNoValueTest()
+    {
+        // arrange
 
-            // validate results
-        }
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d4x", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d4/", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d4k", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d4l", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2+l2d4", _config, _roller));
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseDiceDropNumberErrorTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseDiceOperatorMultipleTimesTest()
+    {
+        // arrange
 
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("4d6p4", this.config, roller));
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d4k1k2", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d4l1l2", _config, _roller));
+    }
 
-            // validate results
-        }
+    [TestMethod]
+    public void DiceParser_ParseRandomStringsTest()
+    {
+        // arrange
 
-        [TestMethod]
-        public void DiceParser_ParseDiceOperatorNoValueTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("eosnddik+9", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2drk4/9", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("7y+2d4k4", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("7!y+2d4", _config, _roller));
+    }
 
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d4x", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d4/", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d4k", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d4l", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2+l2d4", this.config, roller));
+    [TestMethod]
+    public void DiceParser_ParseDicePercentilErrorTest()
+    {
+        // arrange
 
-            // validate results
-        }
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d6%3", _config, _roller));
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseDiceOperatorMultipleTimesTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseDiceFudgeErrorTest()
+    {
+        // arrange
 
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d4k1k2", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d4l1l2", this.config, roller));
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("2d6f", _config, _roller));
+        Assert.ThrowsExactly<FormatException>(() => _parser.Parse("6fd", _config, _roller));
+    }
 
-            // validate results
-        }
+    [TestMethod]
+    public void DiceParser_ParseDiceEmptyNullExpressionTest()
+    {
+        // arrange
 
-        [TestMethod]
-        public void DiceParser_ParseRandomStringsTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
-
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("eosnddik+9", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2drk4/9", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("7y+2d4k4", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("7!y+2d4", this.config, roller));
-            // validate results
-        }
-
-        [TestMethod]
-        public void DiceParser_ParseDicePercentilErrorTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
-
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d6%3", this.config, roller));
-
-            // validate results
-        }
-
-        [TestMethod]
-        public void DiceParser_ParseDiceFudgeErrorTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
-
-            // run test
-            Assert.ThrowsException<FormatException>(() => parser.Parse("2d6f", this.config, roller));
-            Assert.ThrowsException<FormatException>(() => parser.Parse("6fd", this.config, roller));
-
-            // validate results
-        }
-
-        [TestMethod]
-        public void DiceParser_ParseDiceEmptyNullExpressionTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
-
-            // run test
-            Assert.ThrowsException<ArgumentNullException>(() => parser.Parse("", this.config, roller));
-            Assert.ThrowsException<ArgumentNullException>(() => parser.Parse(null, this.config, roller));
-
-            // validate results
-        }
+        // act - assert
+        Assert.ThrowsExactly<ArgumentNullException>(() => _parser.Parse("", _config, _roller));
+        Assert.ThrowsExactly<ArgumentNullException>(() => _parser.Parse(null, _config, _roller));
     }
 }

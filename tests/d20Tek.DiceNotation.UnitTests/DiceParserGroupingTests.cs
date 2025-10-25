@@ -1,249 +1,200 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
-using d20Tek.DiceNotation.Results;
 using D20Tek.DiceNotation.UnitTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace d20Tek.DiceNotation.UnitTests
+namespace d20Tek.DiceNotation.UnitTests;
+
+[TestClass]
+public class DiceParserGroupingTests
 {
-    /// <summary>
-    /// Summary description for DiceParserGroupingTests
-    /// </summary>
-    [TestClass]
-    public class DiceParserGroupingTests
+    private readonly DiceConfiguration _config = new();
+    private readonly IDieRoller _testRoller = new ConstantDieRoller(2);
+    private readonly IDieRoller _roller = new RandomDieRoller();
+    private readonly DiceParser _parser = new();
+
+    [TestMethod]
+    public void DiceParser_ParseParensSimpleTest()
     {
-        private readonly DiceConfiguration config = new DiceConfiguration();
-        private readonly IDieRoller testRoller = new ConstantDieRoller(2);
-        private readonly IDieRoller roller = new RandomDieRoller();
+        // arrange
 
-        public DiceParserGroupingTests()
-        {
-        }
+        // act
+        var result = _parser.Parse("(1d20+2)", _config, _testRoller);
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(1d20+2)", result.DiceExpression);
+        Assert.HasCount(1, result.Results);
+        Assert.AreEqual(4, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensSimpleTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensNumDiceTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(1d20+2)", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(1+3)d8", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(1d20+2)", result.DiceExpression);
-            Assert.AreEqual(1, result.Results.Count);
-            Assert.AreEqual(4, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(1+3)d8", result.DiceExpression);
+        Assert.HasCount(4, result.Results);
+        Assert.AreEqual(8, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensNumDiceTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensSidesTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(1+3)d8", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("2d(2x3)+2", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(1+3)d8", result.DiceExpression);
-            Assert.AreEqual(4, result.Results.Count);
-            Assert.AreEqual(8, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("2d(2x3)+2", result.DiceExpression);
+        Assert.HasCount(2, result.Results);
+        Assert.AreEqual(6, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensSidesTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensChooseTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("2d(2x3)+2", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("4d(2x3)k(1+2)", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("2d(2x3)+2", result.DiceExpression);
-            Assert.AreEqual(2, result.Results.Count);
-            Assert.AreEqual(6, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        AssertHelpers.AssertDiceChoose(result, "4d(2x3)k(1+2)", "DiceTerm.d6", 4, 3);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensChooseTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensMultiplyTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("4d(2x3)k(1+2)", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(2d10+1) * 10", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            AssertHelpers.AssertDiceChoose(result, "4d(2x3)k(1+2)", "DiceTerm.d6", 4, 3);
-        }
-
-        [TestMethod]
-        public void DiceParser_ParseParensMultiplyTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
-
-            // run test
-            DiceResult result = parser.Parse("(2d10+1) * 10", this.config, this.testRoller);
-
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(2d10+1)*10", result.DiceExpression);
-            Assert.AreEqual(2, result.Results.Count);
-            Assert.AreEqual(50, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(2d10+1)*10", result.DiceExpression);
+        Assert.HasCount(2, result.Results);
+        Assert.AreEqual(50, result.Value);
+    }
 
 
-        [TestMethod]
-        public void DiceParser_ParseParensDivideTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensDivideTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(4d10-2) / (1+1)", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(4d10-2) / (1+1)", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(4d10-2)/(1+1)", result.DiceExpression);
-            Assert.AreEqual(4, result.Results.Count);
-            Assert.AreEqual(3, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(4d10-2)/(1+1)", result.DiceExpression);
+        Assert.HasCount(4, result.Results);
+        Assert.AreEqual(3, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensFudgeTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensFudgeTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(10f-2) / (1+1)", this.config, this.roller);
+        // act
+        var result = _parser.Parse("(10f-2) / (1+1)", this._config, this._roller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(10f-2)/(1+1)", result.DiceExpression);
-            Assert.AreEqual(10, result.Results.Count);
-            AssertHelpers.IsWithinRangeInclusive(-5, 5, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(10f-2)/(1+1)", result.DiceExpression);
+        Assert.HasCount(10, result.Results);
+        AssertHelpers.IsWithinRangeInclusive(-5, 5, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensComplexTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensComplexTest()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(2+1d20+(2+3))x3-10", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(2+1d20+(2+3))x3-10", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(2+1d20+(2+3))x3-10", result.DiceExpression);
-            Assert.AreEqual(1, result.Results.Count);
-            Assert.AreEqual(17, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(2+1d20+(2+3))x3-10", result.DiceExpression);
+        Assert.HasCount(1, result.Results);
+        Assert.AreEqual(17, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensComplex2Test()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensComplex2Test()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(2+1d20+(2+3))x3-10+()", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(2+1d20+(2+3))x3-10+()", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(2+1d20+(2+3))x3-10+()", result.DiceExpression);
-            Assert.AreEqual(1, result.Results.Count);
-            Assert.AreEqual(17, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(2+1d20+(2+3))x3-10+()", result.DiceExpression);
+        Assert.HasCount(1, result.Results);
+        Assert.AreEqual(17, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensComplex3Test()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensComplex3Test()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(2+1d20+(2+3))x3-10+(3)", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(2+1d20+(2+3))x3-10+(3)", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(2+1d20+(2+3))x3-10+(3)", result.DiceExpression);
-            Assert.AreEqual(1, result.Results.Count);
-            Assert.AreEqual(20, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(2+1d20+(2+3))x3-10+(3)", result.DiceExpression);
+        Assert.HasCount(1, result.Results);
+        Assert.AreEqual(20, result.Value);
+    }
 
-        [TestMethod]
-        public void DiceParser_ParseParensComplex4Test()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensComplex4Test()
+    {
+        // arrange
 
-            // run test
-            DiceResult result = parser.Parse("(((2+1d20)+(2+3))x3-10+(3))", this.config, this.testRoller);
+        // act
+        var result = _parser.Parse("(((2+1d20)+(2+3))x3-10+(3))", _config, _testRoller);
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("(((2+1d20)+(2+3))x3-10+(3))", result.DiceExpression);
-            Assert.AreEqual(1, result.Results.Count);
-            Assert.AreEqual(20, result.Value);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("(((2+1d20)+(2+3))x3-10+(3))", result.DiceExpression);
+        Assert.HasCount(1, result.Results);
+        Assert.AreEqual(20, result.Value);
+    }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArithmeticException))]
-        [ExcludeFromCodeCoverage]
-        public void DiceParser_ParseParensMismatchEndTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
+    [TestMethod]
+    public void DiceParser_ParseParensMismatchEndTest()
+    {
+        // arrange
 
-            // run test
-            parser.Parse("(2+1d20+(2+3)x3-10+(3)", this.config, this.testRoller);
+        // act
+        Assert.ThrowsExactly<ArithmeticException>(
+            [ExcludeFromCodeCoverage]() => _parser.Parse("(2+1d20+(2+3)x3-10+(3)", _config, _testRoller));
+    }
 
-            // validate results
-        }
+    [TestMethod]
+    public void DiceParser_ParseParensMismatchStartTest()
+    {
+        // arrange
 
-        [TestMethod]
-        [ExpectedException(typeof(FormatException))]
-        [ExcludeFromCodeCoverage]
-        public void DiceParser_ParseParensMismatchStartTest()
-        {
-            // setup test
-            DiceParser parser = new DiceParser();
-
-            // run test
-            parser.Parse("(2+1d20+2+3))x3-10+(3)", this.config, this.testRoller);
-
-            // validate results
-        }
+        // act
+        Assert.ThrowsExactly<FormatException>(
+            [ExcludeFromCodeCoverage] () => _parser.Parse("(2+1d20+2+3))x3-10+(3)", _config, _testRoller));
     }
 }

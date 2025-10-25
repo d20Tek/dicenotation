@@ -2,200 +2,150 @@
 using D20Tek.DiceNotation.UnitTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace d20Tek.DiceNotation.UnitTests.DieRoller
+namespace d20Tek.DiceNotation.UnitTests.ExtendedDieRollers;
+
+[TestClass]
+public class CryptoDieRollerTests
 {
-    /// <summary>
-    /// Summary description for CryptoDieRoller
-    /// </summary>
-    [TestClass]
-    public class CryptoDieRollerTests
+    private readonly CryptoDieRoller _die = new();
+
+    [TestMethod]
+    public void CryptoDieRoller_DefaultConstructorTest()
     {
-        public CryptoDieRollerTests()
+        // arrange
+
+        // act
+        var die = new CryptoDieRoller();
+
+        // assert
+        Assert.IsNotNull(die);
+        Assert.IsInstanceOfType<IDieRoller>(die);
+        Assert.IsInstanceOfType<CryptoDieRoller>(die);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld20Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(20);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 20, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld4Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(4);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 4, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld6Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(6);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 6, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld8Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(8);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 8, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld12Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(12);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 12, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld100Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(100);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 100, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_Rolld7Test()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(7);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 7, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_RollFudgeTest()
+    {
+        // arrange
+
+        // act
+        var result = _die.Roll(3, -2);
+
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(-1, 1, result);
+    }
+
+    [TestMethod]
+    public void CryptoDieRoller_RollMultipleFudgeTest()
+    {
+        // arrange
+
+        // act
+        for (var i = 0; i < 100; i++)
         {
-        }
+            var result = _die.Roll(3, -2);
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
-        [TestMethod]
-        public void CryptoDieRoller_DefaultConstructorTest()
-        {
-            // setup test
-
-            // run test
-            IDieRoller die = new CryptoDieRoller();
-
-            // validate results
-            Assert.IsNotNull(die);
-            Assert.IsInstanceOfType(die, typeof(IDieRoller));
-            Assert.IsInstanceOfType(die, typeof(CryptoDieRoller));
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld20Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(20);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 20, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld4Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(4);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 4, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld6Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(6);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 6, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld8Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(8);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 8, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld12Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(12);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 12, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld100Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(100);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 100, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_Rolld7Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(7);
-
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 7, result);
-        }
-
-        [TestMethod]
-        public void CryptoDieRoller_RollFudgeTest()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            int result = die.Roll(3, -2);
-
-            // validate results
+            // assert
             AssertHelpers.IsWithinRangeInclusive(-1, 1, result);
         }
+    }
 
-        [TestMethod]
-        public void CryptoDieRoller_RollMultipleFudgeTest()
+    [TestMethod]
+    public void CryptoDieRoller_RollThousandD6Test()
+    {
+        // arrange
+
+        // act
+        for (var i = 0; i < 1000; i++)
         {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
+            var result = _die.Roll(6);
 
-            // run test
-            for (int i = 0; i < 100; i++)
-            {
-                int result = die.Roll(3, -2);
-
-                // validate results
-                AssertHelpers.IsWithinRangeInclusive(-1, 1, result);
-            }
+            // assert
+            AssertHelpers.IsWithinRangeInclusive(1, 6, result);
         }
-
-        [TestMethod]
-        public void CryptoDieRoller_RollThousanD6Test()
-        {
-            // setup test
-            IDieRoller die = new CryptoDieRoller();
-
-            // run test
-            for (int i = 0; i < 1000; i++)
-            {
-                int result = die.Roll(6);
-
-                // validate results
-                AssertHelpers.IsWithinRangeInclusive(1, 6, result);
-            }
-        }
-
-        //[TestMethod]
-        //public void CryptoDieRoller_RollErrorTest()
-        //{
-        //    // setup test
-        //    IDieRoller die = new CryptoDieRoller();
-
-        //    // run test
-        //    Assert.ThrowsException<ArgumentOutOfRangeException>(() => die.Roll(0));
-
-        //    // validate results
-        //}
     }
 }

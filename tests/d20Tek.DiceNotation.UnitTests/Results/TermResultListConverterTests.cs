@@ -4,211 +4,167 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace d20Tek.DiceNotation.UnitTests
+namespace d20Tek.DiceNotation.UnitTests.Results;
+
+[TestClass]
+public class TermResultListConverterTests
 {
-    /// <summary>
-    /// Summary description for TermResultListConverterTests
-    /// </summary>
-    [TestClass]
-    public class TermResultListConverterTests
+    private readonly TermResultListConverter _conv = new();
+
+    [TestMethod]
+    public void TermResultListConverter_ConstructorTest()
     {
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
+        // arrange
 
-        [TestMethod]
-        public void TermResultListConverter_ConstructorTest()
+        // act
+        TermResultListConverter conv = new();
+
+        // assert
+        Assert.IsNotNull(conv);
+        Assert.IsInstanceOfType<TermResultListConverter>(conv);
+    }
+
+    [TestMethod]
+    public void TermResultListConverter_ConvertTextTest()
+    {
+        // arrange
+        DiceResult diceResult = new()
         {
-            // setup test
+            DiceExpression = "d6",
+            DieRollerUsed = "ConstantDieRoller",
+            Results =
+            [
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+            ],
+            Value = 3,
+        };
 
-            // run test
-            TermResultListConverter conv = new TermResultListConverter();
+        // act
+        var result = _conv.Convert(diceResult.Results, typeof(string), null, "en-us") as string;
 
-            // validate results
-            Assert.IsNotNull(conv);
-            Assert.IsInstanceOfType(conv, typeof(TermResultListConverter));
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("3", result);
+    }
 
-        [TestMethod]
-        public void TermResultListConverter_ConvertTextTest()
+    [TestMethod]
+    public void TermResultListConverter_ConvertChooseTextTest()
+    {
+        // arrange
+        DiceResult diceResult = new()
         {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            DiceResult diceResult = new DiceResult
-            {
-                DiceExpression = "d6",
-                DieRollerUsed = "ConstantDieRoller",
-                Results = new List<TermResult>
-                {
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                },
-                Value = 3,
-            };
+            DiceExpression = "6d6k3",
+            DieRollerUsed = "ConstantDieRoller",
+            Results =
+            [
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
+            ],
+            Value = 9,
+        };
 
-            // run test
-            string result = conv.Convert(diceResult.Results, typeof(string), null, "en-us") as string;
+        // act
+        var result = _conv.Convert(diceResult.Results, typeof(string), null, "en-us") as string;
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("3", result);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("3, 3, 3, 3*, 3*, 3*", result);
+    }
 
-        [TestMethod]
-        public void TermResultListConverter_ConvertChooseTextTest()
+    [TestMethod]
+    public void TermResultListConverter_ConvertComplexTextTest()
+    {
+        // arrange
+        DiceResult diceResult = new()
         {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            DiceResult diceResult = new DiceResult
-            {
-                DiceExpression = "6d6k3",
-                DieRollerUsed = "ConstantDieRoller",
-                Results = new List<TermResult>
-                {
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
-                },
-                Value = 9,
-            };
+            DiceExpression = "4d6k3+d8+5",
+            DieRollerUsed = "ConstantDieRoller",
+            Results =
+            [
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+            ],
+            Value = 17,
+        };
 
-            // run test
-            string result = conv.Convert(diceResult.Results, typeof(string), null, "en-us") as string;
+        // act
+        var result = _conv.Convert(diceResult.Results, typeof(string), null, "en-us") as string;
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("3, 3, 3, 3*, 3*, 3*", result);
-        }
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("3, 3, 3, 3*, 3", result);
+    }
 
-        [TestMethod]
-        public void TermResultListConverter_ConvertComplexTextTest()
+    [TestMethod]
+    public void TermResultListConverter_ConvertEmptyResultListTest()
+    {
+        // arrange
+        IReadOnlyList<TermResult> list = [];
+
+        // act
+        var result = _conv.Convert(list, typeof(string), null, "en-us") as string;
+
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(string.Empty, result);
+    }
+
+    [TestMethod]
+    public void TermResultListConverter_ConvertErrorTargetTypeTest()
+    {
+        // arrange
+        DiceResult diceResult = new()
         {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            DiceResult diceResult = new DiceResult
-            {
-                DiceExpression = "4d6k3+d8+5",
-                DieRollerUsed = "ConstantDieRoller",
-                Results = new List<TermResult>
-                {
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                },
-                Value = 17,
-            };
+            DiceExpression = "d20",
+            DieRollerUsed = "ConstantDieRoller",
+            Results =
+            [
+                new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
+            ],
+            Value = 3,
+        };
 
-            // run test
-            string result = conv.Convert(diceResult.Results, typeof(string), null, "en-us") as string;
+        // act - assert
+        Assert.ThrowsExactly<ArgumentException>(
+            [ExcludeFromCodeCoverage] () => _conv.Convert(diceResult.Results, typeof(int), null, "en-us"));
+    }
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual("3, 3, 3, 3*, 3", result);
-        }
+    [TestMethod]
+    public void TermResultListConverter_ConvertErrorValueNullTest()
+    {
+        // arrange
 
-        [TestMethod]
-        public void TermResultListConverter_ConvertEmptyResultListTest()
-        {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            IReadOnlyList<TermResult> list = new List<TermResult>();
+        // act - assert
+        Assert.ThrowsExactly<ArgumentNullException>(
+            [ExcludeFromCodeCoverage] () => _conv.Convert(null, typeof(string), null, "en-us"));
+    }
 
-            // run test
-            string result = conv.Convert(list, typeof(string), null, "en-us") as string;
+    [TestMethod]
+    public void TermResultListConverter_ConvertErrorValueTypeTest()
+    {
+        // arrange
+        var value = "testString";
 
-            // validate results
-            Assert.IsNotNull(result);
-            Assert.AreEqual(string.Empty, result);
-        }
+        // act - assert
+        Assert.ThrowsExactly<ArgumentException>(
+            [ExcludeFromCodeCoverage] () => _conv.Convert(value, typeof(string), null, "en-us"));
+    }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        [ExcludeFromCodeCoverage]
-        public void TermResultListConverter_ConvertErrorTargetTypeTest()
-        {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            DiceResult diceResult = new DiceResult
-            {
-                DiceExpression = "d20",
-                DieRollerUsed = "ConstantDieRoller",
-                Results = new List<TermResult>
-                {
-                    new TermResult { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-                },
-                Value = 3,
-            };
+    [TestMethod]
+    public void TermResultListConverter_ConvertBackTest()
+    {
+        // arrange
+        var value = "testString";
 
-            // run test
-            conv.Convert(diceResult.Results, typeof(int), null, "en-us");
-
-            // validate results
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        [ExcludeFromCodeCoverage]
-        public void TermResultListConverter_ConvertErrorValueNullTest()
-        {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-
-            // run test
-            conv.Convert(null, typeof(string), null, "en-us");
-
-            // validate results
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        [ExcludeFromCodeCoverage]
-        public void TermResultListConverter_ConvertErrorValueTypeTest()
-        {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            string value = "testString";
-
-            // run test
-            conv.Convert(value, typeof(string), null, "en-us");
-
-            // validate results
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
-        [ExcludeFromCodeCoverage]
-        public void TermResultListConverter_ConvertBackTest()
-        {
-            // setup test
-            TermResultListConverter conv = new TermResultListConverter();
-            string value = "testString";
-
-            // run test
-            conv.ConvertBack(value, typeof(string), null, "en-us");
-
-            // validate results
-        }
+        // act - assert
+        Assert.ThrowsExactly<NotSupportedException>(
+            [ExcludeFromCodeCoverage] () => _conv.ConvertBack(value, typeof(string), null, "en-us"));
     }
 }

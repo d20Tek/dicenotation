@@ -3,108 +3,77 @@ using d20Tek.DiceNotation.DieRoller;
 using d20Tek.DiceNotation.Results;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace d20Tek.DiceNotation.UnitTests.DiceTerms
+namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
+
+[TestClass]
+public class ConstantTermTests
 {
-    /// <summary>
-    /// Summary description for ConstantTermTests
-    /// </summary>
-    [TestClass]
-    public class ConstantTermTests
+    private static readonly IDieRoller dieRoller = new RandomDieRoller();
+
+    [TestMethod]
+    public void ConstantTerm_ConstructorTest()
     {
-        private static readonly IDieRoller dieRoller = new RandomDieRoller();
+        // arrange
 
-        public ConstantTermTests()
-        {
-        }
+        // act
+        IExpressionTerm term = new ConstantTerm(16);
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
+        // assert
+        Assert.IsNotNull(term);
+        Assert.IsInstanceOfType<IExpressionTerm>(term);
+        Assert.IsInstanceOfType<ConstantTerm>(term);
+    }
 
-        [TestMethod]
-        public void ConstantTerm_ConstructorTest()
-        {
-            // setup test
+    [TestMethod]
+    public void ConstantTerm_CalculateResultsTest()
+    {
+        // arrange
+        var term = new ConstantTerm(4);
 
-            // run test
-            IExpressionTerm term = new ConstantTerm(16);
+        // act
+        IReadOnlyList<TermResult> results = term.CalculateResults(dieRoller);
 
-            // validate results
-            Assert.IsNotNull(term);
-            Assert.IsInstanceOfType(term, typeof(IExpressionTerm));
-            Assert.IsInstanceOfType(term, typeof(ConstantTerm));
-        }
+        // assert
+        Assert.IsNotNull(results);
+        Assert.HasCount(1, results);
+        TermResult r = results[0];
+        Assert.IsNotNull(r);
+        Assert.AreEqual(1, r.Scalar);
+        Assert.AreEqual(4, r.Value);
+        Assert.AreEqual("ConstantTerm", r.Type);
+    }
 
-        [TestMethod]
-        public void ConstantTerm_CalculateResultsTest()
-        {
-            // setup test
-            IExpressionTerm term = new ConstantTerm(4);
+    [TestMethod]
+    public void ConstantTerm_CalculateResultsNullDieRollerTest()
+    {
+        // arrange
+        var term = new ConstantTerm(8);
 
-            // run test
-            IReadOnlyList<TermResult> results = term.CalculateResults(dieRoller);
+        // act
+        IReadOnlyList<TermResult> results = term.CalculateResults(null);
 
-            // validate results
-            Assert.IsNotNull(results);
-            Assert.AreEqual(1, results.Count);
-            TermResult r = results.FirstOrDefault();
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            Assert.AreEqual(4, r.Value);
-            Assert.AreEqual("ConstantTerm", r.Type);
-        }
+        // assert
+        Assert.IsNotNull(results);
+        Assert.HasCount(1, results);
+        TermResult r = results[0];
+        Assert.IsNotNull(r);
+        Assert.AreEqual(1, r.Scalar);
+        Assert.AreEqual(8, r.Value);
+        Assert.AreEqual("ConstantTerm", r.Type);
+    }
 
-        [TestMethod]
-        public void ConstantTerm_CalculateResultsNullDieRollerTest()
-        {
-            // setup test
-            IExpressionTerm term = new ConstantTerm(8);
+    [TestMethod]
+    public void ConstantTerm_ToStringTest()
+    {
+        // arrange
+        var term = new ConstantTerm(3);
 
-            // run test
-            IReadOnlyList<TermResult> results = term.CalculateResults(null);
+        // act
+        string result = term.ToString();
 
-            // validate results
-            Assert.IsNotNull(results);
-            Assert.AreEqual(1, results.Count);
-            TermResult r = results.FirstOrDefault();
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            Assert.AreEqual(8, r.Value);
-            Assert.AreEqual("ConstantTerm", r.Type);
-        }
-
-        [TestMethod]
-        public void ConstantTerm_ToStringTest()
-        {
-            // setup test
-            IExpressionTerm term = new ConstantTerm(3);
-
-            // run test
-            string result = term.ToString();
-
-            // validate results
-            Assert.IsFalse(string.IsNullOrEmpty(result));
-            Assert.AreEqual("3", result);
-        }
+        // assert
+        Assert.IsFalse(string.IsNullOrEmpty(result));
+        Assert.AreEqual("3", result);
     }
 }

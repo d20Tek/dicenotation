@@ -1,77 +1,47 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace d20Tek.DiceNotation.DieRoller.UnitTests
+namespace d20Tek.DiceNotation.DieRoller.UnitTests;
+
+[TestClass]
+public class ConstantDieRollerTests
 {
-    /// <summary>
-    /// Summary description for ConstantDieRollerTests
-    /// </summary>
-    [TestClass]
-    public class ConstantDieRollerTests
+    [TestMethod]
+    public void ConstantDieRoller_DefaultConstructorTest()
     {
-        public ConstantDieRollerTests()
-        {
-        }
+        // arrange
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
+        // act
+        var die = new ConstantDieRoller();
 
-        [TestMethod]
-        public void ConstantDieRoller_DefaultConstructorTest()
-        {
-            // setup test
+        // assert
+        Assert.IsNotNull(die);
+        Assert.IsInstanceOfType<IDieRoller>(die);
+        Assert.IsInstanceOfType<ConstantDieRoller>(die);
+    }
 
-            // run test
-            IDieRoller die = new ConstantDieRoller();
+    [TestMethod]
+    public void ConstantDieRoller_RollDefaultConstantTest()
+    {
+        // arrange
+        var die = new ConstantDieRoller();
 
-            // validate results
-            Assert.IsNotNull(die);
-            Assert.IsInstanceOfType(die, typeof(IDieRoller));
-            Assert.IsInstanceOfType(die, typeof(ConstantDieRoller));
-        }
+        // act
+        int result = die.Roll(20);
 
-        [TestMethod]
-        public void ConstantDieRoller_RollDefaultConstantTest()
-        {
-            // setup test
-            IDieRoller die = new ConstantDieRoller();
+        // assert
+        Assert.AreEqual(1, result);
+    }
 
-            // run test
-            int result = die.Roll(20);
+    [TestMethod]
+    public void ConstantDieRoller_RollConstantTest()
+    {
+        // arrange
+        var die = new ConstantDieRoller(3);
 
-            // validate results
-            Assert.AreEqual(1, result);
-        }
+        // act
+        int result = die.Roll(6);
 
-        [TestMethod]
-        public void ConstantDieRoller_RollConstantTest()
-        {
-            // setup test
-            IDieRoller die = new ConstantDieRoller(3);
-
-            // run test
-            int result = die.Roll(6);
-
-            // validate results
-            Assert.AreEqual(3, result);
-        }
+        // assert
+        Assert.AreEqual(3, result);
     }
 }

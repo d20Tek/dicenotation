@@ -3,171 +3,141 @@ using d20Tek.DiceNotation.DieRoller;
 using D20Tek.DiceNotation.UnitTests.Helpers;
 using System;
 
-namespace d20Tek.DiceNotation.UnitTests.DieRoller
+namespace d20Tek.DiceNotation.UnitTests.DieRoller;
+
+[TestClass]
+public class RandomDieRollerTests
 {
-    /// <summary>
-    /// Summary description for RandomDieRollerTests
-    /// </summary>
-    [TestClass]
-    public class RandomDieRollerTests
+    [TestMethod]
+    public void RandomDieRoller_DefaultConstructorTest()
     {
-        public RandomDieRollerTests()
-        {
-        }
+        // arrange
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
+        // act
+        var die = new RandomDieRoller();
 
-        [TestMethod]
-        public void RandomDieRoller_DefaultConstructorTest()
-        {
-            // setup test
+        // assert
+        Assert.IsNotNull(die);
+        Assert.IsInstanceOfType<IDieRoller>(die);
+        Assert.IsInstanceOfType<RandomDieRoller>(die);
+    }
 
-            // run test
-            IDieRoller die = new RandomDieRoller();
+    [TestMethod]
+    public void RandomDieRoller_ConstructorRandomGeneratorTest()
+    {
+        // arrange
+        Random rand = new(42);
 
-            // validate results
-            Assert.IsNotNull(die);
-            Assert.IsInstanceOfType(die, typeof(IDieRoller));
-            Assert.IsInstanceOfType(die, typeof(RandomDieRoller));
-        }
+        // act
+        var die = new RandomDieRoller(rand, null);
 
-        [TestMethod]
-        public void RandomDieRoller_ConstructorRandomGeneratorTest()
-        {
-            // setup test
-            Random rand = new Random(42);
+        // assert
+        Assert.IsNotNull(die);
+        Assert.IsInstanceOfType<IDieRoller>(die);
+        Assert.IsInstanceOfType<RandomDieRoller>(die);
+    }
 
-            // run test
-            IDieRoller die = new RandomDieRoller(rand, null);
+    [TestMethod]
+    public void RandomDieRoller_Rolld20Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            Assert.IsNotNull(die);
-            Assert.IsInstanceOfType(die, typeof(IDieRoller));
-            Assert.IsInstanceOfType(die, typeof(RandomDieRoller));
-        }
+        // act
+        int result = die.Roll(20);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld20Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 20, result);
+    }
 
-            // run test
-            int result = die.Roll(20);
+    [TestMethod]
+    public void RandomDieRoller_Rolld4Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 20, result);
-        }
+        // act
+        int result = die.Roll(4);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld4Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 4, result);
+    }
 
-            // run test
-            int result = die.Roll(4);
+    [TestMethod]
+    public void RandomDieRoller_Rolld6Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 4, result);
-        }
+        // act
+        int result = die.Roll(6);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld6Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 6, result);
+    }
 
-            // run test
-            int result = die.Roll(6);
+    [TestMethod]
+    public void RandomDieRoller_Rolld8Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 6, result);
-        }
+        // act
+        int result = die.Roll(8);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld8Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 8, result);
+    }
 
-            // run test
-            int result = die.Roll(8);
+    [TestMethod]
+    public void RandomDieRoller_Rolld12Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 8, result);
-        }
+        // act
+        int result = die.Roll(12);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld12Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 12, result);
+    }
 
-            // run test
-            int result = die.Roll(12);
+    [TestMethod]
+    public void RandomDieRoller_Rolld100Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 12, result);
-        }
+        // act
+        int result = die.Roll(100);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld100Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 100, result);
+    }
 
-            // run test
-            int result = die.Roll(100);
+    [TestMethod]
+    public void RandomDieRoller_Rolld7Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 100, result);
-        }
+        // act
+        int result = die.Roll(7);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld7Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
+        // assert
+        AssertHelpers.IsWithinRangeInclusive(1, 7, result);
+    }
 
-            // run test
-            int result = die.Roll(7);
+    [TestMethod]
+    public void RandomDieRoller_Rolld1Test()
+    {
+        // arrange
+        var die = new RandomDieRoller();
 
-            // validate results
-            AssertHelpers.IsWithinRangeInclusive(1, 7, result);
-        }
+        // act
+        int result = die.Roll(1);
 
-        [TestMethod]
-        public void RandomDieRoller_Rolld1Test()
-        {
-            // setup test
-            IDieRoller die = new RandomDieRoller();
-
-            // run test
-            int result = die.Roll(1);
-
-            // validate results
-            Assert.AreEqual(1, result);
-        }
+        // assert
+        Assert.AreEqual(1, result);
     }
 }

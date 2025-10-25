@@ -14,9 +14,9 @@ namespace d20Tek.DiceNotation.UnitTests
             var request = new DiceRequest(2, 6);
 
             // assert
-            Assert.AreEqual(request.NumberDice, 2);
-            Assert.AreEqual(request.Sides, 6);
-            Assert.AreEqual(request.Scalar, 1);
+            Assert.AreEqual(2, request.NumberDice);
+            Assert.AreEqual(6, request.Sides);
+            Assert.AreEqual(1, request.Scalar);
             Assert.IsNull(request.Choose);
             Assert.IsNull(request.Exploding);
         }
@@ -30,12 +30,12 @@ namespace d20Tek.DiceNotation.UnitTests
             var request = new DiceRequest(4, 6, 2, 1, 3, 1);
 
             // assert
-            Assert.AreEqual(request.NumberDice, 4);
-            Assert.AreEqual(request.Sides, 6);
-            Assert.AreEqual(request.Bonus, 2);
-            Assert.AreEqual(request.Scalar, 1);
-            Assert.AreEqual(request.Choose, 3);
-            Assert.AreEqual(request.Exploding, 1);
+            Assert.AreEqual(4, request.NumberDice);
+            Assert.AreEqual(6, request.Sides);
+            Assert.AreEqual(2, request.Bonus);
+            Assert.AreEqual(1, request.Scalar);
+            Assert.AreEqual(3, request.Choose);
+            Assert.AreEqual(1, request.Exploding);
         }
     }
 }

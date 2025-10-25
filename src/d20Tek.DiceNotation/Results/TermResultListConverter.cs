@@ -16,12 +16,7 @@ public class TermResultListConverter
 
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
-        if (value is not List<TermResult> list)
-        {
-            throw new ArgumentException("Object not of type List<TermResult>.", nameof(value));
-        }
-
-        return DiceRollsToString(list);
+        return DiceRollsToString(ConvertList(value));
     }
 
     public virtual object ConvertBack(object value, Type targetType, object parameter, string language) => 
@@ -33,4 +28,16 @@ public class TermResultListConverter
             results.Take(_maxTerms)
                    .Where(r => r.Type.Contains("DiceTerm"))
                    .Select(r => r.AppliesToResultCalculation ? $"{r.Value}" : $"{r.Value}*"));
+
+    private static List<TermResult> ConvertList(object value)
+    {
+        if (value is not List<TermResult> list)
+        {
+            list = (value is not IReadOnlyList<TermResult> readonlyList) ?
+                        throw new ArgumentException("Object not of type List<TermResult>.", nameof(value)) :
+                        [.. readonlyList];
+        }
+
+        return list;
+    }
 }
