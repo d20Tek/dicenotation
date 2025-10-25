@@ -22,9 +22,7 @@ public class AssertHelpersTests
     {
         // arrange
 
-        // act
-
-        // assert
+        // act - assert
         Assert.Throws<AssertFailedException>(
             [ExcludeFromCodeCoverage] () => AssertHelpers.IsWithinRangeInclusive(1, 20, -2));
     }
@@ -34,9 +32,7 @@ public class AssertHelpersTests
     {
         // arrange
 
-        // act
-
-        // assert
+        // act - assert
         Assert.Throws<AssertFailedException>(
             [ExcludeFromCodeCoverage] () => AssertHelpers.IsWithinRangeInclusive(1, 20, 25));
     }
