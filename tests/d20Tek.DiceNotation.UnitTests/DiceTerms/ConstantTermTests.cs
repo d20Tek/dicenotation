@@ -9,7 +9,7 @@ namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
 [TestClass]
 public class ConstantTermTests
 {
-    private static readonly IDieRoller dieRoller = new RandomDieRoller();
+    private static readonly IDieRoller _dieRoller = new RandomDieRoller();
 
     [TestMethod]
     public void ConstantTerm_ConstructorTest()
@@ -32,7 +32,7 @@ public class ConstantTermTests
         var term = new ConstantTerm(4);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(dieRoller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_dieRoller);
 
         // assert
         Assert.IsNotNull(results);

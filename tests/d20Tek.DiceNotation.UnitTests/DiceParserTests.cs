@@ -208,6 +208,7 @@ public class DiceParserTests
     }
 
     [TestMethod]
+    [ExcludeFromCodeCoverage]
     public void DiceParser_ParseDiceWithExplodingNoValueRandomTest()
     {
         // arrange

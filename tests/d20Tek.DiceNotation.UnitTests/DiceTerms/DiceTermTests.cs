@@ -1,23 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using d20Tek.DiceNotation.DiceTerms;
+﻿using d20Tek.DiceNotation.DiceTerms;
 using d20Tek.DiceNotation.DieRoller;
+using d20Tek.DiceNotation.Results;
 using D20Tek.DiceNotation.UnitTests.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics.CodeAnalysis;
-using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
 
-/// <summary>
-/// Summary description for DiceTermTests
-/// </summary>
 [TestClass]
 public class DiceTermTests
 {
-    private readonly IDieRoller dieRoller = new RandomDieRoller();
-    private readonly IDieRoller constantRoller = new ConstantDieRoller();
+    private readonly IDieRoller _dieRoller = new RandomDieRoller();
+    private readonly IDieRoller _constantRoller = new ConstantDieRoller();
 
     [TestMethod]
     public void DiceTerm_ConstructorTest()
@@ -40,7 +36,7 @@ public class DiceTermTests
         var term = new DiceTerm(1, 20);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(dieRoller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_dieRoller);
 
         // assert
         Assert.IsNotNull(results);
@@ -59,7 +55,7 @@ public class DiceTermTests
         var term = new DiceTerm(3, 6);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(constantRoller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // assert
         Assert.IsNotNull(results);
@@ -80,7 +76,7 @@ public class DiceTermTests
         var term = new DiceTerm(5, 6, choose: 3);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(constantRoller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // assert
         Assert.IsNotNull(results);
@@ -104,7 +100,7 @@ public class DiceTermTests
         var term = new DiceTerm(5, 6, exploding: 6);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(constantRoller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // assert
         Assert.IsNotNull(results);
@@ -207,7 +203,7 @@ public class DiceTermTests
         var term = new DiceTerm(2, 8, 10);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(constantRoller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // validate results
         Assert.IsNotNull(results);

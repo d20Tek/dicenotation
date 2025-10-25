@@ -6,14 +6,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
 
 [TestClass]
 public class FudgeDiceTermTests
 {
-    private readonly IDieRoller roller = new RandomDieRoller();
+    private readonly IDieRoller _roller = new RandomDieRoller();
 
     [TestMethod]
     public void FudgeDiceTerm_ConstructorTest()
@@ -36,7 +35,7 @@ public class FudgeDiceTermTests
         var term = new FudgeDiceTerm(1);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_roller);
 
         // assert
         Assert.IsNotNull(results);
@@ -55,7 +54,7 @@ public class FudgeDiceTermTests
         var term = new FudgeDiceTerm(3);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_roller);
 
         // assert
         Assert.IsNotNull(results);
@@ -76,7 +75,7 @@ public class FudgeDiceTermTests
         var term = new FudgeDiceTerm(5, 3);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(roller);
+        IReadOnlyList<TermResult> results = term.CalculateResults(_roller);
 
         // assert
         Assert.IsNotNull(results);

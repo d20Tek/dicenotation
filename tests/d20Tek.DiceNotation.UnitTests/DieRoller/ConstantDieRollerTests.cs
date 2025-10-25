@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using d20Tek.DiceNotation.DieRoller;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace d20Tek.DiceNotation.DieRoller.UnitTests;
+namespace d20Tek.DiceNotation.UnitTests.DieRoller;
 
 [TestClass]
 public class ConstantDieRollerTests
@@ -26,7 +27,7 @@ public class ConstantDieRollerTests
         var die = new ConstantDieRoller();
 
         // act
-        int result = die.Roll(20);
+        var result = die.Roll(20);
 
         // assert
         Assert.AreEqual(1, result);
@@ -39,7 +40,7 @@ public class ConstantDieRollerTests
         var die = new ConstantDieRoller(3);
 
         // act
-        int result = die.Roll(6);
+        var result = die.Roll(6);
 
         // assert
         Assert.AreEqual(3, result);
