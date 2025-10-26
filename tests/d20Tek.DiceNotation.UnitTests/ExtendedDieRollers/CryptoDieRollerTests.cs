@@ -1,6 +1,4 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
-using D20Tek.DiceNotation.UnitTests.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace d20Tek.DiceNotation.UnitTests.ExtendedDieRollers;
 

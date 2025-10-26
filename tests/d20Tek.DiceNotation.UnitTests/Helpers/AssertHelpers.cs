@@ -1,7 +1,6 @@
 ﻿using d20Tek.DiceNotation.Results;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace D20Tek.DiceNotation.UnitTests.Helpers;
+namespace d20Tek.DiceNotation.UnitTests.Helpers;
 
 public static class AssertHelpers
 {

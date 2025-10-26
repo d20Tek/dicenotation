@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics.CodeAnalysis;
-
-namespace D20Tek.DiceNotation.UnitTests.Helpers;
+﻿namespace d20Tek.DiceNotation.UnitTests.Helpers;
 
 [TestClass]
 public class AssertHelpersTests

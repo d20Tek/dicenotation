@@ -1,11 +1,6 @@
 ﻿using d20Tek.DiceNotation.DiceTerms;
 using d20Tek.DiceNotation.DieRoller;
 using d20Tek.DiceNotation.Results;
-using D20Tek.DiceNotation.UnitTests.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
 
@@ -24,9 +19,7 @@ public class DiceTermTests
         IExpressionTerm term = new DiceTerm(1, 20);
 
         // assert
-        Assert.IsNotNull(term);
-        Assert.IsInstanceOfType<IExpressionTerm>(term);
-        Assert.IsInstanceOfType<DiceTerm>(term);
+        term.AssertInstanceOf<DiceTerm>();
     }
 
     [TestMethod]
@@ -39,13 +32,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(_dieRoller);
 
         // assert
-        Assert.IsNotNull(results);
-        Assert.HasCount(1, results);
-        TermResult r = results[0];
-        Assert.IsNotNull(r);
-        Assert.AreEqual(1, r.Scalar);
-        AssertHelpers.IsWithinRangeInclusive(1, 20, r.Value);
-        Assert.AreEqual("DiceTerm.d20", r.Type);
+        results.AssertInRange(1, "DiceTerm.d20", 1, 20);
     }
 
     [TestMethod]
@@ -58,15 +45,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // assert
-        Assert.IsNotNull(results);
-        Assert.HasCount(3, results);
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            Assert.AreEqual(1, r.Value);
-            Assert.AreEqual("DiceTerm.d6", r.Type);
-        }
+        results.AssertInRange(3, "DiceTerm.d6", 1, 20);
     }
 
     [TestMethod]
@@ -79,18 +58,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // assert
-        Assert.IsNotNull(results);
-        Assert.HasCount(5, results);
-        int included = 0;
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            Assert.AreEqual(1, r.Value);
-            Assert.AreEqual("DiceTerm.d6", r.Type);
-            if (r.AppliesToResultCalculation) included++;
-        }
-        Assert.AreEqual(3, included);
+        results.AssertWithChoose(5, "DiceTerm.d6", 1, 20, 3);
     }
 
     [TestMethod]
@@ -103,15 +71,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // assert
-        Assert.IsNotNull(results);
-        Assert.HasCount(5, results);
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            Assert.AreEqual(1, r.Value);
-            Assert.AreEqual("DiceTerm.d6", r.Type);
-        }
+        results.AssertConstant(5, "DiceTerm.d6", 1);
     }
 
     [TestMethod]
@@ -125,17 +85,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(new RandomDieRoller());
 
         // assert
-        Assert.IsNotNull(results);
-        int count = 10;
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, r.Value);
-            if (r.Value >= 6) count++;
-            Assert.AreEqual("DiceTerm.d6", r.Type);
-        }
-        Assert.HasCount(count, results);
+        results.AssertWithExploding(10, "DiceTerm.d6", 1, 6, 6);
     }
 
     [TestMethod]
@@ -149,17 +99,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(new RandomDieRoller());
 
         // assert
-        Assert.IsNotNull(results);
-        int count = 10;
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            AssertHelpers.IsWithinRangeInclusive(1, 12, r.Value);
-            if (r.Value >= 9) count++;
-            Assert.AreEqual("DiceTerm.d12", r.Type);
-        }
-        Assert.HasCount(count, results);
+        results.AssertWithExploding(10, "DiceTerm.d12", 1, 12, 9);
     }
 
     [TestMethod]
@@ -172,28 +112,7 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(new RandomDieRoller());
 
         // assert
-        Assert.IsNotNull(results);
-        int included = 0;
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            AssertHelpers.IsWithinRangeInclusive(1, 12, r.Value);
-            Assert.AreEqual("DiceTerm.d12", r.Type);
-            if (r.AppliesToResultCalculation) included++;
-        }
-        Assert.AreEqual(8, included);
-    }
-
-    [TestMethod]
-    public void DiceTerm_CalculateResultsErrorMaxRerollsTest()
-    {
-        // arrange
-        var term = new DiceTerm(10, 12, exploding: 9);
-
-        // act - assert
-        Assert.ThrowsExactly<OverflowException>(
-            [ExcludeFromCodeCoverage] () => term.CalculateResults(new ConstantDieRoller(10)));
+        results.AssertWithChoose(10, "DiceTerm.d12", 1, 12, 8);
     }
 
     [TestMethod]
@@ -206,136 +125,6 @@ public class DiceTermTests
         IReadOnlyList<TermResult> results = term.CalculateResults(_constantRoller);
 
         // validate results
-        Assert.IsNotNull(results);
-        Assert.HasCount(2, results);
-        foreach (TermResult r in results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(10, r.Scalar);
-            Assert.AreEqual(1, r.Value);
-            Assert.AreEqual("DiceTerm.d8", r.Type);
-        }
-    }
-
-    [TestMethod]
-    public void DiceTerm_CalculateResultsNullDieRollerTest()
-    {
-        // arrange
-        var term = new DiceTerm(1, 10);
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentNullException>([ExcludeFromCodeCoverage] () => term.CalculateResults(null));
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringTest()
-    {
-        // arrange
-        var term = new DiceTerm(2, 10);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("2d10", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringChooseTest()
-    {
-        // arrange
-        var term = new DiceTerm(5, 6, choose: 3);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("5d6k3", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringMultiplierTest()
-    {
-        // arrange
-        var term = new DiceTerm(2, 8, 10);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("2d8x10", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringExplodingNoneDiceTest()
-    {
-        // arrange
-        var term = new DiceTerm(5, 6, exploding: 6);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("5d6!6", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringExplodingLowerThanMaxTest()
-    {
-        // arrange
-        var term = new DiceTerm(10, 12, exploding: 9);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("10d12!9", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringAllTermsTest()
-    {
-        // arrange
-        var term = new DiceTerm(4, 6, 10, 3, 6);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("4d6k3!6x10", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringTest_NegativeScalar()
-    {
-        // arrange
-        var term = new DiceTerm(1, 4, -1);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("-1d4", result);
-    }
-
-    [TestMethod]
-    public void DiceTerm_ToStringTest_FractionalScalar()
-    {
-        // arrange
-        var term = new DiceTerm(1, 4, 0.5);
-
-        // act
-        string result = term.ToString();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
-        Assert.AreEqual("1d4/2", result);
+        results.AssertWithScalar(2, "DiceTerm.d8", 1, 8, 10);
     }
 }

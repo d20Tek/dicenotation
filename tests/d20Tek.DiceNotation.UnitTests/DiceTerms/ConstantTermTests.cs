@@ -1,14 +1,13 @@
 ﻿using d20Tek.DiceNotation.DiceTerms;
 using d20Tek.DiceNotation.DieRoller;
 using d20Tek.DiceNotation.Results;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace d20Tek.DiceNotation.UnitTests.DiceTerms;
 
 [TestClass]
 public class ConstantTermTests
 {
+    private const string _expectedTermType = "ConstantTerm";
     private static readonly IDieRoller _dieRoller = new RandomDieRoller();
 
     [TestMethod]
@@ -20,47 +19,35 @@ public class ConstantTermTests
         IExpressionTerm term = new ConstantTerm(16);
 
         // assert
-        Assert.IsNotNull(term);
-        Assert.IsInstanceOfType<IExpressionTerm>(term);
-        Assert.IsInstanceOfType<ConstantTerm>(term);
+        term.AssertInstanceOf<ConstantTerm>();
     }
 
     [TestMethod]
     public void ConstantTerm_CalculateResultsTest()
     {
         // arrange
-        var term = new ConstantTerm(4);
+        var constantValue = 4;
+        var term = new ConstantTerm(constantValue);
 
         // act
         IReadOnlyList<TermResult> results = term.CalculateResults(_dieRoller);
 
         // assert
-        Assert.IsNotNull(results);
-        Assert.HasCount(1, results);
-        TermResult r = results[0];
-        Assert.IsNotNull(r);
-        Assert.AreEqual(1, r.Scalar);
-        Assert.AreEqual(4, r.Value);
-        Assert.AreEqual("ConstantTerm", r.Type);
+        results.AssertConstant(1, _expectedTermType, constantValue);
     }
 
     [TestMethod]
     public void ConstantTerm_CalculateResultsNullDieRollerTest()
     {
         // arrange
-        var term = new ConstantTerm(8);
+        var constantValue = 8;
+        var term = new ConstantTerm(constantValue);
 
         // act
         IReadOnlyList<TermResult> results = term.CalculateResults(null);
 
         // assert
-        Assert.IsNotNull(results);
-        Assert.HasCount(1, results);
-        TermResult r = results[0];
-        Assert.IsNotNull(r);
-        Assert.AreEqual(1, r.Scalar);
-        Assert.AreEqual(8, r.Value);
-        Assert.AreEqual("ConstantTerm", r.Type);
+        results.AssertConstant(1, _expectedTermType, constantValue);
     }
 
     [TestMethod]
@@ -73,7 +60,6 @@ public class ConstantTermTests
         string result = term.ToString();
 
         // assert
-        Assert.IsFalse(string.IsNullOrEmpty(result));
         Assert.AreEqual("3", result);
     }
 }
