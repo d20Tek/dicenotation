@@ -1,13 +1,13 @@
 ﻿using d20Tek.DiceNotation.Results;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System.Collections.Generic;
 
 namespace d20Tek.DiceNotation.UnitTests.Results;
 
 [TestClass]
 public class DiceResultTests
 {
+    private const string _expectedRollerType = "ConstantDieRoller";
+    private const string _randomRollerType = "RandomDieRoller";
+    private const string _diceTermType = "DiceTerm";
     private readonly Mock<IDiceConfiguration> config = new();
 
     public DiceResultTests()
@@ -20,26 +20,19 @@ public class DiceResultTests
     public void ValidateProperties()
     {
         // arrange
-        List<TermResult> termList =
-        [
-            new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = true },
-        ];
+        var termList = CreateSimpleTerms(3);
 
         // act
         DiceResult result = new()
         {
             DiceExpression = "d6",
-            DieRollerUsed = "ConstantDieRoller",
+            DieRollerUsed = _expectedRollerType,
             Results = termList,
             Value = 3,
         };
 
         // assert
-        Assert.AreEqual("d6", result.DiceExpression);
-        Assert.AreEqual("ConstantDieRoller", result.DieRollerUsed);
-        CollectionAssert.AreEqual(termList, new List<TermResult>(result.Results));
-        Assert.AreEqual(3, result.Value);
-        Assert.AreEqual("3", result.RollsDisplayText);
+        AssertDiceResult(result, termList, _expectedRollerType, "d6", 3);
     }
 
     [TestMethod]
@@ -51,74 +44,52 @@ public class DiceResultTests
         DiceResult result = new()
         {
             DiceExpression = "d6",
-            DieRollerUsed = "ConstantDieRoller",
+            DieRollerUsed = _expectedRollerType,
             Results = null,
             Value = 3,
         };
 
         // assert
-        Assert.AreEqual("d6", result.DiceExpression);
-        Assert.AreEqual("ConstantDieRoller", result.DieRollerUsed);
-        Assert.IsNull(result.Results);
-        Assert.AreEqual(3, result.Value);
-        Assert.AreEqual("", result.RollsDisplayText);
+        AssertDiceResult(result, null, _expectedRollerType, "d6", 3, string.Empty);
     }
 
     [TestMethod]
     public void Constructor_WithValueSpecified()
     {
         // arrange
-        List<TermResult> termList =
-        [
-            new() { Scalar = 1, Type = "DiceTerm", Value = 5, AppliesToResultCalculation = true },
-        ];
+        var termList = CreateSimpleTerms(5);
 
         // act
-        var result = new DiceResult("d6", 5, termList, "RandomDieRoller", config.Object);
+        var result = new DiceResult("d6", 5, termList, _randomRollerType, config.Object);
 
         // assert
-        Assert.AreEqual("d6", result.DiceExpression);
-        Assert.AreEqual("RandomDieRoller", result.DieRollerUsed);
-        CollectionAssert.AreEqual(termList, new List<TermResult>(result.Results));
-        Assert.AreEqual(5, result.Value);
+        AssertDiceResult(result, termList, _randomRollerType, "d6", 5);
     }
 
     [TestMethod]
     public void Constructor_WithValueCalculated()
     {
         // arrange
-        List<TermResult> termList =
-        [
-            new() { Scalar = 1, Type = "DiceTerm", Value = 5, AppliesToResultCalculation = true },
-        ];
+        var termList = CreateSimpleTerms(5);
 
         // act
-        var result = new DiceResult("d6", termList, "RandomDieRoller", config.Object);
+        var result = new DiceResult("d6", termList, _randomRollerType, config.Object);
 
         // assert
-        Assert.AreEqual("d6", result.DiceExpression);
-        Assert.AreEqual("RandomDieRoller", result.DieRollerUsed);
-        CollectionAssert.AreEqual(termList, new List<TermResult>(result.Results));
-        Assert.AreEqual(5, result.Value);
+        AssertDiceResult(result, termList, _randomRollerType, "d6", 5);
     }
 
     [TestMethod]
     public void Constructor_WithFudgeDice()
     {
         // arrange
-        List<TermResult> termList =
-        [
-            new() { Scalar = 1, Type = "DiceTerm", Value = 1, AppliesToResultCalculation = true },
-        ];
+        var termList = CreateSimpleTerms(1);
 
         // act
         var result = new DiceResult("1f", 1, termList, "FudgeDieRoller", config.Object);
 
         // assert
-        Assert.AreEqual("1f", result.DiceExpression);
-        Assert.AreEqual("FudgeDieRoller", result.DieRollerUsed);
-        CollectionAssert.AreEqual(termList, new List<TermResult>(result.Results));
-        Assert.AreEqual(1, result.Value);
+        AssertDiceResult(result, termList, "FudgeDieRoller", "1f", 1);
     }
 
     [TestMethod]
@@ -127,17 +98,34 @@ public class DiceResultTests
         // arrange
         List<TermResult> termList =
         [
-            new() { Scalar = 1, Type = "DiceTerm", Value = 5, AppliesToResultCalculation = true },
-            new() { Scalar = 1, Type = "DiceTerm", Value = 3, AppliesToResultCalculation = false },
+            new() { Scalar = 1, Type = _diceTermType, Value = 5, AppliesToResultCalculation = true },
+            new() { Scalar = 1, Type = _diceTermType, Value = 3, AppliesToResultCalculation = false },
         ];
 
         // act
-        var result = new DiceResult("2d6", termList, "RandomDieRoller", config.Object);
+        var result = new DiceResult("2d6", termList, _randomRollerType, config.Object);
 
         // assert
-        Assert.AreEqual("2d6", result.DiceExpression);
-        Assert.AreEqual("RandomDieRoller", result.DieRollerUsed);
-        CollectionAssert.AreEqual(termList, new List<TermResult>(result.Results));
-        Assert.AreEqual(5, result.Value);
+        AssertDiceResult(result, termList, _randomRollerType, "2d6", 5, "5, 3*");
+    }
+
+    private static List<TermResult> CreateSimpleTerms(int value) =>
+        [ new() { Scalar = 1, Type = _diceTermType, Value = value, AppliesToResultCalculation = true } ];
+
+
+    private static void AssertDiceResult(
+        DiceResult result,
+        List<TermResult> expectedTerms,
+        string rollerType,
+        string expression,
+        int expectedValue,
+        string rollText = null)
+    {
+        rollText ??= $"{expectedValue}";
+        Assert.AreEqual(expression, result.DiceExpression);
+        Assert.AreEqual(rollerType, result.DieRollerUsed);
+        CollectionAssert.AreEqual(expectedTerms, result.Results?.ToList());
+        Assert.AreEqual(expectedValue, result.Value);
+        Assert.AreEqual(rollText, result.RollsDisplayText);
     }
 }

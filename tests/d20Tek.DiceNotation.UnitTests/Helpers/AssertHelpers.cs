@@ -4,13 +4,11 @@ namespace d20Tek.DiceNotation.UnitTests.Helpers;
 
 public static class AssertHelpers
 {
-    public static void IsWithinRangeInclusive(int min, int max, int value)
-    {
+    public static void IsWithinRangeInclusive(int min, int max, int value) => 
         Assert.IsTrue(value >= min && value <= max);
-    }
 
     public static void AssertDiceChoose(
-        DiceResult result,
+        this DiceResult result,
         string expectedExpression,
         string expectedDiceType,
         int expectedTotalResults,
