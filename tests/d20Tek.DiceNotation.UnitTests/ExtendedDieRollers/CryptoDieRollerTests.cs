@@ -22,87 +22,24 @@ public class CryptoDieRollerTests
     }
 
     [TestMethod]
-    public void CryptoDieRoller_Rolld20Test()
+    [DataRow(20)]
+    [DataRow(4)]
+    [DataRow(6)]
+    [DataRow(8)]
+    [DataRow(10)]
+    [DataRow(12)]
+    [DataRow(100)]
+    [DataRow(7)]
+    [DataRow(1)]
+    public void CryptoDieRoller_RollDiceTest(int sides)
     {
         // arrange
 
         // act
-        var result = _die.Roll(20);
+        var result = _die.Roll(sides);
 
         // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 20, result);
-    }
-
-    [TestMethod]
-    public void CryptoDieRoller_Rolld4Test()
-    {
-        // arrange
-
-        // act
-        var result = _die.Roll(4);
-
-        // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 4, result);
-    }
-
-    [TestMethod]
-    public void CryptoDieRoller_Rolld6Test()
-    {
-        // arrange
-
-        // act
-        var result = _die.Roll(6);
-
-        // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 6, result);
-    }
-
-    [TestMethod]
-    public void CryptoDieRoller_Rolld8Test()
-    {
-        // arrange
-
-        // act
-        var result = _die.Roll(8);
-
-        // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 8, result);
-    }
-
-    [TestMethod]
-    public void CryptoDieRoller_Rolld12Test()
-    {
-        // arrange
-
-        // act
-        var result = _die.Roll(12);
-
-        // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 12, result);
-    }
-
-    [TestMethod]
-    public void CryptoDieRoller_Rolld100Test()
-    {
-        // arrange
-
-        // act
-        var result = _die.Roll(100);
-
-        // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 100, result);
-    }
-
-    [TestMethod]
-    public void CryptoDieRoller_Rolld7Test()
-    {
-        // arrange
-
-        // act
-        var result = _die.Roll(7);
-
-        // assert
-        AssertHelpers.IsWithinRangeInclusive(1, 7, result);
+        AssertHelpers.IsWithinRangeInclusive(1, sides, result);
     }
 
     [TestMethod]
@@ -123,13 +60,10 @@ public class CryptoDieRollerTests
         // arrange
 
         // act
-        for (var i = 0; i < 100; i++)
-        {
-            var result = _die.Roll(3, -2);
+        var rolls = Enumerable.Range(0, 100).Select(_ => _die.Roll(3, -2)).ToList();
 
-            // assert
-            AssertHelpers.IsWithinRangeInclusive(-1, 1, result);
-        }
+        // assert
+        rolls.ForEach(r => AssertHelpers.IsWithinRangeInclusive(-1, 1, r));
     }
 
     [TestMethod]
@@ -138,12 +72,9 @@ public class CryptoDieRollerTests
         // arrange
 
         // act
-        for (var i = 0; i < 1000; i++)
-        {
-            var result = _die.Roll(6);
+        var rolls = Enumerable.Range(0, 100).Select(_ => _die.Roll(6)).ToList();
 
-            // assert
-            AssertHelpers.IsWithinRangeInclusive(1, 6, result);
-        }
+        // assert
+        rolls.ForEach(r => AssertHelpers.IsWithinRangeInclusive(1, 6, r));
     }
 }

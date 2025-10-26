@@ -1,11 +1,11 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
-using System.Threading.Tasks;
 
 namespace d20Tek.DiceNotation.UnitTests.DieRoller;
 
 [TestClass]
 public class DieRollTrackerWithRandomRollerTests
 {
+    private const string _expectedRollerType = "RandomDieRoller";
     private readonly DieRollTracker _tracker = new();
     private readonly IDieRoller _roller;
 
@@ -21,7 +21,7 @@ public class DieRollTrackerWithRandomRollerTests
         IList<DieTrackingData> data = await _tracker.GetTrackingDataAsync();
 
         // assert
-        data.AssertTrackingData(5, "RandomDieRoller", 12);
+        data.AssertTrackingData(5, _expectedRollerType, 12);
     }
 
     [TestMethod]
@@ -39,8 +39,8 @@ public class DieRollTrackerWithRandomRollerTests
 
         // assert
         Assert.AreEqual(17, data1.Count + data2.Count + data3.Count);
-        data1.AssertTrackingData(4, "RandomDieRoller", 12);
-        data2.AssertTrackingData(3, "RandomDieRoller", 8);
-        data3.AssertTrackingData(10, "RandomDieRoller", 20);
+        data1.AssertTrackingData(4, _expectedRollerType, 12);
+        data2.AssertTrackingData(3, _expectedRollerType, 8);
+        data3.AssertTrackingData(10, _expectedRollerType, 20);
     }
 }
