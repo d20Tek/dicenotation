@@ -19,10 +19,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(1d20+2)", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(1d20+2)", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(4, result.Value);
+        result.AssertResult("(1d20+2)", 1, 4);
     }
 
     [TestMethod]
@@ -34,10 +31,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(1+3)d8", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(1+3)d8", result.DiceExpression);
-        Assert.HasCount(4, result.Results);
-        Assert.AreEqual(8, result.Value);
+        result.AssertResult("(1+3)d8", 4, 8);
     }
 
     [TestMethod]
@@ -49,10 +43,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("2d(2x3)+2", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("2d(2x3)+2", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual(6, result.Value);
+        result.AssertResult("2d(2x3)+2", 2, 6);
     }
 
     [TestMethod]
@@ -64,8 +55,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("4d(2x3)k(1+2)", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4d(2x3)k(1+2)", "DiceTerm.d6", 4, 3);
+        result.AssertDiceChoose("4d(2x3)k(1+2)", "DiceTerm.d6", 4, 3);
     }
 
     [TestMethod]
@@ -77,10 +67,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(2d10+1) * 10", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(2d10+1)*10", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual(50, result.Value);
+        result.AssertResult("(2d10+1)*10", 2, 50);
     }
 
 
@@ -93,10 +80,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(4d10-2) / (1+1)", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(4d10-2)/(1+1)", result.DiceExpression);
-        Assert.HasCount(4, result.Results);
-        Assert.AreEqual(3, result.Value);
+        result.AssertResult("(4d10-2)/(1+1)", 4, 3);
     }
 
     [TestMethod]
@@ -105,7 +89,7 @@ public class DiceParserGroupingTests
         // arrange
 
         // act
-        var result = _parser.Parse("(10f-2) / (1+1)", this._config, this._roller);
+        var result = _parser.Parse("(10f-2) / (1+1)", _config, _roller);
 
         // assert
         Assert.IsNotNull(result);
@@ -123,10 +107,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(2+1d20+(2+3))x3-10", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(2+1d20+(2+3))x3-10", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(17, result.Value);
+        result.AssertResult("(2+1d20+(2+3))x3-10", 1, 17);
     }
 
     [TestMethod]
@@ -138,10 +119,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(2+1d20+(2+3))x3-10+()", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(2+1d20+(2+3))x3-10+()", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(17, result.Value);
+        result.AssertResult("(2+1d20+(2+3))x3-10+()", 1, 17);
     }
 
     [TestMethod]
@@ -153,10 +131,7 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(2+1d20+(2+3))x3-10+(3)", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(2+1d20+(2+3))x3-10+(3)", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(20, result.Value);
+        result.AssertResult("(2+1d20+(2+3))x3-10+(3)", 1, 20);
     }
 
     [TestMethod]
@@ -168,29 +143,6 @@ public class DiceParserGroupingTests
         var result = _parser.Parse("(((2+1d20)+(2+3))x3-10+(3))", _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("(((2+1d20)+(2+3))x3-10+(3))", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(20, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseParensMismatchEndTest()
-    {
-        // arrange
-
-        // act
-        Assert.ThrowsExactly<ArithmeticException>(
-            [ExcludeFromCodeCoverage]() => _parser.Parse("(2+1d20+(2+3)x3-10+(3)", _config, _testRoller));
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseParensMismatchStartTest()
-    {
-        // arrange
-
-        // act
-        Assert.ThrowsExactly<FormatException>(
-            [ExcludeFromCodeCoverage] () => _parser.Parse("(2+1d20+2+3))x3-10+(3)", _config, _testRoller));
+        result.AssertResult("(((2+1d20)+(2+3))x3-10+(3))", 1, 20);
     }
 }

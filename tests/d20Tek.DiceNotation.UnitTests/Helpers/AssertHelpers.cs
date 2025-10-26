@@ -30,4 +30,12 @@ public static class AssertHelpers
         Assert.AreEqual(sum + modifier, result.Value);
         Assert.AreEqual(expectedAppliedResults, count);
     }
+
+    public static void AssertResult(this DiceResult result, string expression, int expectedCount, int expectedResult)
+    {
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expression, result.DiceExpression);
+        Assert.HasCount(expectedCount, result.Results);
+        Assert.AreEqual(expectedResult, result.Value);
+    }
 }

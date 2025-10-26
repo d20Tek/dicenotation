@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace d20Tek.DiceNotation.UnitTests;
+﻿namespace d20Tek.DiceNotation.UnitTests;
 
 [TestClass]
 public class DiceRequestTests

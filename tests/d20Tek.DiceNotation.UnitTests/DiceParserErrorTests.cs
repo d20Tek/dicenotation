@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using d20Tek.DiceNotation.DieRoller;
-using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using d20Tek.DiceNotation.DieRoller;
 
 namespace d20Tek.DiceNotation.UnitTests;
 
@@ -93,5 +90,25 @@ public class DiceParserErrorTests
         // act - assert
         Assert.ThrowsExactly<ArgumentNullException>(() => _parser.Parse("", _config, _roller));
         Assert.ThrowsExactly<ArgumentNullException>(() => _parser.Parse(null, _config, _roller));
+    }
+
+    [TestMethod]
+    public void DiceParser_ParseParensMismatchEndTest()
+    {
+        // arrange
+
+        // act - assert
+        Assert.ThrowsExactly<ArithmeticException>(
+            [ExcludeFromCodeCoverage] () => _parser.Parse("(2+1d20+(2+3)x3-10+(3)", _config, _roller));
+    }
+
+    [TestMethod]
+    public void DiceParser_ParseParensMismatchStartTest()
+    {
+        // arrange
+
+        // act - assert
+        Assert.ThrowsExactly<FormatException>(
+            [ExcludeFromCodeCoverage] () => _parser.Parse("(2+1d20+2+3))x3-10+(3)", _config, _roller));
     }
 }

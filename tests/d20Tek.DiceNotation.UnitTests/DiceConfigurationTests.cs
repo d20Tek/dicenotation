@@ -1,26 +1,23 @@
-﻿using d20Tek.DiceNotation;
-using d20Tek.DiceNotation.DieRoller;
-using d20Tek.DiceNotation.Results;
+﻿using d20Tek.DiceNotation.DieRoller;
 
-namespace D20Tek.DiceNotation.UnitTests;
+namespace d20Tek.DiceNotation.UnitTests;
 
 [TestClass]
 public class DiceConfigurationTests
 {
-    readonly IDieRoller _roller = new ConstantDieRoller(2);
+    private readonly Dice _dice = new();
+    private readonly IDieRoller _roller = new ConstantDieRoller(2);
 
     [TestMethod]
     public void DiceConfiguration_SetUnboundedResultTest()
     {
         // arrange
-        var dice = new Dice();
 
         // act
-        dice.Configuration.HasBoundedResult = false;
-        DiceResult result = dice.Roll("d12-3", _roller);
+        _dice.Configuration.HasBoundedResult = false;
+        var result = _dice.Roll("d12-3", _roller);
 
         // assert
-        Assert.IsNotNull(result);
         Assert.AreEqual("d12-3", result.DiceExpression);
         Assert.HasCount(1, result.Results);
         Assert.AreEqual(-1, result.Value);
@@ -30,14 +27,12 @@ public class DiceConfigurationTests
     public void DiceConfiguration_SetBoundedResultMinimumTest()
     {
         // arrange
-        var dice = new Dice();
 
         // act
-        dice.Configuration.BoundedResultMinimum = 3;
-        DiceResult result = dice.Roll("d7-3", _roller);
+        _dice.Configuration.BoundedResultMinimum = 3;
+        var result = _dice.Roll("d7-3", _roller);
 
         // assert
-        Assert.IsNotNull(result);
         Assert.AreEqual("d7-3", result.DiceExpression);
         Assert.HasCount(1, result.Results);
         Assert.AreEqual(3, result.Value);
@@ -47,42 +42,35 @@ public class DiceConfigurationTests
     public void DiceConfiguration_SetDefaultDieSidesTest()
     {
         // arrange
-        var dice = new Dice();
 
         // act
-        dice.Configuration.DefaultDieSides = 10;
-        DiceResult result = dice.Roll("4dk3+3", _roller);
+        _dice.Configuration.DefaultDieSides = 10;
+        var result = _dice.Roll("4dk3+3", _roller);
 
         // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4dk3+3", "DiceTerm.d10", 4, 3, 3);
+        result.AssertDiceChoose("4dk3+3", "DiceTerm.d10", 4, 3, 3);
     }
 
     [TestMethod]
     public void DiceConfiguration_SetDefaultDieSidesErrorTest()
     {
         // arrange
-        var dice = new Dice();
 
-        // act
+        // act - assert
         Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => dice.Configuration.DefaultDieSides = 1);
-
-        // assert
+            [ExcludeFromCodeCoverage] () => _dice.Configuration.DefaultDieSides = 1);
     }
 
     [TestMethod]
     public void DiceConfiguration_SetConstantDefaultDieRoller()
     {
         // arrange
-        var dice = new Dice();
 
         // act
-        dice.Configuration.DefaultDieRoller = new ConstantDieRoller(10);
-        DiceResult result = dice.Roll("1d20");
+        _dice.Configuration.DefaultDieRoller = new ConstantDieRoller(10);
+        var result = _dice.Roll("1d20");
 
         // assert
-        Assert.IsNotNull(result);
         Assert.AreEqual(10, result.Value);
     }
 
@@ -90,12 +78,9 @@ public class DiceConfigurationTests
     public void DiceConfiguration_SetDefaultDieRollerErrorTest()
     {
         // arrange
-        var dice = new Dice();
 
-        // act
+        // act - assert
         Assert.ThrowsExactly<ArgumentNullException>(
-            [ExcludeFromCodeCoverage] () => dice.Configuration.DefaultDieRoller = null);
-
-        // assert
+            [ExcludeFromCodeCoverage] () => _dice.Configuration.DefaultDieRoller = null);
     }
 }

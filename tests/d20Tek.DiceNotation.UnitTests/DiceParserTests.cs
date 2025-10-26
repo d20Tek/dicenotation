@@ -1,5 +1,4 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
-using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.UnitTests;
 
@@ -24,492 +23,103 @@ public class DiceParserTests
     }
 
     [TestMethod]
-    public void DiceParser_ParseSimpleDiceTest()
+    [DataRow("3d6", 3, 6)]
+    [DataRow("d20", 1, 2)]
+    [DataRow("2d4+3", 2, 7)]
+    [DataRow("d12-2", 1, 1)]
+    [DataRow("2d8x10", 2, 40)]
+    [DataRow("10*2d8", 2, 40)]
+    [DataRow("2+1d20+2+3x3-10", 1, 5)]
+    [DataRow("d", 1, 2)]
+    [DataRow("2d+3", 2, 7)]
+    public void DiceParser_ParseSimpleDiceTest(string expression, int expectedCount, int expectedResult)
     {
         // arrange
 
         // act
-        var result = _parser.Parse("3d6", _config, _testRoller);
+        var result = _parser.Parse(expression, _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("3d6", result.DiceExpression);
-        Assert.HasCount(3, result.Results);
-        Assert.AreEqual(6, result.Value);
+        result.AssertResult(expression, expectedCount, expectedResult);
     }
 
     [TestMethod]
-    public void DiceParser_ParseSingleDieTest()
+    [DataRow("4d6k3", 4, 3)]
+    [DataRow("6d6p2", 6, 4)]
+    [DataRow("4d6p1", 4, 3)]
+    [DataRow("6d6l2", 6, 2)]
+    [DataRow("4d6l1", 4, 1)]
+    public void DiceParser_ParseDiceWithChooseTest(string expression, int expectedCount, int expectedResult)
     {
         // arrange
 
         // act
-        var result = _parser.Parse("d20", _config, _testRoller);
+        var result = _parser.Parse(expression, _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("d20", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(2, result.Value);
+        result.AssertDiceChoose(expression, "DiceTerm.d6", expectedCount, expectedResult);
     }
 
     [TestMethod]
-    public void DiceParser_ParseDiceWithModifierTest()
+    [DataRow(" 4  d6 k 3+  2    ", "4d6k3+2", 4, 3, 2)]
+    [DataRow("4d6k3 + d8 + 2", "4d6k3+d8+2", 5, 4, 2)]
+    [DataRow("2 + 4d6k3 + d8", "2+4d6k3+d8", 5, 4, 2)]
+    public void DiceParser_ParseDiceChooseWithWhitepaceTest(
+        string inputExpression,
+        string expectedExpression,
+        int expectedCount,
+        int expectedResult,
+        int modifier)
     {
         // arrange
 
         // act
-        var result = _parser.Parse("2d4+3", _config, _testRoller);
+        var result = _parser.Parse(inputExpression, _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("2d4+3", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual(7, result.Value);
+        result.AssertDiceChoose(expectedExpression, "DiceTerm", expectedCount, expectedResult, modifier);
     }
 
     [TestMethod]
-    public void DiceParser_ParseDiceWithNegativeModifierTest()
+    [DataRow("3d10 / 2", "3d10/2", 3, 3)]
+    [DataRow("40 / 1d6", "40/1d6", 1, 20)]
+    [DataRow("100 - 2d12", "100-2d12", 2, 96)]
+    [DataRow("-5 + 4d6", "-5+4d6", 4, 3)]
+    [DataRow("6 + d20 - 3", "6+d20-3", 1, 5)]
+    [DataRow("d%+5", "d100+5", 1, 7)]
+    public void DiceParser_ParseDiceWithWhitespaceTest(
+        string inputExpression,
+        string expectedExpression,
+        int expectedCount,
+        int expectedResult)
     {
         // arrange
 
         // act
-        var result = _parser.Parse("d12-2", _config, _testRoller);
+        var result = _parser.Parse(inputExpression, _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("d12-2", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(1, result.Value);
+        result.AssertResult(expectedExpression, expectedCount, expectedResult);
     }
 
     [TestMethod]
-    public void DiceParser_ParseDiceWithKeepTest()
+    [DataRow("42", "42", 0, 42)]
+    [DataRow("4 + 2", "4+2", 0, 6)]
+    [DataRow("4x2", "4x2", 0, 8)]
+    [DataRow("4/2", "4/2", 0, 2)]
+    public void DiceParser_ParseConstantTests(
+        string inputExpression,
+        string expectedExpression,
+        int expectedCount,
+        int expectedResult)
     {
         // arrange
 
         // act
-        var result = _parser.Parse("4d6k3", _config, _testRoller);
+        var result = _parser.Parse(inputExpression, _config, _testRoller);
 
         // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4d6k3", "DiceTerm.d6", 4, 3);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithDropLowestTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("6d6p2", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "6d6p2", "DiceTerm.d6", 6, 4);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithEquivalentKeepDropTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("4d6p1", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4d6p1", "DiceTerm.d6", 4, 3);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithKeepLowestTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("6d6l2", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "6d6l2", "DiceTerm.d6", 6, 2);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithEquivalentKeepLowestTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("4d6l1", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4d6l1", "DiceTerm.d6", 4, 1);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithExplodingTest()
-    {
-        // arrange
-
-        // act
-        DiceResult result = _parser.Parse("6d6!6", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("6d6!6", result.DiceExpression);
-        Assert.HasCount(6, result.Results);
-        Assert.AreEqual(12, result.Value);
-    }
-
-    [TestMethod]
-    [ExcludeFromCodeCoverage]
-    public void DiceParser_ParseDiceWithExplodingRandomTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("10d6!6", this._config, new RandomDieRoller());
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("10d6!6", result.DiceExpression);
-        int sum = 0, count = 10;
-        foreach (TermResult r in result.Results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, r.Value);
-            Assert.AreEqual("DiceTerm.d6", r.Type);
-            sum += r.Value;
-            if (r.Value >= 6) count++;
-        }
-        Assert.HasCount(count, result.Results);
-        Assert.AreEqual(sum, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithExplodingNoValueTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("6d6!", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("6d6!", result.DiceExpression);
-        Assert.HasCount(6, result.Results);
-        Assert.AreEqual(12, result.Value);
-    }
-
-    [TestMethod]
-    [ExcludeFromCodeCoverage]
-    public void DiceParser_ParseDiceWithExplodingNoValueRandomTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("10d6!", _config, new RandomDieRoller());
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("10d6!", result.DiceExpression);
-        int sum = 0, count = 10;
-        foreach (TermResult r in result.Results)
-        {
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Scalar);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, r.Value);
-            Assert.AreEqual("DiceTerm.d6", r.Type);
-            sum += r.Value;
-            if (r.Value >= 6) count++;
-        }
-        Assert.HasCount(count, result.Results);
-        Assert.AreEqual(sum, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithExplodingNoValueModifierTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("6d6!+2", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("6d6!+2", result.DiceExpression);
-        Assert.HasCount(6, result.Results);
-        Assert.AreEqual(14, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithWhitepaceTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse(" 4  d6 k 3+  2    ", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4d6k3+2", "DiceTerm.d6", 4, 3, 2);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithChainedExpressionTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("4d6k3 + d8 + 2", _config, _testRoller);
-
-        // validate results
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "4d6k3+d8+2", "DiceTerm", 5, 4, 2);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithMultiplyAfterTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("2d8x10", _config, _testRoller);
-
-        // validate results
-        Assert.IsNotNull(result);
-        Assert.AreEqual("2d8x10", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual(40, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithMultiplyBeforeTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("10*2d8", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("10*2d8", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual(40, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithDivideTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("3d10 / 2", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("3d10/2", result.DiceExpression);
-        Assert.HasCount(3, result.Results);
-        Assert.AreEqual(3, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithDivideBeforeTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("40 / 1d6", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("40/1d6", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(20, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceWithChainedOrderTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("2 + 4d6k3 + d8", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        AssertHelpers.AssertDiceChoose(result, "2+4d6k3+d8", "DiceTerm", 5, 4, 2);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseConstantOnlyTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("42", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("42", result.DiceExpression);
-        Assert.IsEmpty(result.Results);
-        Assert.AreEqual(42, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseConstantOnlyAdditionTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("4 + 2", _config, _testRoller);
-
-        // validate results
-        Assert.IsNotNull(result);
-        Assert.AreEqual("4+2", result.DiceExpression);
-        Assert.IsEmpty(result.Results);
-        Assert.AreEqual(6, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseConstantOnlyMultiplyTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("4x2", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("4x2", result.DiceExpression);
-        Assert.IsEmpty(result.Results);
-        Assert.AreEqual(8, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseConstantOnlyDivideTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("4/2", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("4/2", result.DiceExpression);
-        Assert.IsEmpty(result.Results);
-        Assert.AreEqual(2, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceSubractOrderTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("100 - 2d12", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("100-2d12", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual(96, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceNegativeConstantTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("-5 + 4d6", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("-5+4d6", result.DiceExpression);
-        Assert.HasCount(4, result.Results);
-        Assert.AreEqual(3, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceMultipleConstantsTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("6 + d20 - 3", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("6+d20-3", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(5, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceMultipleConstantsOrderTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("2+1d20+2+3x3-10", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("2+1d20+2+3x3-10", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(5, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDicePercentileTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("d%+5", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("d100+5", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual(7, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseSingleDieNoSidesTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("d", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("d", result.DiceExpression);
-        Assert.HasCount(1, result.Results);
-        Assert.AreEqual("DiceTerm.d6", result.Results[0].Type);
-        Assert.AreEqual(2, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceParser_ParseDiceNoSidesOperatorTest()
-    {
-        // arrange
-
-        // act
-        var result = _parser.Parse("2d+3", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("2d+3", result.DiceExpression);
-        Assert.HasCount(2, result.Results);
-        Assert.AreEqual("DiceTerm.d6", result.Results[0].Type);
-        Assert.AreEqual("DiceTerm.d6", result.Results[1].Type);
-        Assert.AreEqual(7, result.Value);
+        result.AssertResult(expectedExpression, expectedCount, expectedResult);
     }
 
     [TestMethod]
