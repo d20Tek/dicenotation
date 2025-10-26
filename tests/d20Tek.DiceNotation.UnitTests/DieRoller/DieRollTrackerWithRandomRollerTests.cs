@@ -15,71 +15,32 @@ public class DieRollTrackerWithRandomRollerTests
     public async Task DieRollTrackerWithRandomRoller_SingleDieSidesTest()
     {
         // arrange
-        _roller.Roll(12);
-        _roller.Roll(12);
-        _roller.Roll(12);
-        _roller.Roll(12);
-        _roller.Roll(12);
+        _roller.RollMultiple(5, 12);
 
         // act
         IList<DieTrackingData> data = await _tracker.GetTrackingDataAsync();
 
-        // validate results
-        Assert.HasCount(5, data);
-        foreach (DieTrackingData e in data)
-        {
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("12", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 12, e.Result);
-        }
+        // assert
+        data.AssertTrackingData(5, "RandomDieRoller", 12);
     }
 
     [TestMethod]
     public async Task DieRollTrackerWithRandomRoller_MultipleDieSidesTest()
     {
         // arrange
-        _roller.Roll(12);
-        _roller.Roll(12);
-        _roller.Roll(12);
-        _roller.Roll(12);
-        _roller.Roll(8);
-        _roller.Roll(8);
-        _roller.Roll(8);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
-        _roller.Roll(20);
+        _roller.RollMultiple(4, 12);
+        _roller.RollMultiple(3, 8);
+        _roller.RollMultiple(10, 20);
 
-        // run test
+        // act
         IList<DieTrackingData> data1 = await _tracker.GetTrackingDataAsync(dieSides: "12");
         IList<DieTrackingData> data2 = await _tracker.GetTrackingDataAsync(dieSides: "8");
         IList<DieTrackingData> data3 = await _tracker.GetTrackingDataAsync(dieSides: "20");
 
-        // validate results
+        // assert
         Assert.AreEqual(17, data1.Count + data2.Count + data3.Count);
-        Assert.HasCount(4, data1);
-        foreach (DieTrackingData e in data1)
-        {
-            Assert.AreEqual("12", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 12, e.Result);
-        }
-        Assert.HasCount(3, data2);
-        foreach (DieTrackingData e in data2)
-        {
-            Assert.AreEqual("8", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 8, e.Result);
-        }
-        Assert.HasCount(10, data3);
-        foreach (DieTrackingData e in data3)
-        {
-            Assert.AreEqual("20", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 20, e.Result);
-        }
+        data1.AssertTrackingData(4, "RandomDieRoller", 12);
+        data2.AssertTrackingData(3, "RandomDieRoller", 8);
+        data3.AssertTrackingData(10, "RandomDieRoller", 20);
     }
 }

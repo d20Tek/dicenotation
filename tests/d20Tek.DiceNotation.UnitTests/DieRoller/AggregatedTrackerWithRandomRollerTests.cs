@@ -1,6 +1,4 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace d20Tek.DiceNotation.UnitTests.DieRoller;
 
@@ -16,14 +14,7 @@ public class AggregatedTrackerWithRandomRollerTests
     public void SingleDieSidesTest()
     {
         // arrange
-        int[] rolls =
-        [
-            _roller.Roll(12),
-            _roller.Roll(12),
-            _roller.Roll(12),
-            _roller.Roll(12),
-            _roller.Roll(12),
-        ];
+        int[] rolls = _roller.RollMultiple(5, 12);
         int expected = rolls.Distinct().Count();
 
         // act
@@ -42,32 +33,20 @@ public class AggregatedTrackerWithRandomRollerTests
     public void MultipleDieSidesTest()
     {
         // arrange
-        int[] rolls12 = [_roller.Roll(12), _roller.Roll(12), _roller.Roll(12), _roller.Roll(12)];
+        int[] rolls12 = _roller.RollMultiple(4, 12);
         var expected12 = rolls12.Distinct().Count();
 
-        int[] rolls8 = [_roller.Roll(8), _roller.Roll(8), _roller.Roll(8)];
+        int[] rolls8 = _roller.RollMultiple(3, 8);
         var expected8 = rolls8.Distinct().Count();
 
-        int[] rolls20 =
-        [
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-            _roller.Roll(20),
-        ];
+        int[] rolls20 = _roller.RollMultiple(10, 20);
         var expected20 = rolls20.Distinct().Count();
 
         // act
         var data = _tracker.GetFrequencyDataView();
-        var list12s = data.Where(p => p.DieSides == "12").ToList();
-        var list8s = data.Where(p => p.DieSides == "8").ToList();
-        var list20s = data.Where(p => p.DieSides == "20").ToList();
+        var list12s = data.Where(p => p.DieSides == "12").ToArray();
+        var list8s = data.Where(p => p.DieSides == "8").ToArray();
+        var list20s = data.Where(p => p.DieSides == "20").ToArray();
 
         // assert
         Assert.HasCount(expected12, list12s);

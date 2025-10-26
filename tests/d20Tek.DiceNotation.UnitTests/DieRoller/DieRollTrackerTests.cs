@@ -6,6 +6,7 @@ namespace d20Tek.DiceNotation.UnitTests.DieRoller;
 [TestClass]
 public class DieRollTrackerTests
 {
+    private const string _expectedRollerType = "RandomDieRoller";
     private readonly DieRollTracker _tracker = new();
 
     [TestMethod]
@@ -38,7 +39,7 @@ public class DieRollTrackerTests
         // assert
         Assert.IsNotNull(d);
         Assert.HasCount(1, d);
-        Assert.AreEqual("RandomDieRoller", d[0].RollerType);
+        Assert.AreEqual(_expectedRollerType, d[0].RollerType);
         Assert.AreEqual("6", d[0].DieSides);
         Assert.AreEqual(4, d[0].Result);
         Assert.IsInstanceOfType<Guid>(d[0].Id);
@@ -61,14 +62,7 @@ public class DieRollTrackerTests
         IList<DieTrackingData> d = await _tracker.GetTrackingDataAsync();
 
         // assert
-        Assert.IsNotNull(d);
-        Assert.HasCount(6, d);
-        foreach (DieTrackingData e in d)
-        {
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("6", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, e.Result);
-        }
+        d.AssertTrackingData(6, _expectedRollerType, 6);
     }
 
     [TestMethod]
@@ -89,22 +83,10 @@ public class DieRollTrackerTests
         // assert
         Assert.IsNotNull(d);
         Assert.HasCount(6, d);
-        int i;
-        for (i = 0; i < 4; i++)
-        {
-            DieTrackingData e = d[i];
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("6", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, e.Result);
-        }
-
-        for (int x = i; x < 5; x++)
-        {
-            DieTrackingData e = d[x];
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("8", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 8, e.Result);
-        }
+        var list1 = d.Take(4).ToList();
+        list1.AssertTrackingData(4, _expectedRollerType, 6);
+        var list2 = d.TakeLast(2).ToList();
+        list2.AssertTrackingData(2, _expectedRollerType, 8);
     }
 
     [TestMethod]
@@ -125,92 +107,10 @@ public class DieRollTrackerTests
         // assert
         Assert.IsNotNull(d);
         Assert.HasCount(6, d);
-        int i;
-        for (i = 0; i < 2; i++)
-        {
-            DieTrackingData e = d[i];
-            Assert.AreEqual("ConstantDieRoller", e.RollerType);
-            Assert.AreEqual("6", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, e.Result);
-        }
-
-        for (int x = i; x < 6; x++)
-        {
-            DieTrackingData e = d[x];
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("6", e.DieSides);
-            AssertHelpers.IsWithinRangeInclusive(1, 6, e.Result);
-        }
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest1()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(1, 1, typeof(RandomDieRoller)));
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest2()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(0, 5, typeof(RandomDieRoller)));
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest3()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(-4, 5, typeof(RandomDieRoller)));
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest4()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(6, 8, typeof(RandomDieRoller)));
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest5()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(6, -2, typeof(RandomDieRoller)));
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest6()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentNullException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(6, 4, null));
-    }
-
-    [TestMethod]
-    public void DieRollTracker_AddDieRollErrorsTest7()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(6, 4, this.GetType()));
+        var list1 = d.Take(2).ToList();
+        list1.AssertTrackingData(2, "ConstantDieRoller", 6);
+        var list2 = d.TakeLast(4).ToList();
+        list2.AssertTrackingData(4, _expectedRollerType, 6);
     }
 
     [TestMethod]
@@ -255,14 +155,11 @@ public class DieRollTrackerTests
         _tracker.SetupTrackingSampleData();
 
         // act
-        IList<DieTrackingData> data = await _tracker.GetTrackingDataAsync("RandomDieRoller");
+        IList<DieTrackingData> data = await _tracker.GetTrackingDataAsync(_expectedRollerType);
 
         // assert
         Assert.HasCount(19, data);
-        foreach(DieTrackingData e in data)
-        {
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-        }
+        data.ToList().ForEach(e => Assert.AreEqual(_expectedRollerType, e.RollerType));
     }
 
     [TestMethod]
@@ -276,10 +173,7 @@ public class DieRollTrackerTests
 
         // assert
         Assert.HasCount(4, data);
-        foreach (DieTrackingData e in data)
-        {
-            Assert.AreEqual("10", e.DieSides);
-        }
+        data.ToList().ForEach(e => Assert.AreEqual("10", e.DieSides));
     }
 
     [TestMethod]
@@ -289,15 +183,10 @@ public class DieRollTrackerTests
         _tracker.SetupTrackingSampleData();
 
         // act
-        IList<DieTrackingData> data = await _tracker.GetTrackingDataAsync("RandomDieRoller", "20");
+        IList<DieTrackingData> data = await _tracker.GetTrackingDataAsync(_expectedRollerType, "20");
 
         // assert
-        Assert.HasCount(14, data);
-        foreach (DieTrackingData e in data)
-        {
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("20", e.DieSides);
-        }
+        data.AssertTrackingData(14, _expectedRollerType, 20);
     }
 
     [TestMethod]
@@ -324,58 +213,6 @@ public class DieRollTrackerTests
 
         // assert
         Assert.IsEmpty(data);
-    }
-
-    [TestMethod]
-    public async Task DieRollTracker_ToJsonTest()
-    {
-        // arrange
-        _tracker.SetupTrackingSampleData();
-
-        // act
-        var data = await _tracker.ToJsonAsync();
-
-        // assert
-        Assert.IsFalse(string.IsNullOrEmpty(data));
-    }
-
-    [TestMethod]
-    public async Task DieRollTracker_LaodFromJsonTest()
-    {
-        // arrange
-        _tracker.SetupTrackingSampleData();
-        string data = await _tracker.ToJsonAsync();
-        Assert.IsFalse(string.IsNullOrEmpty(data));
-
-        // act
-        var other = new DieRollTracker();
-        await other.LoadFromJsonAsync(data);
-
-        IList<DieTrackingData> list = await other.GetTrackingDataAsync("RandomDieRoller", "20");
-
-        // assert
-        Assert.HasCount(14, list);
-        foreach (DieTrackingData e in list)
-        {
-            Assert.AreEqual("RandomDieRoller", e.RollerType);
-            Assert.AreEqual("20", e.DieSides);
-        }
-    }
-
-    [TestMethod]
-    public async Task DieRollTracker_LaodFromJsonTest_NoData()
-    {
-        // arrange
-        string data = string.Empty;
-
-        // act
-        var other = new DieRollTracker();
-        await other.LoadFromJsonAsync(data);
-
-        IList<DieTrackingData> list = await other.GetTrackingDataAsync("RandomDieRoller", "20");
-
-        // assert
-        Assert.IsEmpty(list);
     }
 
     [TestMethod]

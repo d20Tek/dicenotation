@@ -2,9 +2,9 @@
 
 namespace d20Tek.DiceNotation.UnitTests.DieRoller;
 
-internal static class TrackingDataFactory
+internal static class TrackingAggregateDataFactory
 {
-    public static void SetupTrackingSampleData(this IAllowRollTrackerEntry tracker)
+    public static void SetupTrackingSampleData(this IDieRollTracker tracker)
     {
         tracker.AddDieRoll(6, 4, typeof(RandomDieRoller));
         tracker.AddDieRoll(6, 3, typeof(RandomDieRoller));
@@ -35,7 +35,7 @@ internal static class TrackingDataFactory
         tracker.AddDieRoll(20, 9, typeof(RandomDieRoller));
     }
 
-    public static List<AggregateDieTrackingData> SetupStatisticalTrackingData(this IAllowRollTrackerEntry tracker)
+    public static List<AggregateDieTrackingData> SetupStatisticalTrackingData(this IDieRollTracker tracker)
     {
         SetupTrackingSampleData(tracker);
 
@@ -60,29 +60,29 @@ internal static class TrackingDataFactory
 
         List<AggregateDieTrackingData> expectedAggegate =
         [
-            new() { RollerType = "ConstantDieRoller", DieSides = "10", Result = 2, Count = 1, Percentage = 33.3f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "10", Result = 8, Count = 1, Percentage = 33.3f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "10", Result = 9, Count = 1, Percentage = 33.3f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "20", Result = 5, Count = 2, Percentage = 33.3f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "20", Result = 11, Count = 2, Percentage = 33.3f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "20", Result = 18, Count = 2, Percentage = 33.3f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "8", Result = 2, Count = 1, Percentage = 50.0f },
-            new() { RollerType = "ConstantDieRoller", DieSides = "8", Result = 4, Count = 1, Percentage = 50.0f },
-            new() { RollerType = "RandomDieRoller", DieSides = "10", Result = 4, Count = 1, Percentage = 100.0f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 5, Count = 4, Percentage = 13.8f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 8, Count = 2, Percentage = 6.9f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 9, Count = 6, Percentage = 20.7f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 10, Count = 1, Percentage = 3.4f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 11, Count = 2, Percentage = 6.9f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 12, Count = 4, Percentage = 13.8f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 13, Count = 2, Percentage = 6.9f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 14, Count = 2, Percentage = 6.9f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 17, Count = 2, Percentage = 6.9f },
-            new() { RollerType = "RandomDieRoller", DieSides = "20", Result = 20, Count = 4, Percentage = 13.8f },
-            new() { RollerType = "RandomDieRoller", DieSides = "6", Result = 1, Count = 1, Percentage = 25.0f },
-            new() { RollerType = "RandomDieRoller", DieSides = "6", Result = 3, Count = 1, Percentage = 25.0f },
-            new() { RollerType = "RandomDieRoller", DieSides = "6", Result = 4, Count = 1, Percentage = 25.0f },
-            new() { RollerType = "RandomDieRoller", DieSides = "6", Result = 6, Count = 1, Percentage = 25.0f }
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "10", Result = 2, Count = 1, Percentage = 33.3f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "10", Result = 8, Count = 1, Percentage = 33.3f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "10", Result = 9, Count = 1, Percentage = 33.3f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "20", Result = 5, Count = 2, Percentage = 33.3f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "20", Result = 11, Count = 2, Percentage = 33.3f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "20", Result = 18, Count = 2, Percentage = 33.3f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "8", Result = 2, Count = 1, Percentage = 50.0f },
+            new AggregateDieTrackingData { RollerType = "ConstantDieRoller", DieSides = "8", Result = 4, Count = 1, Percentage = 50.0f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "10", Result = 4, Count = 1, Percentage = 100.0f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 5, Count = 4, Percentage = 13.8f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 8, Count = 2, Percentage = 6.9f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 9, Count = 6, Percentage = 20.7f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 10, Count = 1, Percentage = 3.4f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 11, Count = 2, Percentage = 6.9f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 12, Count = 4, Percentage = 13.8f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 13, Count = 2, Percentage = 6.9f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 14, Count = 2, Percentage = 6.9f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 17, Count = 2, Percentage = 6.9f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "20", Result = 20, Count = 4, Percentage = 13.8f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "6", Result = 1, Count = 1, Percentage = 25.0f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "6", Result = 3, Count = 1, Percentage = 25.0f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "6", Result = 4, Count = 1, Percentage = 25.0f },
+            new AggregateDieTrackingData { RollerType = "RandomDieRoller", DieSides = "6", Result = 6, Count = 1, Percentage = 25.0f }
         ];
 
         return expectedAggegate;
