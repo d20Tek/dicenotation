@@ -1,5 +1,4 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
-using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.UnitTests;
 
