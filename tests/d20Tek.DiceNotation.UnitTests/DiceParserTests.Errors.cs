@@ -88,7 +88,7 @@ public class DiceParserErrorTests
         // arrange
 
         // act - assert
-        Assert.ThrowsExactly<ArgumentNullException>(() => _parser.Parse("", _config, _roller));
+        Assert.ThrowsExactly<ArgumentException>(() => _parser.Parse("", _config, _roller));
         Assert.ThrowsExactly<ArgumentNullException>(() => _parser.Parse(null, _config, _roller));
     }
 

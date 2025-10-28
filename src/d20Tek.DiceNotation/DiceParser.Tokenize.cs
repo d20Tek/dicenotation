@@ -11,7 +11,7 @@ public partial class DiceParser
         string vector = string.Empty;
 
         // first clean up expression
-        expression = this.CorrectExpression(expression);
+        expression = CorrectExpression(expression);
 
         // loop through the expression characters
         for (var i = 0; i < expression.Length; i++)
@@ -23,40 +23,40 @@ public partial class DiceParser
             if (char.IsLetter(ch, 0))
             {
                 // if it's a letter, then increment the char position until we find the end of the text
-                this.TokenizeLetters(expression, tokens, ref vector, ref i, ch, prev);
+                TokenizeLetters(expression, tokens, ref vector, ref i, ch, prev);
             }
             else if (char.IsDigit(ch, 0))
             {
                 // if it's a digit, then increment char until you find the end of the number
-                this.TokenizeNumbers(expression, tokens, ref vector, ref i, ch);
+                TokenizeNumbers(expression, tokens, ref vector, ref i, ch);
             }
             else if ((i + 1) < expression.Length &&
-                     this.Operators.Contains(ch) &&
+                     Operators.Contains(ch) &&
                      char.IsDigit(expression[i + 1]) && (i == 0 ||
-                     ((i - 1) > 0 && prev == this.GroupStartOperator)))
+                     ((i - 1) > 0 && prev == GroupStartOperator)))
             {
                 // if the above is true, then, the token for that negative number will be "-1", not "-","1".
-                this.TokenizeUnaryOperators(expression, tokens, ref vector, ref i, ch);
+                TokenizeUnaryOperators(expression, tokens, ref vector, ref i, ch);
             }
-            else if (ch == this.GroupStartOperator)
+            else if (ch == GroupStartOperator)
             {
                 // if an open grouping, then if we didn't have an operator, then append the default operator.
-                if (i != 0 && (char.IsDigit(prev, 0) || prev == this.GroupEndOperator))
+                if (i != 0 && (char.IsDigit(prev, 0) || prev == GroupEndOperator))
                 {
-                    tokens.Add(this.DefaultOperator);
+                    tokens.Add(DefaultOperator);
                 }
 
                 tokens.Add(ch.ToString());
             }
-            else if (ch == this.GroupEndOperator)
+            else if (ch == GroupEndOperator)
             {
                 // if closing grouping and there's no operator, then append the default operator.
                 tokens.Add(ch);
 
                 if ((i + 1) < expression.Length && (char.IsDigit(next, 0) ||
-                    (next != this.GroupEndOperator && !this.Operators.Contains(next))))
+                    (next != GroupEndOperator && !Operators.Contains(next))))
                 {
-                    tokens.Add(this.DefaultOperator);
+                    tokens.Add(DefaultOperator);
                 }
             }
             else
@@ -72,12 +72,7 @@ public partial class DiceParser
     private string CorrectExpression(string expression)
     {
         // first verify we have an expression to parse.
-        if (string.IsNullOrWhiteSpace(expression))
-        {
-            throw new ArgumentNullException(
-                nameof(expression),
-                "The expression string is empty or null.");
-        }
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(expression);
 
         // first remove any whitespace from the expression
         string result = WhitespaceRegex.Replace(expression.ToLower(), string.Empty);
@@ -149,29 +144,27 @@ public partial class DiceParser
         string prev)
     {
         if (position != 0 &&
-            (char.IsDigit(prev, 0) || prev == this.GroupEndOperator) &&
-            !this.Operators.Contains(ch))
+            (char.IsDigit(prev, 0) || prev == GroupEndOperator) &&
+            !Operators.Contains(ch))
         {
-            tokens.Add(this.DefaultOperator);
+            tokens.Add(DefaultOperator);
         }
 
         // if we have a single die operator (d, f), then default to having a default
         // number of dice (1)
-        if ((ch == "d" || ch == "f") && (string.IsNullOrEmpty(prev) ||
-                                         this.Operators.Contains(prev) ||
-                                         prev == this.GroupStartOperator))
+        if ((ch == "d" || ch == "f") &&
+            (string.IsNullOrEmpty(prev) || Operators.Contains(prev) || prev == GroupStartOperator))
         {
-            tokens.Add(this.DefaultNumDice);
+            tokens.Add(DefaultNumDice);
         }
 
         // append the current character
         substring += ch;
 
-        if (!this.Operators.Contains(ch))
+        if (!Operators.Contains(ch))
         {
             // if the character isn't an operator, then loop ahead while the expression has letters
-            while ((position + 1) < expression.Length &&
-                   char.IsLetterOrDigit(expression[position + 1]))
+            while ((position + 1) < expression.Length && char.IsLetterOrDigit(expression[position + 1]))
             {
                 position++;
                 substring += expression[position];

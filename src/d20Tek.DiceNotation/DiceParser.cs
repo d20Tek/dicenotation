@@ -10,17 +10,17 @@ namespace d20Tek.DiceNotation
     {
         private const string PercentileNotation = "d%";
         private const string D100EquivalentNotation = "d100";
+        private const string DefaultOperator = "x";
+        private const string GroupStartOperator = "(";
+        private const string GroupEndOperator = ")";
+        private const string DefaultNumDice = "1";
+
         private static readonly Regex WhitespaceRegex = new(@"\s+");
         private static readonly string DecimalSeparator =
             CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 
-        private IDiceConfiguration? config = null;
-
-        public List<string> Operators { get; } =
-            ["d", "f", "k", "p", "l", "!", "/", "x", "*", "-", "+"];
-
-        public Dictionary<string, Func<int, int, int>> OperatorActions { get; } =
-            new Dictionary<string, Func<int, int, int>>
+        private static readonly List<string> Operators = ["d", "f", "k", "p", "l", "!", "/", "x", "*", "-", "+"];
+        private static readonly Dictionary<string, Func<int, int, int>> OperatorActions = new()
         {
             { "/", (numberA, numberB) => numberA / numberB },
             { "x", (numberA, numberB) => numberA * numberB },
@@ -29,12 +29,6 @@ namespace d20Tek.DiceNotation
             { "+", (numberA, numberB) => numberA + numberB },
         };
 
-        public string DefaultOperator { get; set; } = "x";
-
-        public string GroupStartOperator { get; set; } = "(";
-
-        public string GroupEndOperator { get; set; } = ")";
-
-        public string DefaultNumDice { get; set; } = "1";
+        private IDiceConfiguration? _config = null;
     }
 }

@@ -121,30 +121,4 @@ public class DiceParserTests
         // assert
         result.AssertResult(expectedExpression, expectedCount, expectedResult);
     }
-
-    [TestMethod]
-    public void DiceParser_SettingCustomOperators()
-    {
-        // arrange
-        DiceParser parser = new()
-        {
-            DefaultNumDice = "2",
-            DefaultOperator = "x",
-            GroupStartOperator = "[",
-            GroupEndOperator = "]"
-        };
-
-        // act
-        var result = parser.Parse("3d6", _config, _testRoller);
-
-        // assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual("3d6", result.DiceExpression);
-        Assert.HasCount(3, result.Results);
-        Assert.AreEqual(6, result.Value);
-        Assert.AreEqual("2", parser.DefaultNumDice);
-        Assert.AreEqual("x", parser.DefaultOperator);
-        Assert.AreEqual("[", parser.GroupStartOperator);
-        Assert.AreEqual("]", parser.GroupEndOperator);
-    }
 }

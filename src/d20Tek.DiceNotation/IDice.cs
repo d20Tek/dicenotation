@@ -11,12 +11,7 @@ public interface IDice
 
     void Clear();
 
-    IDice Dice(
-        int sides,
-        int numberDice = 1,
-        double scalar = 1,
-        int? choose = null,
-        int? exploding = null);
+    IDice Dice(int sides, int numberDice = 1, double scalar = 1, int? choose = null, int? exploding = null);
 
     IDice FudgeDice(int numberDice = 1, int? choose = null);
 

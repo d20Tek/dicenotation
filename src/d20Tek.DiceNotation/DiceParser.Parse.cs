@@ -10,42 +10,40 @@ public partial class DiceParser
 {
     public DiceResult Parse(string expression, IDiceConfiguration config, IDieRoller dieRoller)
     {
-        this.config = config;
+        ArgumentNullException.ThrowIfNull(config);
+        _config = config;
 
         // first clean up expression
-        expression = this.CorrectExpression(expression);
+        expression = CorrectExpression(expression);
 
         // then break the expression down into tokens.
-        List<string> tokens = this.Tokenize(expression);
+        var tokens = Tokenize(expression);
 
         // finally parse and evaluate the expression tokens
-        return this.ParseLogic(expression, tokens, dieRoller);
+        return ParseLogic(expression, tokens, dieRoller);
     }
 
     private DiceResult ParseLogic(string expression, List<string> tokens, IDieRoller dieRoller)
     {
-        List<TermResult> results = new List<TermResult>();
+        List<TermResult> results = [];
 
-        while (tokens.IndexOf(this.GroupStartOperator) != -1)
+        while (tokens.IndexOf(GroupStartOperator) != -1)
         {
             // getting data between grouping symbols: "(" and ")"
-            int open = tokens.LastIndexOf(this.GroupStartOperator);
-            int close = tokens.IndexOf(this.GroupEndOperator, open);
+            int open = tokens.LastIndexOf(GroupStartOperator);
+            int close = tokens.IndexOf(GroupEndOperator, open);
 
-            if (open >= close)
-            {
-                throw new ArithmeticException("No matching close-open parenthesis.");
-            }
+            if (open >= close) throw new ArithmeticException("No matching close-open parenthesis.");
 
             // get a subexpression list for elements within the grouping symbols
-            List<string> subExpression = new List<string>();
+            List<string> subExpression = [];
             for (var i = open + 1; i < close; i++)
             {
                 subExpression.Add(tokens[i]);
             }
 
             // run the operations on the subexpression
-            int subValue = this.HandleBasicOperation(results, subExpression, dieRoller);
+            int subValue = HandleBasicOperation(results, subExpression, dieRoller);
 
             // when subexpression calculation is done, replace the grouping start symbol
             // and removing the tokens for the subexpression from the token list
@@ -55,21 +53,13 @@ public partial class DiceParser
 
         // at this point, we should have replaced all groups in the expression
         // with the appropriate values, so need to calculate last simple expression
-        int value = this.HandleBasicOperation(results, tokens, dieRoller);
+        int value = HandleBasicOperation(results, tokens, dieRoller);
 
         // now return the dice result from the final value and TermResults list
-        return new DiceResult(
-            expression,
-            value,
-            results,
-            dieRoller.GetType().ToString(),
-            this.config!);
+        return new(expression, value, results, dieRoller.GetType().ToString(), _config!);
     }
 
-    private int HandleBasicOperation(
-        List<TermResult> results,
-        List<string> tokens,
-        IDieRoller dieRoller)
+    private int HandleBasicOperation(List<TermResult> results, List<string> tokens, IDieRoller dieRoller)
     {
         if (tokens.Count == 0)
         {
@@ -84,7 +74,7 @@ public partial class DiceParser
 
         // loop through each operator in our operator list
         // operators order in the list signify their order of operations
-        foreach (var op in this.Operators)
+        foreach (var op in Operators)
         {
             // loop through all of the tokens until we find the operator in the list
             while (tokens.IndexOf(op) != -1)
@@ -95,19 +85,19 @@ public partial class DiceParser
                     {
                         // if current operator is the die operator, then process
                         // that part of the expression accordingly
-                        this.HandleDieOperator(results, tokens, op, dieRoller);
+                        HandleDieOperator(results, tokens, op, dieRoller);
                     }
                     else if (op == "f")
                     {
                         // if current operator is the fudge die operator, then process
                         // that part of the expression accordingly
-                        this.HandleFudgeOperator(results, tokens, op, dieRoller);
+                        HandleFudgeOperator(results, tokens, op, dieRoller);
                     }
                     else
                     {
                         // otherwise, treat the operator as an arimethic operator,
                         // and perform the correct math operation
-                        this.HandleArithmeticOperators(tokens, op);
+                        HandleArithmeticOperators(tokens, op);
                     }
                 }
                 catch (Exception ex)
@@ -146,7 +136,7 @@ public partial class DiceParser
 
         // find the action that corresponds to the current operator, then
         // run that action to evaluate the math function
-        int result = this.OperatorActions[op](numberA, numberB);
+        int result = OperatorActions[op](numberA, numberB);
 
         // put the evaluation result in the first entry and remove
         // the remaining processed tokens
@@ -154,17 +144,10 @@ public partial class DiceParser
         tokens.RemoveRange(opPosition, 2);
     }
 
-    private void HandleDieOperator(
-        List<TermResult> results,
-        List<string> tokens,
-        string op,
-        IDieRoller dieRoller)
+    private void HandleDieOperator(List<TermResult> results, List<string> tokens, string op, IDieRoller dieRoller)
     {
         if (tokens.IndexOf("f") >= 0)
-        {
-            throw new FormatException(
-                "Fudge dice and regular dice cannot be used in the same expression");
-        }
+            throw new FormatException("Fudge dice and regular dice cannot be used in the same expression");
 
         // find the previous and next numbers in the token list
         int opPosition = tokens.IndexOf(op);
@@ -181,40 +164,35 @@ public partial class DiceParser
         }
         else
         {
-            sides = this.config!.DefaultDieSides;
+            sides = _config!.DefaultDieSides;
             length++;
         }
 
         // look-ahead to find other dice operators (like the choose-keep/drop operators)
-        int? choose = this.ChooseLookAhead(tokens, opPosition, numDice, ref length);
-        int? explode = this.ExplodeLookAhead(tokens, opPosition, sides, ref length);
+        int? choose = ChooseLookAhead(tokens, opPosition, numDice, ref length);
+        int? explode = ExplodeLookAhead(tokens, opPosition, sides, ref length);
 
         // create a dice term based on the values
-        DiceTerm term = new DiceTerm(numDice, sides, 1, choose, explode);
+        DiceTerm term = new(numDice, sides, 1, choose, explode);
 
         // then evaluate the dice term to roll dice and get the result
-        this.EvaluateDiceTerm(results, tokens, dieRoller, opPosition, length, term);
+        EvaluateDiceTerm(results, tokens, dieRoller, opPosition, length, term);
     }
 
-    private void HandleFudgeOperator(
-        List<TermResult> results,
-        List<string> tokens,
-        string op,
-        IDieRoller dieRoller)
+    private void HandleFudgeOperator(List<TermResult> results, List<string> tokens, string op, IDieRoller dieRoller)
     {
         // find the previous and next numbers in the token list
         int opPosition = tokens.IndexOf(op);
-
         int numDice = int.Parse(tokens[opPosition - 1]);
         int length = 1;
 
         // look-ahead to find other dice operators (like the choose-keep/drop operators)
-        int? choose = this.ChooseLookAhead(tokens, opPosition, numDice, ref length);
+        int? choose = ChooseLookAhead(tokens, opPosition, numDice, ref length);
 
         // create a dice term based on the values
-        IExpressionTerm term = new FudgeDiceTerm(numDice, choose);
+        FudgeDiceTerm term = new(numDice, choose);
 
         // then evaluate the dice term to roll dice and get the result
-        this.EvaluateDiceTerm(results, tokens, dieRoller, opPosition, length, term);
+        EvaluateDiceTerm(results, tokens, dieRoller, opPosition, length, term);
     }
 }

@@ -8,7 +8,7 @@ namespace d20Tek.DiceNotation;
 
 public partial class DiceParser
 {
-    private int? ChooseLookAhead(List<string> tokens, int opPosition, int numDice, ref int length)
+    private static int? ChooseLookAhead(List<string> tokens, int opPosition, int numDice, ref int length)
     {
         int? result = null;
 
@@ -39,7 +39,7 @@ public partial class DiceParser
         return result;
     }
 
-    private int? ExplodeLookAhead(List<string> tokens, int opPosition, int sides, ref int length)
+    private static int? ExplodeLookAhead(List<string> tokens, int opPosition, int sides, ref int length)
     {
         int? result = null;
 
@@ -62,7 +62,7 @@ public partial class DiceParser
         return result;
     }
 
-    private void EvaluateDiceTerm(
+    private static void EvaluateDiceTerm(
         List<TermResult> results,
         List<string> tokens,
         IDieRoller dieRoller,
@@ -70,7 +70,7 @@ public partial class DiceParser
         int length,
         IExpressionTerm term)
     {
-        IReadOnlyList<TermResult> t = term.CalculateResults(dieRoller);
+        var t = term.CalculateResults(dieRoller);
         int value = t.Sum(r => (int)Math.Round(r.AppliesToResultCalculation ? r.Value * r.Scalar : 0));
         results.AddRange(t);
 

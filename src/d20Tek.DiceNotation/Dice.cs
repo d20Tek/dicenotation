@@ -28,7 +28,7 @@ public class Dice : IDice
 
     public IDice Concat(IDice otherDice)
     {
-        ArgumentNullException.ThrowIfNull(otherDice, nameof(otherDice));
+        ArgumentNullException.ThrowIfNull(otherDice);
         _terms.AddRange(((Dice)otherDice)._terms);
         return this;
     }
