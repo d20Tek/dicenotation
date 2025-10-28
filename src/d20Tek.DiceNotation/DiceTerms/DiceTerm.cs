@@ -56,7 +56,6 @@ public class DiceTerm : IExpressionTerm
 
     public IReadOnlyList<TermResult> CalculateResults(IDieRoller dieRoller)
     {
-        // ensure we have a die roller.
         ArgumentNullException.ThrowIfNull(dieRoller);
 
         List<TermResult> results = [];
@@ -70,26 +69,18 @@ public class DiceTerm : IExpressionTerm
             if (_exploding != null && value >= _exploding)
             {
                 if (rerolls > MaxRerollsAllowed)
-                {
-                    throw new OverflowException(
-                        "Rolling dice past the maximum allowed number of rerolls.");
-                }
+                    throw new OverflowException("Rolling dice past the maximum allowed number of rerolls.");
 
                 rerolls++;
             }
 
-            results.Add(new TermResult
-            {
-                Scalar = _scalar,
-                Value = value,
-                Type = termType,
-            });
+            results.Add(new() { Scalar = _scalar, Value = value, Type = termType });
         }
 
         // order by their value (high to low) and only take the amount specified in choose.
         int tempChoose = _choose ?? results.Count;
         var ordered = tempChoose > 0 ?
-                        results.OrderByDescending(d => d.Value).ToList() :
+                        [.. results.OrderByDescending(d => d.Value)] :
                         results.OrderBy(d => d.Value).ToList();
 
         for (int i = Math.Abs(tempChoose); i < ordered.Count; i++)
@@ -102,10 +93,7 @@ public class DiceTerm : IExpressionTerm
 
     public override string ToString()
     {
-        string variableText = _choose == null || _choose == _numberDice ?
-            string.Empty :
-            "k" + _choose;
-
+        string variableText = _choose == null || _choose == _numberDice ? string.Empty : "k" + _choose;
         variableText += _exploding == null ? string.Empty : "!" + _exploding;
         string result;
 
@@ -139,8 +127,5 @@ public class DiceTerm : IExpressionTerm
         return result;
     }
 
-    protected virtual int RollTerm(IDieRoller dieRoller, int sides)
-    {
-        return dieRoller.Roll(sides);
-    }
+    protected virtual int RollTerm(IDieRoller dieRoller, int sides) => dieRoller.Roll(sides);
 }

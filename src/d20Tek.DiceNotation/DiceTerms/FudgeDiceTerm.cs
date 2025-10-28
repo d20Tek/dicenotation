@@ -17,8 +17,5 @@ public class FudgeDiceTerm : DiceTerm
         FormatDiceTermText = FudgeFormatDiceTermText;
     }
 
-    protected override int RollTerm(IDieRoller dieRoller, int sides)
-    {
-        return dieRoller.Roll(sides, FudgeFactor);
-    }
+    protected override int RollTerm(IDieRoller dieRoller, int sides) => dieRoller.Roll(sides, FudgeFactor);
 }

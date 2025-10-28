@@ -3,10 +3,9 @@
 //---------------------------------------------------------------------------------------------------------------------
 using d20Tek.DiceNotation.Results;
 
-namespace d20Tek.DiceNotation.DiceTerms
+namespace d20Tek.DiceNotation.DiceTerms;
+
+public interface IExpressionTerm
 {
-    public interface IExpressionTerm
-    {
-        IReadOnlyList<TermResult> CalculateResults(IDieRoller dieRoller);
-    }
+    IReadOnlyList<TermResult> CalculateResults(IDieRoller dieRoller);
 }
