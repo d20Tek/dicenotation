@@ -1,6 +1,8 @@
 ﻿//---------------------------------------------------------------------------------------------------------------------
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
+using d20Tek.DiceNotation.DiceTerms;
+
 namespace d20Tek.DiceNotation;
 
 public class DiceRequest
@@ -49,4 +51,6 @@ public class DiceRequest
         Choose = choose;
         Exploding = exploding;
     }
+
+    public DiceTerm ToDiceTerm() => new(NumberDice, Sides, Scalar, Choose, Exploding);
 }

@@ -38,16 +38,7 @@ public class Dice : IDice
 
     public DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null)
     {
-        List<IExpressionTerm> terms =
-        [
-            new DiceTerm(
-                diceRequest.NumberDice,
-                diceRequest.Sides,
-                diceRequest.Scalar,
-                diceRequest.Choose,
-                diceRequest.Exploding)
-        ];
-
+        List<IExpressionTerm> terms = [ diceRequest.ToDiceTerm() ];
         AddConstantIf(terms, diceRequest.Bonus);
         return RollTerms(terms, dieRoller ?? Configuration.DefaultDieRoller);
     }
