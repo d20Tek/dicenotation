@@ -1,19 +1,16 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.DieRoller;
+﻿namespace d20Tek.DiceNotation.DieRoller;
 
-public class RandomDieRoller : RandomDieRollerBase
+public class RandomDieRoller(Random random, IAllowRollTrackerEntry? tracker) : RandomDieRollerBase(tracker)
 {
     private static readonly Random DefaultRandomGenerator = new();
-    private readonly Random random;
+    private readonly Random _random = random;
 
     public RandomDieRoller(IAllowRollTrackerEntry? tracker = null)
         : this(DefaultRandomGenerator, tracker) { }
 
-    public RandomDieRoller(Random random, IAllowRollTrackerEntry? tracker)
-        : base(tracker) => this.random = random;
-
-    /// <inheritdoc/>
-    protected override int GetNextRandom(int sides) => random.Next(sides) + 1;
+    protected override int GetNextRandom(int sides)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(sides, 0);
+        return _random.Next(sides) + 1;
+    }
 }

@@ -1,15 +1,9 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.DieRoller;
+﻿namespace d20Tek.DiceNotation.DieRoller;
 
-public class ConstantDieRoller : IDieRoller
+public class ConstantDieRoller(int rollValue = ConstantDieRoller.DefaultRollValue) : IDieRoller
 {
     private const int DefaultRollValue = 1;
-    private readonly int constantRollValue;
+    private readonly int constantRollValue = rollValue;
 
-    public ConstantDieRoller(int rollValue = DefaultRollValue) => constantRollValue = rollValue;
-
-    /// <inheritdoc/>
     public int Roll(int sides, int? factor = null) => constantRollValue;
 }

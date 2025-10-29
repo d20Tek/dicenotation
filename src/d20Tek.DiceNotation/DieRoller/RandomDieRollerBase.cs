@@ -1,13 +1,8 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.DieRoller;
+﻿namespace d20Tek.DiceNotation.DieRoller;
 
-public abstract class RandomDieRollerBase : IDieRoller
+public abstract class RandomDieRollerBase(IAllowRollTrackerEntry? tracker = null) : IDieRoller
 {
-    private readonly IAllowRollTrackerEntry? tracker;
-
-    public RandomDieRollerBase(IAllowRollTrackerEntry? tracker = null) => this.tracker = tracker;
+    private readonly IAllowRollTrackerEntry? _tracker = tracker;
 
     public int Roll(int sides, int? factor = null)
     {
@@ -16,7 +11,7 @@ public abstract class RandomDieRollerBase : IDieRoller
         result += (factor is not null) ? factor.Value : 0;
 
         // if the user provided a roll tracker, then use it
-        tracker?.AddDieRoll(sides, result, GetType());
+        _tracker?.AddDieRoll(sides, result, GetType());
 
         return result;
     }

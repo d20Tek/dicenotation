@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.DieRoller;
+﻿namespace d20Tek.DiceNotation.DieRoller;
 
 public interface IDieRollTracker : IAllowRollTrackerEntry
 {
