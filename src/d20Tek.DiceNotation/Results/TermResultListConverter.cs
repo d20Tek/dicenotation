@@ -1,19 +1,14 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.Results;
+﻿namespace d20Tek.DiceNotation.Results;
 
 public class TermResultListConverter
 {
     private const int _maxTerms = 100;
+    private const string _separator = ", ";
+    private const string _diceTerm = "DiceTerm";
 
     public virtual object Convert(object value, Type targetType, object parameter, string language)
     {
-        if (targetType != typeof(string))
-        {
-            throw new ArgumentException("Unexpected type passed to converter.", nameof(targetType));
-        }
-
+        TypeException.ThrowIfNot<string>(targetType, "Unexpected type passed to converter.");
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
         return DiceRollsToString(ConvertList(value));
@@ -23,11 +18,12 @@ public class TermResultListConverter
         throw new NotSupportedException();
 
     private static string DiceRollsToString(List<TermResult> results) =>
-        string.Join(
-            ", ",
-            results.Take(_maxTerms)
-                   .Where(r => r.Type.Contains("DiceTerm"))
-                   .Select(r => r.AppliesToResultCalculation ? $"{r.Value}" : $"{r.Value}*"));
+        string.Join(_separator, TrimResults(results));
+
+    private static IEnumerable<string> TrimResults(List<TermResult> results) =>
+        results.Take(_maxTerms)
+               .Where(r => r.Type.Contains(_diceTerm))
+               .Select(r => r.AppliesToResultCalculation ? $"{r.Value}" : $"{r.Value}*");
 
     private static List<TermResult> ConvertList(object value)
     {

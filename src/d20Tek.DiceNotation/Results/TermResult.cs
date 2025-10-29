@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.Results;
+﻿namespace d20Tek.DiceNotation.Results;
 
 public class TermResult
 {
@@ -12,4 +9,8 @@ public class TermResult
     public string Type { get; set; } = string.Empty;
 
     public bool AppliesToResultCalculation { get; set; } = true;
+
+    public TermResult(double scalar, int value, string type) => (Scalar, Value, Type) = (scalar, value, type);
+
+    public TermResult() { }
 }

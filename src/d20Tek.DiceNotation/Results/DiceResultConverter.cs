@@ -1,17 +1,10 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.Results;
+﻿namespace d20Tek.DiceNotation.Results;
 
 public class DiceResultConverter
 {
     public virtual object Convert(object value, Type targetType, object parameter, string language)
     {
-        if (targetType != typeof(string))
-        {
-            throw new ArgumentException("Unexpected type passed to converter.", nameof(targetType));
-        }
-
+        TypeException.ThrowIfNot<string>(targetType, "Unexpected type passed to converter.");
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
         if (value is not DiceResult dr)
@@ -19,7 +12,7 @@ public class DiceResultConverter
             throw new ArgumentException("Object not of type DiceResult.", nameof(value));
         }
 
-        return string.Format("{0} ({1})", dr.Value, dr.DiceExpression);
+        return $"{dr.Value} ({dr.DiceExpression})";
     }
 
     public virtual object ConvertBack(object value, Type targetType, object parameter, string language) =>

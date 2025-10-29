@@ -1,34 +1,20 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using d20Tek.DiceNotation.Results;
+﻿using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.DiceTerms;
 
-public class DiceTerm : IExpressionTerm
+public partial class DiceTerm : IExpressionTerm
 {
-    private const string DiceFormatResultType = "{0}.d{1}";
-    private const string DiceFormatDiceTermText = "{0}d{1}{2}";
-    private const string FormatDiceMultiplyTermText = "{0}d{1}{2}x{3}";
-    private const string FormatDiceDivideTermText = "{0}d{1}{2}/{3}";
-    private const int MaxRerollsAllowed = 1000;
-
     private readonly int _numberDice;
     private readonly int _sides;
     private readonly double _scalar;
     private readonly int? _choose;
     private readonly int? _exploding;
 
-    protected string FormatResultType { get; set; } = DiceFormatResultType;
+    protected string FormatResultType { get; set; } = DiceTermHelper.DiceFormatResultType;
 
-    protected string FormatDiceTermText { get; set; } = DiceFormatDiceTermText;
+    protected string FormatDiceTermText { get; set; } = DiceTermHelper.DiceFormatDiceTermText;
 
-    public DiceTerm(
-        int numberDice,
-        int sides,
-        double scalar = 1,
-        int? choose = null,
-        int? exploding = null)
+    public DiceTerm(int numberDice, int sides, double scalar = 1, int? choose = null, int? exploding = null)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(numberDice, 0, nameof(numberDice));
         ArgumentOutOfRangeException.ThrowIfLessThan(sides, 1, nameof(sides));
@@ -58,73 +44,21 @@ public class DiceTerm : IExpressionTerm
     {
         ArgumentNullException.ThrowIfNull(dieRoller);
 
-        List<TermResult> results = [];
-        string termType = string.Format(FormatResultType, GetType().Name, _sides);
-        int rerolls = 0;
+        var results = new List<TermResult>();
+        var termType = string.Format(FormatResultType, GetType().Name, _sides);
+        var rerolls = 0;
+        void AddResult(int value) => results.Add(new(_scalar, value, termType));
 
         // go through the number of dice and roll each one, saving them as term results.
         for (int i = 0; i < _numberDice + rerolls; i++)
         {
             int value = RollTerm(dieRoller, _sides);
-            if (_exploding != null && value >= _exploding)
-            {
-                if (rerolls > MaxRerollsAllowed)
-                    throw new OverflowException("Rolling dice past the maximum allowed number of rerolls.");
+            AddResult(value);
 
-                rerolls++;
-            }
-
-            results.Add(new() { Scalar = _scalar, Value = value, Type = termType });
+            rerolls = DiceTermHelper.EvaluateExplodingDice(rerolls, value, _exploding);
         }
 
-        // order by their value (high to low) and only take the amount specified in choose.
-        int tempChoose = _choose ?? results.Count;
-        var ordered = tempChoose > 0 ?
-                        [.. results.OrderByDescending(d => d.Value)] :
-                        results.OrderBy(d => d.Value).ToList();
-
-        for (int i = Math.Abs(tempChoose); i < ordered.Count; i++)
-        {
-            ordered[i].AppliesToResultCalculation = false;
-        }
-
-        return results;
-    }
-
-    public override string ToString()
-    {
-        string variableText = _choose == null || _choose == _numberDice ? string.Empty : "k" + _choose;
-        variableText += _exploding == null ? string.Empty : "!" + _exploding;
-        string result;
-
-        if (_scalar == 1)
-        {
-            result = string.Format(FormatDiceTermText, _numberDice, _sides, variableText);
-        }
-        else if (_scalar == -1)
-        {
-            result = string.Format(FormatDiceTermText, -_numberDice, _sides, variableText);
-        }
-        else if (_scalar > 1)
-        {
-            result = string.Format(
-                FormatDiceMultiplyTermText,
-                _numberDice,
-                _sides,
-                variableText,
-                _scalar);
-        }
-        else
-        {
-            result = string.Format(
-                FormatDiceDivideTermText,
-                _numberDice,
-                _sides,
-                variableText,
-                (int)(1 / _scalar));
-        }
-
-        return result;
+        return DiceTermHelper.OrderTermResults(results, _choose);
     }
 
     protected virtual int RollTerm(IDieRoller dieRoller, int sides) => dieRoller.Roll(sides);

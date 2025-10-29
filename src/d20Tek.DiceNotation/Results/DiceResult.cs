@@ -1,13 +1,11 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace d20Tek.DiceNotation.Results;
 
 public class DiceResult
 {
     private const string FudgeDiceIdentifier = "f";
+    private const string _defaultLocale = "en-us";
     private static readonly TermResultListConverter Converter = new();
 
     public string DiceExpression { get; set; } = string.Empty;
@@ -19,21 +17,13 @@ public class DiceResult
     public int Value { get; set; }
 
     [JsonIgnore]
-    public string RollsDisplayText =>
-        (Results == null) ?
-            string.Empty :
-            Converter.Convert(Results.ToList(), typeof(string), string.Empty, "en-us").ToString()!;
+    public string RollsDisplayText => (Results is null)
+            ? string.Empty
+            : Converter.Convert(Results.ToList(), typeof(string), string.Empty, _defaultLocale).ToString()!;
 
     public DiceResult(string expression, List<TermResult> results, string rollerUsed, IDiceConfiguration config)
-        : this(
-              expression,
-              results.Sum(r => (int)Math.Round(
-                  r.AppliesToResultCalculation ? r.Value * r.Scalar : 0)),
-              results,
-              rollerUsed,
-              config)
-    {
-    }
+        : this(expression, results.Sum(CalculateResult), results, rollerUsed, config)
+    {}
 
     public DiceResult(string expression, int value, List<TermResult> results, string roller, IDiceConfiguration config)
     {
@@ -45,7 +35,8 @@ public class DiceResult
         Value = boundedResult ? Math.Max(value, config.BoundedResultMinimum) : value;
     }
 
-    public DiceResult()
-    {
-    }
+    public DiceResult() { }
+
+    private static int CalculateResult(TermResult r) =>
+        (int)Math.Round(r.AppliesToResultCalculation ? r.Value * r.Scalar : 0);
 }

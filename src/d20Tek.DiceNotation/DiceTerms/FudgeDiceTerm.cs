@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace d20Tek.DiceNotation.DiceTerms;
+﻿namespace d20Tek.DiceNotation.DiceTerms;
 
 public class FudgeDiceTerm : DiceTerm
 {
