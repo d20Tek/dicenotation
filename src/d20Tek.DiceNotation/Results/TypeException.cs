@@ -14,4 +14,15 @@ public class TypeException
             throw new ArgumentException(message, paramName);
         }
     }
+
+    public static void ThrowIfNotAssignableFrom<T>(
+        Type targetType,
+        [CallerArgumentExpression(nameof(targetType))] string? paramName = "none")
+    {
+        var typeT = typeof(T);
+        if (typeT.IsAssignableFrom(targetType) is false)
+        {
+            throw new ArgumentException($"{targetType} is not of type {typeT}.", paramName);
+        }
+    }
 }
