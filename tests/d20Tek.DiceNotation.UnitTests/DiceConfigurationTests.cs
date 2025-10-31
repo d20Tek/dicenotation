@@ -14,7 +14,7 @@ public class DiceConfigurationTests
         // arrange
 
         // act
-        _dice.Configuration.HasBoundedResult = false;
+        _dice.Configuration.SetHasBoundedResult(false);
         var result = _dice.Roll("d12-3", _roller);
 
         // assert
@@ -29,7 +29,7 @@ public class DiceConfigurationTests
         // arrange
 
         // act
-        _dice.Configuration.BoundedResultMinimum = 3;
+        _dice.Configuration.SetBoundedMinimumResult(3);
         var result = _dice.Roll("d7-3", _roller);
 
         // assert
@@ -44,7 +44,7 @@ public class DiceConfigurationTests
         // arrange
 
         // act
-        _dice.Configuration.DefaultDieSides = 10;
+        _dice.Configuration.SetDefaultDieSides(10);
         var result = _dice.Roll("4dk3+3", _roller);
 
         // assert
@@ -58,7 +58,27 @@ public class DiceConfigurationTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentOutOfRangeException>(
-            [ExcludeFromCodeCoverage] () => _dice.Configuration.DefaultDieSides = 1);
+            [ExcludeFromCodeCoverage] () => _dice.Configuration.SetDefaultDieSides(1));
+    }
+
+    [TestMethod]
+    public void DiceConfiguration_SetDefaultDieSidesWithGreater_ErrorTest()
+    {
+        // arrange
+
+        // act - assert
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+            [ExcludeFromCodeCoverage] () => _dice.Configuration.SetDefaultDieSides(2001));
+    }
+
+    [TestMethod]
+    public void DiceConfiguration_SetBoundedMinimumResultErrorTest()
+    {
+        // arrange
+
+        // act - assert
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+            [ExcludeFromCodeCoverage] () => _dice.Configuration.SetBoundedMinimumResult(0));
     }
 
     [TestMethod]
@@ -67,20 +87,10 @@ public class DiceConfigurationTests
         // arrange
 
         // act
-        _dice.Configuration.DefaultDieRoller = new ConstantDieRoller(10);
+        _dice.Configuration.SetDefaultDieRoller(new ConstantDieRoller(10));
         var result = _dice.Roll("1d20");
 
         // assert
         Assert.AreEqual(10, result.Value);
-    }
-
-    [TestMethod]
-    public void DiceConfiguration_SetDefaultDieRollerErrorTest()
-    {
-        // arrange
-
-        // act - assert
-        Assert.ThrowsExactly<ArgumentNullException>(
-            [ExcludeFromCodeCoverage] () => _dice.Configuration.DefaultDieRoller = null);
     }
 }

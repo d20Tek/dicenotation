@@ -75,7 +75,7 @@ public class DiceTests_Parsed
 
         // act
         var dice = new Dice();
-        dice.Configuration.HasBoundedResult = false;
+        dice.Configuration.SetHasBoundedResult(false);
         var result = parser.Parse("d12-3", dice.Configuration, new ConstantDieRoller(1));
 
         // validate results

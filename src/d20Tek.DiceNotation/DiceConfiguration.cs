@@ -1,36 +1,48 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using d20Tek.DiceNotation.DieRoller;
+﻿using d20Tek.DiceNotation.DieRoller;
+using System.Text.Json.Serialization;
 
 namespace d20Tek.DiceNotation;
 
 public class DiceConfiguration : IDiceConfiguration
 {
-    private int defaultDieSides = 6;
-    private IDieRoller defaultDieRoller = new RandomDieRoller();
+    private const int _minDieSides = 2;
+    private const int _maxDieSides = 1000;
+    private const int _defaultBoundedMin = 1;
+    private const int _defaultDieSides = 6;
 
-    public bool HasBoundedResult { get; set; } = true;
+    public bool HasBoundedResult { get; private set; }
 
-    public int BoundedResultMinimum { get; set; } = 1;
+    public int BoundedResultMinimum { get; private set; }
 
-    public int DefaultDieSides
+    public int DefaultDieSides { get; private set; }
+
+    public IDieRoller DefaultDieRoller { get; private set; }
+
+    [JsonConstructor]
+    public DiceConfiguration(int dieSides, int boundedMinResult, bool hasBoundedResult, IDieRoller? dieRoller = null)
     {
-        get => defaultDieSides;
-        set
-        {
-            ArgumentOutOfRangeException.ThrowIfLessThan(value, 2);
-            defaultDieSides = value;
-        }
+        SetDefaultDieSides(dieSides);
+        SetBoundedMinimumResult(boundedMinResult);
+        SetHasBoundedResult(hasBoundedResult);
+        DefaultDieRoller = dieRoller ?? new RandomDieRoller();
     }
 
-    public IDieRoller DefaultDieRoller
+    public DiceConfiguration() : this(_defaultDieSides, _defaultBoundedMin, true) { }
+
+    public void SetDefaultDieSides(int dieSides)
     {
-        get => defaultDieRoller;
-        set
-        {
-            ArgumentNullException.ThrowIfNull(value, nameof(DefaultDieRoller));
-            defaultDieRoller = value;
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(dieSides, _minDieSides);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(dieSides, _maxDieSides);
+        DefaultDieSides = dieSides;
     }
+
+    public void SetHasBoundedResult(bool hasBoundedResult) => HasBoundedResult = hasBoundedResult;
+
+    public void SetBoundedMinimumResult(int boundedMinResult)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(boundedMinResult, _defaultBoundedMin);
+        BoundedResultMinimum = boundedMinResult;
+    }
+
+    public void SetDefaultDieRoller(IDieRoller dieRoller) => DefaultDieRoller = dieRoller;
 }
