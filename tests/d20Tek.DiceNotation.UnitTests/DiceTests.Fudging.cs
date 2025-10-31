@@ -14,10 +14,10 @@ public class DiceTests_Fudging
     {
         // arrange
         var dice = new Dice();
-        dice.FudgeDice(1, null);
+        var expression = DiceExpression.Create().AddFudgeDice(1, null);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -29,10 +29,11 @@ public class DiceTests_Fudging
     public void Dice_RollMultipleFudgeDiceTest()
     {
         // arrange
-        IDice dice = new Dice().FudgeDice(6, null);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddFudgeDice(6, null);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -44,10 +45,11 @@ public class DiceTests_Fudging
     public void Dice_RollFudgeChooseDiceTest()
     {
         // arrange
-        IDice dice = new Dice().FudgeDice(6, 3);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddFudgeDice(6, 3);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);

@@ -11,13 +11,14 @@ public class DiceTests
     private readonly IDieRoller _roller = new RandomDieRoller();
 
     [TestMethod]
-    public void Dice_RollConstantTest()
+    public void DiceExpression_RollConstantTest()
     {
         // arrange
-        IDice dice = new Dice().Constant(3);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddConstant(3);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -29,7 +30,7 @@ public class DiceTests
     public void Roll_WithSingleDieExpression()
     {
         // arrange
-        IDice dice = new Dice();
+        var dice = new Dice();
         var expression = DiceExpression.Create().AddDice(20);
 
         // act
@@ -42,14 +43,14 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_RollMultipleDiceTest()
+    public void DiceExpression_RollMultipleDiceTest()
     {
         // arrange
-        IDice dice = new Dice();
-        dice.Dice(6, 3);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(6, 3);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -58,14 +59,14 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_RollScalarMultiplierDiceTest()
+    public void DiceExpression_RollScalarMultiplierDiceTest()
     {
         // arrange
-        IDice dice = new Dice();
-        dice.Dice(8, 2, 10);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(8, 2, 10);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -82,14 +83,14 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_RollChooseDiceTest()
+    public void DiceExpression_RollChooseDiceTest()
     {
         // arrange
-        IDice dice = new Dice();
-        dice.Dice(6, 4, choose: 3);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(6, 4, choose: 3);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -99,14 +100,14 @@ public class DiceTests
 
     [TestMethod]
     [ExcludeFromCodeCoverage]
-    public void Dice_RollExplodingDiceTest()
+    public void DiceExpression_RollExplodingDiceTest()
     {
         // arrange
-        IDice dice = new Dice();
-        dice.Dice(6, 4, exploding: 6);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(6, 4, exploding: 6);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -126,14 +127,14 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_RollChainedDiceTest()
+    public void DiceExpression_RollChainedDiceTest()
     {
         // arrange
-        IDice dice = new Dice();
-        dice.Dice(6, 4, choose: 3).Dice(8).Constant(5);
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(6, 4, choose: 3).AddDice(8).AddConstant(5);
 
         // act
-        var result = dice.Roll(new ConstantDieRoller(1));
+        var result = dice.Roll(expression, new ConstantDieRoller(1));
 
         // assert
         Assert.Contains("ConstantDieRoller", result.DieRollerUsed);
@@ -142,24 +143,10 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_RollNullRollerTest()
+    public void DiceExpression_RollNullRollerTest()
     {
         // arrange
-        IDice dice = new Dice();
-        dice.Dice(20);
-
-        // act
-        var actual = dice.Roll(null);
-
-        // assert
-        Assert.That.InRange(actual.Value, 1, 20);
-    }
-
-    [TestMethod]
-    public void Roll_WithExpressionAndNullRoller()
-    {
-        // arrange
-        IDice dice = new Dice();
+        var dice = new Dice();
         var expression = DiceExpression.Create().AddDice(20);
 
         // act
@@ -170,17 +157,16 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_DiceWith1Side()
+    public void DiceExpression_DiceWith1Side()
     {
         // arrange
-        IDice dice = new Dice();
+        var dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(1);
 
         // act
-        var result = dice.Dice(1);
-        var dr = result.Roll();
+        var dr = dice.Roll(expression);
 
         // assert
-        result.AssertNotation("1d1");
         Assert.AreEqual(1, dr.Value);
     }
 }

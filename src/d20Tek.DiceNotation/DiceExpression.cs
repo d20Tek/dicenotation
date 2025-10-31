@@ -2,7 +2,7 @@
 
 namespace d20Tek.DiceNotation;
 
-public  class DiceExpression
+public class DiceExpression
 {
     private readonly List<IExpressionTerm> _terms = [];
 
