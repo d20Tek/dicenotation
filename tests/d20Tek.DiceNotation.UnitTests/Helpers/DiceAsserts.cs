@@ -1,6 +1,4 @@
-﻿using d20Tek.DiceNotation.Results;
-
-namespace d20Tek.DiceNotation.UnitTests.Helpers;
+﻿namespace d20Tek.DiceNotation.UnitTests.Helpers;
 
 internal static class DiceAsserts
 {

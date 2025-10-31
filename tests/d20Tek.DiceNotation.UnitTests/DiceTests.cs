@@ -26,14 +26,14 @@ public class DiceTests
     }
 
     [TestMethod]
-    public void Dice_RollSingleDieTest()
+    public void Roll_WithSingleDieExpression()
     {
         // arrange
         IDice dice = new Dice();
-        dice.Dice(20);
+        var expression = DiceExpression.Create().AddDice(20);
 
         // act
-        var result = dice.Roll(_roller);
+        var result = dice.Roll(expression, _roller);
 
         // assert
         Assert.Contains(_rollerType, result.DieRollerUsed);
@@ -150,6 +150,20 @@ public class DiceTests
 
         // act
         var actual = dice.Roll(null);
+
+        // assert
+        Assert.That.InRange(actual.Value, 1, 20);
+    }
+
+    [TestMethod]
+    public void Roll_WithExpressionAndNullRoller()
+    {
+        // arrange
+        IDice dice = new Dice();
+        var expression = DiceExpression.Create().AddDice(20);
+
+        // act
+        var actual = dice.Roll(expression, null);
 
         // assert
         Assert.That.InRange(actual.Value, 1, 20);

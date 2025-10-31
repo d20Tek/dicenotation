@@ -18,6 +18,8 @@ public interface IDice
 
     DiceResult Roll(IDieRoller? dieRoller = null);
 
+    DiceResult Roll(DiceExpression expresion, IDieRoller? dieRoller = null);
+
     DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null);
 
     DiceResult Roll(string expression, IDieRoller? dieRoller = null);

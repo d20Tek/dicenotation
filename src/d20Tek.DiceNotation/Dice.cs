@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using d20Tek.DiceNotation.DiceTerms;
+﻿using d20Tek.DiceNotation.DiceTerms;
 using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation;
@@ -11,11 +8,11 @@ public class Dice : IDice
     private readonly List<IExpressionTerm> _terms = [];
     private readonly DiceParser _parser = new();
 
+    public IDiceConfiguration Configuration { get; }
+
     public Dice(IDiceConfiguration diceConfig) => Configuration = diceConfig;
 
     public Dice() => Configuration = new DiceConfiguration();
-
-    public IDiceConfiguration Configuration { get; }
 
     public void Clear() => _terms.Clear();
 
@@ -43,12 +40,15 @@ public class Dice : IDice
         return RollTerms(terms, dieRoller ?? Configuration.DefaultDieRoller);
     }
 
+    public DiceResult Roll(DiceExpression expression, IDieRoller? dieRoller = null) =>
+        RollTerms(expression.Roll(), dieRoller ?? Configuration.DefaultDieRoller);
+
     public DiceResult Roll(IDieRoller? dieRoller = null) =>
         RollTerms(_terms, dieRoller ?? Configuration.DefaultDieRoller);
 
     public override string ToString() => string.Join("+", _terms).Replace("+-", "-");
 
-    private DiceResult RollTerms(IList<IExpressionTerm> expresssionTerms, IDieRoller dieRoller) =>
+    private DiceResult RollTerms(IReadOnlyList<IExpressionTerm> expresssionTerms, IDieRoller dieRoller) =>
         new(
             string.Join("+", expresssionTerms).Replace("+-", "-"),
             [.. expresssionTerms.SelectMany(t => t.CalculateResults(dieRoller))],
