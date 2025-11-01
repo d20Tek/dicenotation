@@ -4,9 +4,7 @@ public interface IDieRollTracker : IAllowRollTrackerEntry
 {
     int TrackerDataLimit { get; set; }
 
-    Task<IList<DieTrackingData>> GetTrackingDataAsync(
-        string? dieType = null,
-        string? dieSides = null);
+    Task<IList<DieTrackingData>> GetTrackingDataAsync(string? dieType = null, string? dieSides = null);
 
     Task<IList<AggregateDieTrackingData>> GetFrequencyDataViewAsync();
 

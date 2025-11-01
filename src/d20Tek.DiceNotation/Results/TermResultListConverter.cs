@@ -29,9 +29,9 @@ public class TermResultListConverter
     {
         if (value is not List<TermResult> list)
         {
-            list = (value is not IReadOnlyList<TermResult> readonlyList) ?
-                        throw new ArgumentException("Object not of type List<TermResult>.", nameof(value)) :
-                        [.. readonlyList];
+            list = (value is not IReadOnlyList<TermResult> readonlyList) 
+                ? throw new ArgumentException("Object not of type List<TermResult>.", nameof(value))
+                : [.. readonlyList];
         }
 
         return list;

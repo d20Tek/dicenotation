@@ -9,10 +9,7 @@ public class TypeException
         string message,
         [CallerArgumentExpression(nameof(targetType))] string? paramName = "none")
     {
-        if (targetType != typeof(T))
-        {
-            throw new ArgumentException(message, paramName);
-        }
+        if (targetType != typeof(T)) throw new ArgumentException(message, paramName);
     }
 
     public static void ThrowIfNotAssignableFrom<T>(

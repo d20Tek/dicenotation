@@ -6,7 +6,7 @@ public interface IDice
 {
     IDiceConfiguration Configuration { get; }
 
-    DiceResult Roll(DiceExpression expresion, IDieRoller? dieRoller = null);
+    DiceResult Roll(DiceExpression expression, IDieRoller? dieRoller = null);
 
     DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null);
 

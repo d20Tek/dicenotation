@@ -5,6 +5,7 @@ namespace d20Tek.DiceNotation.DiceTerms;
 internal static class DiceTermHelper
 {
     private const int MaxRerollsAllowed = 1000;
+    private const string MaxReRollsError = "Rolling dice past the maximum allowed number of rerolls.";
     public const string DiceFormatResultType = "{0}.d{1}";
     public const string DiceFormatDiceTermText = "{0}d{1}{2}";
     public const string FormatDiceMultiplyTermText = "{0}d{1}{2}x{3}";
@@ -13,9 +14,7 @@ internal static class DiceTermHelper
     public static int EvaluateExplodingDice(int rerolls, int value, int? exploding)
     {
         if (exploding is null || value < exploding) return rerolls;
-
-        if (rerolls > MaxRerollsAllowed)
-            throw new OverflowException("Rolling dice past the maximum allowed number of rerolls.");
+        EnsureMaxRerolls(rerolls);
 
         return ++rerolls;
     }
@@ -33,5 +32,10 @@ internal static class DiceTermHelper
         }
 
         return ordered;
+    }
+
+    private static void EnsureMaxRerolls(int rerolls)
+    {
+        if (rerolls > MaxRerollsAllowed) throw new OverflowException(MaxReRollsError);
     }
 }

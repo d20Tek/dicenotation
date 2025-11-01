@@ -47,13 +47,12 @@ public partial class DiceTerm : IExpressionTerm
         var results = new List<TermResult>();
         var termType = string.Format(FormatResultType, GetType().Name, _sides);
         var rerolls = 0;
-        void AddResult(int value) => results.Add(new(_scalar, value, termType));
 
         // go through the number of dice and roll each one, saving them as term results.
         for (int i = 0; i < _numberDice + rerolls; i++)
         {
             int value = RollTerm(dieRoller, _sides);
-            AddResult(value);
+            results.Add(new(_scalar, value, termType));
 
             rerolls = DiceTermHelper.EvaluateExplodingDice(rerolls, value, _exploding);
         }

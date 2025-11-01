@@ -7,8 +7,7 @@ public class FudgeDiceTerm : DiceTerm
     private const int FudgeNumberSides = 3;
     private const int FudgeFactor = -2;
 
-    public FudgeDiceTerm(int numberDice, int? choose = null)
-        : base(numberDice, FudgeNumberSides, 1, choose)
+    public FudgeDiceTerm(int numberDice, int? choose = null) : base(numberDice, FudgeNumberSides, 1, choose)
     {
         FormatResultType = FudgeFormatResultType;
         FormatDiceTermText = FudgeFormatDiceTermText;

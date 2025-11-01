@@ -2,7 +2,8 @@
 
 namespace d20Tek.DiceNotation.DieRoller;
 
-public class MathNetDieRoller(RandomSource source, IAllowRollTrackerEntry? tracker = null) : RandomDieRollerBase(tracker)
+public class MathNetDieRoller(RandomSource source, IAllowRollTrackerEntry? tracker = null) :
+    RandomDieRollerBase(tracker)
 {
     private readonly RandomSource _randomSource = source;
 
