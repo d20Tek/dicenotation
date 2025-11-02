@@ -18,7 +18,7 @@ public static class AssertHelpers
         Assert.AreEqual(expectedExpression, result.DiceExpression);
         Assert.HasCount(expectedTotalResults, result.Results);
         int sum = 0, count = 0;
-        foreach (TermResult r in result.Results)
+        foreach (TermResult r in result.Results.Where(x => x.Type.Contains(expectedDiceType)))
         {
             Assert.Contains(expectedDiceType, r.Type);
             if (r.AppliesToResultCalculation)

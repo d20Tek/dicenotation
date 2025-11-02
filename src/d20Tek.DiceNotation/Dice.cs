@@ -1,4 +1,5 @@
 ﻿using d20Tek.DiceNotation.DiceTerms;
+using d20Tek.DiceNotation.Parser;
 using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation;
@@ -6,6 +7,7 @@ namespace d20Tek.DiceNotation;
 public class Dice : IDice
 {
     private readonly DiceParser _parser = new();
+    private readonly DiceNotationEvaluator _evaluator = new();
 
     public IDiceConfiguration Configuration { get; }
 
@@ -15,6 +17,9 @@ public class Dice : IDice
 
     public DiceResult Roll(string notation, IDieRoller? dieRoller = null) =>
         _parser.Parse(notation, Configuration, dieRoller ?? Configuration.DefaultDieRoller);
+
+    public DiceResult Roll2(string notation, IDieRoller? dieRoller = null) =>
+        _evaluator.Roll(notation, dieRoller ?? Configuration.DefaultDieRoller, Configuration);
 
     public DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null)
     {

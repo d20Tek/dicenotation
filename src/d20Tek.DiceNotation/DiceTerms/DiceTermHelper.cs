@@ -21,7 +21,7 @@ internal static class DiceTermHelper
 
     public static List<TermResult> OrderTermResults(List<TermResult> results, int? choose)
     {
-        int tempChoose = choose ?? results.Count;
+        var tempChoose = choose ?? results.Count;
         var ordered = tempChoose > 0 ?
                         [.. results.OrderByDescending(d => d.Value)] :
                         results.OrderBy(d => d.Value).ToList();
