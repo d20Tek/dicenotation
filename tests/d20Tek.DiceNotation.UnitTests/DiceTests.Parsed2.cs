@@ -50,7 +50,7 @@ public class DiceTests_Parsed2
         // assert
         Assert.Contains("ConstantDieRoller", result.DieRollerUsed);
         Assert.AreEqual(9, result.Value);
-        result.AssertDiceChoose("4d6k3 + 1d8 + 5", _diceTermType, 6, 4, 5);
+        result.AssertDiceChoose("4d6k3+1d8+5", _diceTermType, 6, 4, 5);
     }
 
     [TestMethod]

@@ -1,15 +1,17 @@
 ﻿using d20Tek.DiceNotation.DiceTerms;
 using d20Tek.DiceNotation.Results;
+using System.Text.RegularExpressions;
 
 namespace d20Tek.DiceNotation.Parser;
 
-internal class DiceNotationEvaluator
+internal partial class DiceNotationEvaluator
 {
     private readonly Lexer _lexer = new();
     private readonly DiceParser _parser = new();
 
     public DiceResult Roll(string notation, IDieRoller dieRoller, IDiceConfiguration config)
     {
+        notation = WhitespaceRegex().Replace(notation.ToLower(), string.Empty);
         var tokens = _lexer.Tokenize(notation);
         var expression = _parser.ParseExpression(tokens);
 
@@ -17,6 +19,9 @@ internal class DiceNotationEvaluator
 
         return new(notation, value, results, dieRoller.GetType().Name, config);
     }
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex WhitespaceRegex();
 
     private static (int Value, List<TermResult> Results) EvaluateInternal(Expression expr, IDieRoller dieRoller) =>
         expr switch
@@ -30,7 +35,7 @@ internal class DiceNotationEvaluator
 
     private static (int, List<TermResult>) EvaluateNumber(NumberExpression n, IDieRoller dieRoller)
     {
-        var results = new List<TermResult> { new(1, n.Value, "Number") }; // new ConstantTerm(n.Value).CalculateResults(dieRoller).ToList();
+        var results = new ConstantTerm(n.Value).CalculateResults(dieRoller).ToList();
         return (n.Value, results);
     }
 
