@@ -15,7 +15,7 @@ internal sealed class DiceParser
 
     private Expression ParseExpressionInternal() => ParseAddition();
 
-    private void Advance() => _current = _tokens.MoveNext() ? _tokens.Current : new(TokenType.EndOfInput, "");
+    private void Advance() => _current = _tokens.MoveNext() ? _tokens.Current : Constants.EndToken;
 
     // precedence levels
     private Expression ParseAddition()
@@ -46,7 +46,7 @@ internal sealed class DiceParser
 
     private Expression ParseDice()
     {
-        var left = ParsePrimary();
+        var left = ParseUnary();
 
         if (_current is { Type: TokenType.Operator, Value: "d" or "f" })
         {
@@ -61,28 +61,62 @@ internal sealed class DiceParser
             }
 
             int? keep = null, explode = null;
-            while (_current.Value is "k" or "p" or "l" or "!")
+            while (_current is { Type: TokenType.Operator, Value: "k" or "p" or "l" or "!" })
             {
                 string mod = _current.Value;
                 Advance();
-                if (mod == "!") explode = sides;
-                else if (_current.Type == TokenType.Number)
+
+                if (mod == "!")
                 {
-                    int n = int.Parse(_current.Value);
-                    Advance();
-                    if (mod == "k") keep = n;
-                    else if (mod == "p") keep = (int?)null; // adjust for drop rules
-                    else if (mod == "l") keep = -n;
+                    // exploding dice (optionally with threshold)
+                    if (_current.Type == TokenType.Number)
+                    {
+                        explode = int.Parse(_current.Value);
+                        Advance();
+                    }
+                    else
+                    {
+                        explode = sides; // default threshold = max value
+                    }
+                    continue;
                 }
+
+                // For k/p/l, expect a numeric argument
+                if (_current.Type != TokenType.Number)
+                    throw new FormatException($"Expected number after '{mod}' modifier.");
+
+                int n = int.Parse(_current.Value);
+                Advance();
+
+                keep = mod switch
+                {
+                    "k" => n,                      // keep n highest
+                    "p" => Math.Max(0, ((left as NumberExpression)?.Value ?? 1) - n), // drop n lowest → keep (dice - n)
+                    "l" => -n,                     // keep n lowest (negative indicates lowest)
+                    _ => keep
+                };
             }
 
-            if (left is not NumberExpression nExpr)
-                throw new FormatException("Expected number before die operator");
+            if (left is not NumberExpression nExpr) throw new FormatException("Expected number before die operator");
 
             return new DiceExpression(nExpr.Value, sides, keep, explode);
         }
 
         return left;
+    }
+
+    private Expression ParseUnary()
+    {
+        // Handle unary +/- operators
+        if (_current is { Type: TokenType.Operator, Value: "+" or "-" })
+        {
+            string op = _current.Value;
+            Advance();
+            var operand = ParseUnary(); // recursion handles multiple unary signs like "--5"
+            return op == "-" ? new UnaryExpression(op, operand) : operand;
+        }
+
+        return ParsePrimary();
     }
 
     private Expression ParsePrimary()

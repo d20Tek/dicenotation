@@ -13,4 +13,5 @@ internal static class Constants
 
     public static readonly HashSet<string> Operators = ["d", "f", "k", "p", "l", "!", "/", "x", "*", "-", "+"];
     public static Token DefaultDiceNumberToken = new(TokenType.Number, "1");
+    public static Token EndToken = new(TokenType.EndOfInput, "");
 }

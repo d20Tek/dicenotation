@@ -2,10 +2,14 @@
 
 internal abstract record Expression;
 
-internal sealed record NumberExpression(int Value) : Expression;
-
-internal sealed record DiceExpression(int Count, int Sides, int? Keep, int? Explode) : Expression;
-
 internal sealed record BinaryExpression(Expression Left, string Operator, Expression Right) : Expression;
 
+internal sealed record DiceExpression(int Count, int Sides, int? Keep, int? Explode) : Expression;
+//internal sealed record DiceExpression(Expression Count, Expression Sides, Expression? Keep, Expression? Explode)
+//    : Expression;
+
 internal sealed record GroupExpression(Expression Inner) : Expression;
+
+internal sealed record NumberExpression(int Value) : Expression;
+
+internal sealed record UnaryExpression(string Operator, Expression Operand) : Expression;

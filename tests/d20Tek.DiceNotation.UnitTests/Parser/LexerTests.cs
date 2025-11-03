@@ -5,6 +5,7 @@ namespace d20Tek.DiceNotation.UnitTests.Parser;
 [TestClass]
 public class LexerTests
 {
+    private static Token _endToken = new(TokenType.EndOfInput, string.Empty);
     private readonly Lexer _lexer = new();
 
     [TestMethod]
@@ -89,54 +90,6 @@ public class LexerTests
         Assert.AreEqual(new Token(TokenType.Number, "3"), tokens.ElementAt(4));
     }
 
-    [TestMethod]
-    public void Tokenize_WithDefaultNumDice()
-    {
-        // arrange
-
-        // act
-        var tokens = _lexer.Tokenize("d20");
-
-        // assert
-        Assert.IsNotNull(tokens);
-        Assert.HasCount(4, tokens);
-        Assert.AreEqual(new Token(TokenType.Number, "1"), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.Operator, "d"), tokens.ElementAt(1));
-        Assert.AreEqual(new Token(TokenType.Number, "20"), tokens.ElementAt(2));
-    }
-
-    [TestMethod]
-    public void Tokenize_WithFudgeDice()
-    {
-        // arrange
-
-        // act
-        var tokens = _lexer.Tokenize("3f");
-
-        // assert
-        Assert.IsNotNull(tokens);
-        Assert.HasCount(3, tokens);
-        Assert.AreEqual(new Token(TokenType.Number, "3"), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.Operator, "f"), tokens.ElementAt(1));
-    }
-
-    [TestMethod]
-    public void Tokenize_WithDefaultFudgeDice()
-    {
-        // arrange
-
-        // act
-        var tokens = _lexer.Tokenize("f");
-
-        // assert
-        Assert.IsNotNull(tokens);
-        Assert.HasCount(3, tokens);
-        Assert.AreEqual(new Token(TokenType.Number, "1"), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.Operator, "f"), tokens.ElementAt(1));
-    }
-
-    private static Token _endToken = new(TokenType.EndOfInput, string.Empty);
-
     private static IEnumerable<object[]> ImplicitOneCases =>
     [
         ["d20", new Token[] { new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "20"), _endToken }],
@@ -145,6 +98,7 @@ public class LexerTests
         ["xd6", new Token[] { new(TokenType.Identifier, "xd"), new(TokenType.Number, "6"), _endToken }],
         ["d%", new Token[] { new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "100"), _endToken }],
         ["f6", new Token[] { new(TokenType.Number, "1"), new(TokenType.Operator, "f"), new(TokenType.Number, "6"), _endToken }],
+        ["3f", new Token[] { new(TokenType.Number, "3"), new(TokenType.Operator, "f"), _endToken }],
         ["-d6", new Token[] { new(TokenType.Operator, "-"), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "6"), _endToken }],
         ["((d6)+d8)", new Token[] { new(TokenType.GroupStart, "("), new(TokenType.GroupStart, "("), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "6"), new(TokenType.GroupEnd, ")"), new(TokenType.Operator, "+"), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "8"), new(TokenType.GroupEnd, ")"), _endToken }]
     ];
