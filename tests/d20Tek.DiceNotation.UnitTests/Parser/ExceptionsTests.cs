@@ -20,6 +20,25 @@ public class ExceptionsTests
     }
 
     [TestMethod]
+    public void ThrowIfFalse_WithFalseCondition_ThrowsException()
+    {
+        // arrange
+
+        // act - assert
+        Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage] () =>
+            ParseException.ThrowIfFalse(false, "test error", new()));
+    }
+
+    [TestMethod]
+    public void ThrowIfFalse_WithTrueCondition_Succeeds()
+    {
+        // arrange
+
+        // act - assert
+        ParseException.ThrowIfFalse(true, "test error", new());
+    }
+
+    [TestMethod]
     public void EvalException_Creation()
     {
         // arrange

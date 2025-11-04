@@ -5,28 +5,32 @@ namespace d20Tek.DiceNotation.Parser;
 internal sealed class Lexer(string source)
 {
     private readonly string _src = source;
-    private int _index;
-    private int _line = 1, _col = 1;
+    private int _index = 0, _line = 1, _col = 1;
 
     public Token GetNextToken()
     {
-        if (_index >= _src.Length) return Make(TokenKind.EndOfInput, string.Empty, null, currentPos: true);
+        if (_index >= _src.Length)
+            return MakeToken(TokenKind.EndOfInput, string.Empty, null);
 
         var match = Grammar.GetRegex().Match(_src, _index);
-        if (!match.Success) throw Error("Unexpected input (no token matched).");
+        ParseException.ThrowIfFalse(match.Success, "Unexpected input (no token matched).", new(_index, _line, _col));
+        
+        return (match.Groups["WS"].Success is true) ? ProcessWhitespace(match) : ProcessTokenGroup(match);
+    }
 
-        // Handle whitespace by consuming and tail-recur to the next token.
-        if (match.Groups["WS"].Success)
-        {
-            Advance(match);
-            return GetNextToken();
-        }
-
-        // Map the first successful token group to a TokenKind.
-        (TokenKind kind, string lexeme, int? intValue) = MapMatch(match);
-        var tok = Make(kind, lexeme, intValue, currentPos: true);
+    private Token ProcessWhitespace(Match match)
+    {
         Advance(match);
-        return tok;
+        return GetNextToken();
+    }
+
+    private Token ProcessTokenGroup(Match match)
+    {
+        (TokenKind kind, string lexeme, int? intValue) = MapMatch(match);
+        var token = MakeToken(kind, lexeme, intValue);
+        Advance(match);
+
+        return token;
     }
 
     private (TokenKind kind, string lexeme, int? intValue) MapMatch(Match m)
@@ -47,42 +51,23 @@ internal sealed class Lexer(string source)
         if (m.Groups["DROP"].Success) return (TokenKind.Drop, m.Value, null);
         if (m.Groups["KEEPLOWEST"].Success) return (TokenKind.KeepLowest, m.Value, null);
 
-        throw Error($"Unexpected character '{m.Value}'.");
+        throw new ParseException($"Unexpected character '{m.Value}'.", new(_index, _line, _col));
     }
 
     private void Advance(Match m)
     {
         int consumed = m.Length;
-        if (consumed == 0) return;
-
-        // Update line/column tracking using the consumed span.
-        var span = _src.AsSpan(_index, consumed);
-        int lastNl = -1;
-        for (int i = 0; i < span.Length; i++)
+        foreach (char c in _src.AsSpan(_index, consumed))
         {
-            if (span[i] == '\n')
-            {
-                _line++;
-                _col = 1;
-                lastNl = i;
-            }
-            else
-            {
-                _col++;
-            }
+            (_line, _col) = AdvanceNewLine(c, _line, _col);
         }
-
-        // Adjust column if last char was '\n' (we moved one too far above)
-        if (span.Length > 0 && span[^1] == '\n') _col = 1;
 
         _index += consumed;
     }
 
-    private Token Make(TokenKind kind, string lexeme, int? intval, bool currentPos)
-    {
-        var pos = new Position(_index, _line, _col);
-        return new Token(kind, lexeme, intval, pos);
-    }
+    private static (int, int) AdvanceNewLine(char ch, int line, int col) => 
+        (ch == Constants.NewLine) ? (line + 1, 1) : (line, col + 1);
 
-    private ParseException Error(string msg) => new(msg, new Position(_index, _line, _col));
+    private Token MakeToken(TokenKind kind, string lexeme, int? intval) => 
+        new(kind, lexeme, intval, new(_index, _line, _col));
 }

@@ -102,7 +102,8 @@ public class LexerTests
         ["4 / 2", new string[] { "4", "/", "2", string.Empty }],
         ["4d6k3", new string[] { "4", "d", "6", "k", "3", string.Empty}],
         ["4d6p1", new string[] { "4", "d", "6", "p", "1", string.Empty}],
-        ["6d6l2", new string[] { "6", "d", "6", "l", "2", string.Empty}]
+        ["6d6l2", new string[] { "6", "d", "6", "l", "2", string.Empty}],
+        ["  ( (    2d6 )  +  d8   - 1  ) ", new string[] { "(", "(", "2", "d", "6", ")", "+", "d", "8", "-", "1", ")", string.Empty }],
     ];
 
     [TestMethod]
@@ -138,6 +139,25 @@ public class LexerTests
         Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(5, 2, 1)), tokens[3]);
         Assert.AreEqual(new Token(TokenKind.Number, "3", 3, new(6, 2, 2)), tokens[4]);
         Assert.AreEqual(TokenKind.EndOfInput, tokens[5].Kind);
+    }
+
+    [TestMethod]
+    public void Tokenize_EndWithNewLine()
+    {
+        // arrange
+        var lexer = new Lexer("1d20+\n  ");
+
+        // act
+        var tokens = TokenizeNotation(lexer);
+
+        // assert
+        Assert.IsNotNull(tokens);
+        Assert.HasCount(5, tokens);
+        Assert.AreEqual(new Token(TokenKind.Number, "1", 1, new(0, 1, 1)), tokens[0]);
+        Assert.AreEqual(new Token(TokenKind.Dice, "d", null, new(1, 1, 2)), tokens[1]);
+        Assert.AreEqual(new Token(TokenKind.Number, "20", 20, new(2, 1, 3)), tokens[2]);
+        Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(4, 1, 5)), tokens[3]);
+        Assert.AreEqual(TokenKind.EndOfInput, tokens[4].Kind);
     }
 
     private static List<Token> TokenizeNotation(Lexer lexer)
