@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!-- Data collectors -->
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector
+        friendlyName="Code Coverage"
+        uri="datacollector://Microsoft/CodeCoverage/2.0"
+        assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+
+            <!-- Exclude compiler- or source-generated code -->
+            <Attributes>
+              <Exclude>
+                <Attribute>System.CodeDom.Compiler.GeneratedCodeAttribute</Attribute>
+                <Attribute>System.Runtime.CompilerServices.CompilerGeneratedAttribute</Attribute>
+                <Attribute>System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute</Attribute>
+              </Exclude>
+            </Attributes>
+
+            <!-- Exclude the GeneratedRegex namespace -->
+            <Functions>
+              <Exclude>
+                <Function>^.*!System\.Text\.RegularExpressions\.Generated\..*</Function>
+              </Exclude>
+            </Functions>
+
+            <!-- Optionally exclude any .g.cs files -->
+            <Sources>
+              <Exclude>
+                <Source>.*\.g\.cs$</Source>
+              </Exclude>
+            </Sources>
+
+            <ModulePaths>
+              <Exclude>
+                <ModulePath>.*mstest.*</ModulePath>
+              </Exclude>
+            </ModulePaths>
+
+            <!-- Recommended baseline options -->
+            <UseVerifiableInstrumentation>True</UseVerifiableInstrumentation>
+            <AllowLowIntegrityProcesses>True</AllowLowIntegrityProcesses>
+            <CollectFromChildProcesses>True</CollectFromChildProcesses>
+            <CollectAspDotNet>False</CollectAspDotNet>
+
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

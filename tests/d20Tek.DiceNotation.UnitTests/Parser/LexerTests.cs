@@ -5,102 +5,104 @@ namespace d20Tek.DiceNotation.UnitTests.Parser;
 [TestClass]
 public class LexerTests
 {
-    private static Token _endToken = new(TokenType.EndOfInput, string.Empty);
-    private readonly Lexer _lexer = new();
-
     [TestMethod]
     public void Tokenize_WithDiceTerm()
     {
         // arrange
+        var lexer = new Lexer("1d20+3");
 
         // act
-        var tokens = _lexer.Tokenize("1d20+3");
+        var tokens = TokenizeNotation(lexer);
 
         // assert
         Assert.IsNotNull(tokens);
         Assert.HasCount(6, tokens);
-        Assert.AreEqual(new Token(TokenType.Number, "1"), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.Operator, "d"), tokens.ElementAt(1));
-        Assert.AreEqual(new Token(TokenType.Number, "20"), tokens.ElementAt(2));
-        Assert.AreEqual(new Token(TokenType.Operator, "+"), tokens.ElementAt(3));
-        Assert.AreEqual(new Token(TokenType.Number, "3"), tokens.ElementAt(4));
+        Assert.AreEqual(new Token(TokenKind.Number, "1", 1, new(0, 1, 1)), tokens[0]);
+        Assert.AreEqual(new Token(TokenKind.Dice, "d", null, new(1, 1, 2)), tokens[1]);
+        Assert.AreEqual(new Token(TokenKind.Number, "20", 20, new(2, 1, 3)), tokens[2]);
+        Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(4, 1, 5)), tokens[3]);
+        Assert.AreEqual(new Token(TokenKind.Number, "3", 3, new(5, 1, 6)), tokens[4]);
+        Assert.AreEqual(TokenKind.EndOfInput, tokens[5].Kind);
     }
 
     [TestMethod]
     public void Tokenize_WithChooseDiceTerm()
     {
         // arrange
+        var lexer = new Lexer("4d6k3");
 
         // act
-        var tokens = _lexer.Tokenize("4d6k3");
+        var tokens = TokenizeNotation(lexer);
 
         // assert
         Assert.IsNotNull(tokens);
         Assert.HasCount(6, tokens);
-        Assert.AreEqual(new Token(TokenType.Number, "4"), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.Operator, "d"), tokens.ElementAt(1));
-        Assert.AreEqual(new Token(TokenType.Number, "6"), tokens.ElementAt(2));
-        Assert.AreEqual(new Token(TokenType.Operator, "k"), tokens.ElementAt(3));
-        Assert.AreEqual(new Token(TokenType.Number, "3"), tokens.ElementAt(4));
+        Assert.AreEqual(new Token(TokenKind.Number, "4", 4, new(0, 1, 1)), tokens[0]);
+        Assert.AreEqual(new Token(TokenKind.Dice, "d", null, new(1, 1, 2)), tokens[1]);
+        Assert.AreEqual(new Token(TokenKind.Number, "6", 6, new(2, 1, 3)), tokens[2]);
+        Assert.AreEqual(new Token(TokenKind.Keep, "k", null, new(3, 1, 4)), tokens[3]);
+        Assert.AreEqual(new Token(TokenKind.Number, "3", 3, new(4, 1, 5)), tokens[4]);
+        Assert.AreEqual(TokenKind.EndOfInput, tokens[5].Kind);
     }
 
     [TestMethod]
     public void Tokenize_WithTermGrouping()
     {
         // arrange
+        var lexer = new Lexer("((2+1d20)+(2+3))");
 
         // act
-        var tokens = _lexer.Tokenize("((2+1d20)+(2+3))");
+        var tokens = TokenizeNotation(lexer);
 
         // assert
         Assert.IsNotNull(tokens);
         Assert.HasCount(16, tokens);
-        Assert.AreEqual(new Token(TokenType.GroupStart, "("), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.GroupStart, "("), tokens.ElementAt(1));
-        Assert.AreEqual(new Token(TokenType.Number, "2"), tokens.ElementAt(2));
-        Assert.AreEqual(new Token(TokenType.Operator, "+"), tokens.ElementAt(3));
-        Assert.AreEqual(new Token(TokenType.Number, "1"), tokens.ElementAt(4));
-        Assert.AreEqual(new Token(TokenType.Operator, "d"), tokens.ElementAt(5));
-        Assert.AreEqual(new Token(TokenType.Number, "20"), tokens.ElementAt(6));
-        Assert.AreEqual(new Token(TokenType.GroupEnd, ")"), tokens.ElementAt(7));
-        Assert.AreEqual(new Token(TokenType.Operator, "+"), tokens.ElementAt(8));
-        Assert.AreEqual(new Token(TokenType.GroupStart, "("), tokens.ElementAt(9));
-        Assert.AreEqual(new Token(TokenType.Number, "2"), tokens.ElementAt(10));
-        Assert.AreEqual(new Token(TokenType.Operator, "+"), tokens.ElementAt(11));
-        Assert.AreEqual(new Token(TokenType.Number, "3"), tokens.ElementAt(12));
-        Assert.AreEqual(new Token(TokenType.GroupEnd, ")"), tokens.ElementAt(13));
-        Assert.AreEqual(new Token(TokenType.GroupEnd, ")"), tokens.ElementAt(14));
+        Assert.AreEqual(new Token(TokenKind.GroupStart, "(", null, new(0, 1, 1)), tokens[0]);
+        Assert.AreEqual(new Token(TokenKind.GroupStart, "(", null, new(1, 1, 2)), tokens[1]);
+        Assert.AreEqual(new Token(TokenKind.Number, "2", 2, new(2, 1, 3)), tokens[2]);
+        Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(3, 1, 4)), tokens[3]);
+        Assert.AreEqual(new Token(TokenKind.Number, "1", 1, new(4, 1, 5)), tokens[4]);
+        Assert.AreEqual(new Token(TokenKind.Dice, "d", null, new(5, 1, 6)), tokens[5]);
+        Assert.AreEqual(new Token(TokenKind.Number, "20", 20, new(6, 1, 7)), tokens[6]);
+        Assert.AreEqual(new Token(TokenKind.GroupEnd, ")", null, new(8, 1, 9)), tokens[7]);
+        Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(9, 1, 10)), tokens[8]);
+        Assert.AreEqual(new Token(TokenKind.GroupStart, "(", null, new(10, 1, 11)), tokens[9]);
+        Assert.AreEqual(new Token(TokenKind.Number, "2", 2, new(11, 1, 12)), tokens[10]);
+        Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(12, 1, 13)), tokens[11]);
+        Assert.AreEqual(new Token(TokenKind.Number, "3", 3, new(13, 1, 14)), tokens[12]);
+        Assert.AreEqual(new Token(TokenKind.GroupEnd, ")", null, new(14, 1, 15)), tokens[13]);
+        Assert.AreEqual(new Token(TokenKind.GroupEnd, ")", null, new(15, 1, 16)), tokens[14]);
+        Assert.AreEqual(TokenKind.EndOfInput, tokens[15].Kind);
     }
 
     [TestMethod]
     public void Tokenize_WithInvalidOperator()
     {
         // arrange
+        var lexer = new Lexer("4d6g3");
 
-        // act
-        var tokens = _lexer.Tokenize("4d6g3");
-
-        // assert
-        Assert.IsNotNull(tokens);
-        Assert.HasCount(6, tokens);
-        Assert.AreEqual(new Token(TokenType.Number, "4"), tokens.ElementAt(0));
-        Assert.AreEqual(new Token(TokenType.Operator, "d"), tokens.ElementAt(1));
-        Assert.AreEqual(new Token(TokenType.Number, "6"), tokens.ElementAt(2));
-        Assert.AreEqual(new Token(TokenType.Identifier, "g"), tokens.ElementAt(3));
-        Assert.AreEqual(new Token(TokenType.Number, "3"), tokens.ElementAt(4));
+        // act - assert
+        var exception = Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage]() => TokenizeNotation(lexer));
+        Assert.AreEqual(new(3, 1, 4), exception.Position);
     }
 
+    [ExcludeFromCodeCoverage]
     private static IEnumerable<object[]> ImplicitOneCases =>
     [
-        ["d20", new Token[] { new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "20"), _endToken }],
-        ["(d6)", new Token[] { new(TokenType.GroupStart, "("), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "6"), new(TokenType.GroupEnd, ")"), _endToken }],
-        ["+d6", new Token[] { new(TokenType.Operator, "+"), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "6"), _endToken }],
-        ["xd6", new Token[] { new(TokenType.Identifier, "xd"), new(TokenType.Number, "6"), _endToken }],
-        ["d%", new Token[] { new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "100"), _endToken }],
-        ["f6", new Token[] { new(TokenType.Number, "1"), new(TokenType.Operator, "f"), new(TokenType.Number, "6"), _endToken }],
-        ["3f", new Token[] { new(TokenType.Number, "3"), new(TokenType.Operator, "f"), _endToken }],
-        ["-d6", new Token[] { new(TokenType.Operator, "-"), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "6"), _endToken }],
-        ["((d6)+d8)", new Token[] { new(TokenType.GroupStart, "("), new(TokenType.GroupStart, "("), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "6"), new(TokenType.GroupEnd, ")"), new(TokenType.Operator, "+"), new(TokenType.Number, "1"), new(TokenType.Operator, "d"), new(TokenType.Number, "8"), new(TokenType.GroupEnd, ")"), _endToken }]
+        ["d20", new string[] { "d", "20", string.Empty }],
+        ["(d6)", new string[] { "(", "d", "6", ")", string.Empty }],
+        ["+d6", new string[] { "+", "d", "6", string.Empty }],
+        ["xd6", new string[] { "x", "d","6", string.Empty }],
+        ["d%", new string[] { "d", "%", string.Empty }],
+        ["f6", new string[] { "f", "6", string.Empty }],
+        ["3f!", new string[] { "3", "f", "!", string.Empty }],
+        ["-d6", new string[] { "-", "d", "6", string.Empty }],
+        ["((d6)+d8)", new string[] { "(", "(", "d", "6", ")", "+", "d", "8", ")", string.Empty }],
+        ["4 * 2", new string[] { "4", "*", "2", string.Empty }],
+        ["4 / 2", new string[] { "4", "/", "2", string.Empty }],
+        ["4d6k3", new string[] { "4", "d", "6", "k", "3", string.Empty}],
+        ["4d6p1", new string[] { "4", "d", "6", "p", "1", string.Empty}],
+        ["6d6l2", new string[] { "6", "d", "6", "l", "2", string.Empty}]
     ];
 
     [TestMethod]
@@ -108,11 +110,47 @@ public class LexerTests
     public void Tokenize_ShouldInsertImplicitOne(string notation, object[] expected)
     {
         // arrange
+        var lexer = new Lexer(notation);
 
         // act
-        var tokens = _lexer.Tokenize(notation);
+        var tokens = TokenizeNotation(lexer);
 
         // assert
-        CollectionAssert.AreEqual(expected, tokens.ToArray());
+        CollectionAssert.AreEqual(expected, tokens.Select(x => x.Lexeme).ToArray());
+    }
+
+
+    [TestMethod]
+    public void Tokenize_MultipleLines()
+    {
+        // arrange
+        var lexer = new Lexer("1d20\n+3");
+
+        // act
+        var tokens = TokenizeNotation(lexer);
+
+        // assert
+        Assert.IsNotNull(tokens);
+        Assert.HasCount(6, tokens);
+        Assert.AreEqual(new Token(TokenKind.Number, "1", 1, new(0, 1, 1)), tokens[0]);
+        Assert.AreEqual(new Token(TokenKind.Dice, "d", null, new(1, 1, 2)), tokens[1]);
+        Assert.AreEqual(new Token(TokenKind.Number, "20", 20, new(2, 1, 3)), tokens[2]);
+        Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(5, 2, 1)), tokens[3]);
+        Assert.AreEqual(new Token(TokenKind.Number, "3", 3, new(6, 2, 2)), tokens[4]);
+        Assert.AreEqual(TokenKind.EndOfInput, tokens[5].Kind);
+    }
+
+    private static List<Token> TokenizeNotation(Lexer lexer)
+    {
+        var tokens = new List<Token>();
+        var currToken = new Token(TokenKind.StartOfInput, string.Empty, null, new());
+
+        while (currToken.Kind != TokenKind.EndOfInput)
+        {
+            currToken = lexer.GetNextToken();
+            tokens.Add(currToken);
+        }
+
+        return tokens;
     }
 }
