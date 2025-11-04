@@ -6,7 +6,7 @@ namespace d20Tek.DiceNotation.UnitTests.Parser;
 public class LexerTests
 {
     [TestMethod]
-    public void Tokenize_WithDiceTerm()
+    public void GetNextToken_WithDiceTerm()
     {
         // arrange
         var lexer = new Lexer("1d20+3");
@@ -26,7 +26,7 @@ public class LexerTests
     }
 
     [TestMethod]
-    public void Tokenize_WithChooseDiceTerm()
+    public void GetNextToken_WithChooseDiceTerm()
     {
         // arrange
         var lexer = new Lexer("4d6k3");
@@ -46,7 +46,7 @@ public class LexerTests
     }
 
     [TestMethod]
-    public void Tokenize_WithTermGrouping()
+    public void GetNextToken_WithTermGrouping()
     {
         // arrange
         var lexer = new Lexer("((2+1d20)+(2+3))");
@@ -76,7 +76,7 @@ public class LexerTests
     }
 
     [TestMethod]
-    public void Tokenize_WithInvalidOperator()
+    public void GetNextToken_WithInvalidOperator()
     {
         // arrange
         var lexer = new Lexer("4d6g3");
@@ -108,7 +108,7 @@ public class LexerTests
 
     [TestMethod]
     [DynamicData(nameof(ImplicitOneCases))]
-    public void Tokenize_ShouldInsertImplicitOne(string notation, object[] expected)
+    public void GetNextToken_ShouldInsertImplicitOne(string notation, object[] expected)
     {
         // arrange
         var lexer = new Lexer(notation);
@@ -122,7 +122,7 @@ public class LexerTests
 
 
     [TestMethod]
-    public void Tokenize_MultipleLines()
+    public void GetNextToken_MultipleLines()
     {
         // arrange
         var lexer = new Lexer("1d20\n+3");
@@ -142,7 +142,7 @@ public class LexerTests
     }
 
     [TestMethod]
-    public void Tokenize_EndWithNewLine()
+    public void GetNextToken_EndWithNewLine()
     {
         // arrange
         var lexer = new Lexer("1d20+\n  ");
