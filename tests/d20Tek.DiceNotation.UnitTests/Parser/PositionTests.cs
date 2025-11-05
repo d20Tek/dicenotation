@@ -31,6 +31,6 @@ public class PositionTests
 
         // assert
         Assert.IsNotNull(result);
-        Assert.AreEqual("L:1,C:6", result);
+        Assert.AreEqual("I:5,L:1,C:6", result);
     }
 }

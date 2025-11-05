@@ -15,7 +15,7 @@ public class ExceptionsTests
 
         // assert
         Assert.IsNotNull(ex);
-        Assert.AreEqual("test error @ L:2,C:3", ex.Message);
+        Assert.AreEqual("test error @ I:1,L:2,C:3", ex.Message);
         Assert.AreEqual(new(1, 2, 3), ex.Position);
     }
 

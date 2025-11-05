@@ -33,6 +33,6 @@ public class TokenTests
 
         // assert
         Assert.IsNotNull(result);
-        Assert.AreEqual("Number '12' @ L:1,C:6", result);
+        Assert.AreEqual("Number '12' @ I:5,L:1,C:6", result);
     }
 }
