@@ -40,6 +40,9 @@ public class ParserTests
         ["-5 + 4d6", new BinaryExpression(new UnaryExpression(UnaryOperator.Negative, new NumberExpression(5, new(1)), new(0)), BinaryOperator.Add, new DiceExpr(new NumberExpression(4, new(5)), false, new NumberExpression(6, new(7)), _emptyModifiers, new(6)), new(3))],
         ["6 + d20 - 3", new BinaryExpression(new BinaryExpression(new NumberExpression(6, new(0)), BinaryOperator.Add, new DiceExpr(null, false, new NumberExpression(20, new(5)), _emptyModifiers, new(4)), new(2)), BinaryOperator.Subtract, new NumberExpression(3, new(10)), new(8))],
         ["d%+5", new BinaryExpression(new DiceExpr(null, true, null, _emptyModifiers, new(0)), BinaryOperator.Add, new NumberExpression(5, new(3)), new(2))],
+        ["f", new FudgeExpression(null, _emptyModifiers, new(0))],
+        ["3f", new FudgeExpression(new NumberExpression(3, new(0)), _emptyModifiers, new(1))],
+        ["3f+1", new BinaryExpression(new FudgeExpression(new NumberExpression(3, new(0)), _emptyModifiers, new(1)), BinaryOperator.Add, new NumberExpression(1, new(3)), new(2))],
     ];
 
     [TestMethod]
@@ -56,43 +59,6 @@ public class ParserTests
         // assert
         Assert.AreEqual(expectedExpression.ToString(), result.ToString());
         Assert.AreEqual(expectedExpression, result);
-    }
-
-    private static IEnumerable<object[]> ChooseDiceCases =>
-    [
-        ["4d6k3", new DiceExpr(new NumberExpression(4, new(0)), false, new NumberExpression(6, new(2)), [new SelectModifier(SelectKind.KeepHigh, new NumberExpression(3, new(4)), new(3))], new(1))],
-        ["6d6p2", new DiceExpr(new NumberExpression(6, new(0)), false, new NumberExpression(6, new(2)), [new SelectModifier(SelectKind.DropLow, new NumberExpression(2, new(4)), new(3))], new(1))],
-        ["4d6p1", new DiceExpr(new NumberExpression(4, new(0)), false, new NumberExpression(6, new(2)), [new SelectModifier(SelectKind.DropLow, new NumberExpression(1, new(4)), new(3))], new(1))],
-        ["6d6l2", new DiceExpr(new NumberExpression(6, new(0)), false, new NumberExpression(6, new(2)), [new SelectModifier(SelectKind.KeepLow, new NumberExpression(2, new(4)), new(3))], new(1))],
-        ["4d6l1", new DiceExpr(new NumberExpression(4, new(0)), false, new NumberExpression(6, new(2)), [new SelectModifier(SelectKind.KeepLow, new NumberExpression(1, new(4)), new(3))], new(1))],
-        [" 4  d6 k 3    ", new DiceExpr(new NumberExpression(4, new(1)), false, new NumberExpression(6, new(5)), [new SelectModifier(SelectKind.KeepHigh, new NumberExpression(3, new(9)), new(7))], new(4))],
-        ["4d(2x3)k(1+2)", new DiceExpr(new NumberExpression(4, new(0)), false, new GroupExpression(new BinaryExpression(new NumberExpression(2, new(3)), BinaryOperator.Multiply, new NumberExpression(3, new(5)), new(4)), new(2)), [new SelectModifier(SelectKind.KeepHigh, new GroupExpression(new BinaryExpression(new NumberExpression(1, new(9)), BinaryOperator.Add, new NumberExpression(2, new(11)), new(10)), new(8)), new(7))], new(1))],
-    ];
-
-    [TestMethod]
-    [DynamicData(nameof(ChooseDiceCases))]
-    public void DiceParser_ParseDiceWithChoose(string notation, object expectedExpression)
-    {
-        // arrange
-        var lexer = new Lexer(notation);
-        var parser = new Parse(lexer);
-
-        // act
-        var result = parser.ParseExpression();
-
-        // assert
-        AssertExpressionsAreEquivalent((DiceExpr)expectedExpression, (DiceExpr)result);
-    }
-
-    [ExcludeFromCodeCoverage]
-    private static void AssertExpressionsAreEquivalent(DiceExpr expected, DiceExpr actual)
-    {
-        Assert.AreEqual(expected.CountArg, actual.CountArg);
-        Assert.AreEqual(expected.SidesArg, actual.SidesArg);
-        Assert.AreEqual(expected.HasPercentSides, actual.HasPercentSides);
-        Assert.HasCount(expected.Modifiers.Count, actual.Modifiers);
-        Assert.IsTrue( expected.Modifiers.Zip(actual.Modifiers).All(p =>
-            p.First is SelectModifier sm1 && p.Second is SelectModifier sm2 && sm1 == sm2));
     }
 
     private static IEnumerable<object[]> ConstantsCases =>
@@ -128,6 +94,8 @@ public class ParserTests
         ["(2d10+1) * 10", new BinaryExpression(new GroupExpression(new BinaryExpression(new DiceExpr(new NumberExpression(2, new(1)), false, new NumberExpression(10, new(3)), _emptyModifiers, new(2)), BinaryOperator.Add, new NumberExpression(1, new(6)), new(5)), new(0)), BinaryOperator.Multiply, new NumberExpression(10, new(11)), new(9))],
         ["(4d10-2) / (1+1)", new BinaryExpression(new GroupExpression(new BinaryExpression(new DiceExpr(new NumberExpression(4, new(1)), false, new NumberExpression(10, new(3)), _emptyModifiers, new(2)), BinaryOperator.Subtract, new NumberExpression(2, new(6)), new(5)), new(0)), BinaryOperator.Divide, new GroupExpression(new BinaryExpression(new NumberExpression(1, new(12)), BinaryOperator.Add, new NumberExpression(1, new(14)), new(13)), new(11)), new(9))],
         ["(2+1d20+(2+3))x3-10", new BinaryExpression(new BinaryExpression(new GroupExpression(new BinaryExpression(new BinaryExpression(new NumberExpression(2, new(1)), BinaryOperator.Add, new DiceExpr(new NumberExpression(1, new(3)), false, new NumberExpression(20, new(5)), _emptyModifiers, new(4)), new(2)), BinaryOperator.Add, new GroupExpression(new BinaryExpression(new NumberExpression(2, new(9)), BinaryOperator.Add, new NumberExpression(3, new(11)), new(10)), new(8)), new(7)), new(0)), BinaryOperator.Multiply, new NumberExpression(3, new(15)), new(14)), BinaryOperator.Subtract, new NumberExpression(10, new(17)), new(16))],
+        ["(2+1d20+(2+3))x3-10+(3)", new BinaryExpression(new BinaryExpression(new BinaryExpression(new GroupExpression(new BinaryExpression(new BinaryExpression(new NumberExpression(2, new(1)), BinaryOperator.Add, new DiceExpr(new NumberExpression(1, new(3)), false, new NumberExpression(20, new(5)), _emptyModifiers, new(4)), new(2)), BinaryOperator.Add, new GroupExpression(new BinaryExpression(new NumberExpression(2, new(9)), BinaryOperator.Add, new NumberExpression(3, new(11)), new(10)), new(8)), new(7)), new(0)), BinaryOperator.Multiply, new NumberExpression(3, new(15)), new(14)), BinaryOperator.Subtract, new NumberExpression(10, new(17)), new(16)), BinaryOperator.Add, new GroupExpression(new NumberExpression(3, new(21)), new(20)), new(19))],
+        ["(((2+1d20)+(2+3))x3-10+(3))", new GroupExpression(new BinaryExpression(new BinaryExpression(new BinaryExpression(new GroupExpression(new BinaryExpression(new GroupExpression(new BinaryExpression(new NumberExpression(2, new(3)), BinaryOperator.Add, new DiceExpr(new NumberExpression(1, new(5)), false, new NumberExpression(20, new(7)), _emptyModifiers, new(6)), new(4)), new(2)), BinaryOperator.Add, new GroupExpression(new BinaryExpression(new NumberExpression(2, new(12)), BinaryOperator.Add, new NumberExpression(3, new(14)), new(13)), new(11)), new(10)), new(1)), BinaryOperator.Multiply, new NumberExpression(3, new(18)), new(17)), BinaryOperator.Subtract, new NumberExpression(10, new(20)), new(19)), BinaryOperator.Add, new GroupExpression(new NumberExpression(3, new(24)), new(23)), new(22)), new(0))],
     ];
 
     [TestMethod]

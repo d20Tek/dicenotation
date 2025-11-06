@@ -49,11 +49,8 @@ internal sealed class Parser
         TokenKind.GroupStart => NudGroup(t),
         TokenKind.Plus => new UnaryExpression(UnaryOperator.Positive, Parse(35), t.Pos),
         TokenKind.Minus => new UnaryExpression(UnaryOperator.Negative, Parse(35), t.Pos),
-
-        // Prefix 'D' for omitted count: d% | d(arg)
-        TokenKind.Dice => NudDicePrefix(t),
-
-        // There is no prefix 'F'; left count must precede 'F'
+        TokenKind.Dice => NudDicePrefix(t),             // Prefix 'D' for omitted count: d% | d(arg)
+        TokenKind.FudgeDice => NudFudgePrefix(t),       // Prefix 'F' for omitted count: f
         _ => throw Error($"Unexpected token {t.Kind} in prefix position.")
     };
 
@@ -83,6 +80,12 @@ internal sealed class Parser
 
         var dice = new DiceExpression(null, percent, sidesArg, [], dTok.Pos);
         return AttachModifiers(dice);
+    }
+
+    private Expression NudFudgePrefix(Token dTok)
+    {
+        var fudge = new FudgeExpression(null, [], dTok.Pos);
+        return AttachModifiers(fudge);
     }
 
     // ---------- Led (infix / postfix) ----------

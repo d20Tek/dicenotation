@@ -21,7 +21,7 @@ internal sealed record DiceExpression(
     Position Pos) : DiceExpressionBase(Pos);
 
 internal sealed record FudgeExpression(
-    Expression CountArg,
+    Expression? CountArg,
     IReadOnlyList<Modifier> Modifiers,
     Position Pos) : DiceExpressionBase(Pos);
 
