@@ -78,15 +78,10 @@ internal sealed class Parser
             percent = false;
         }
 
-        var dice = new DiceExpression(null, percent, sidesArg, [], dTok.Pos);
-        return AttachModifiers(dice);
+        return new DiceExpression(null, percent, sidesArg, ParseModifiers(), dTok.Pos);
     }
 
-    private Expression NudFudgePrefix(Token dTok)
-    {
-        var fudge = new FudgeExpression(null, [], dTok.Pos);
-        return AttachModifiers(fudge);
-    }
+    private Expression NudFudgePrefix(Token dTok) => new FudgeExpression(null, ParseModifiers(), dTok.Pos);
 
     // ---------- Led (infix / postfix) ----------
     private Expression Led(Token op, Expression left) => op.Kind switch
@@ -95,13 +90,8 @@ internal sealed class Parser
         TokenKind.Minus => LedBinary(left, BinaryOperator.Subtract, op.Pos, 10),
         TokenKind.Star or TokenKind.Times => LedBinary(left, BinaryOperator.Multiply, op.Pos, 20),
         TokenKind.Divide => LedBinary(left, BinaryOperator.Divide, op.Pos, 20),
-
-        // Infix dice: left (must be arg) 'D' sides
-        TokenKind.Dice => LedDice(left, op),
-
-        // Postfix fudge: left (must be arg) 'F'
-        TokenKind.FudgeDice => LedFudge(left, op),
-
+        TokenKind.Dice => LedDice(left, op),            // Infix dice: left (must be arg) 'D' sides
+        TokenKind.FudgeDice => LedFudge(left, op),      // Postfix fudge: left (must be arg) 'F'
         _ => throw Error($"Unexpected token {op.Kind} in infix/postfix position.")
     };
 
@@ -119,24 +109,29 @@ internal sealed class Parser
         // sides: '%' | arg
         bool percent;
         Expression? sidesArg = null;
-        if (Match(TokenKind.Percent)) { Consume(); percent = true; }
-        else { sidesArg = ParseArg(); percent = false; }
+        if (Match(TokenKind.Percent))
+        {
+            Consume();
+            percent = true;
+        }
+        else
+        {
+            sidesArg = ParseArg();
+            percent = false;
+        }
 
-        var dice = new DiceExpression(left, percent, sidesArg, [], dTok.Pos);
-        return AttachModifiers(dice);
+        return new DiceExpression(left, percent, sidesArg, ParseModifiers(), dTok.Pos);
     }
 
     private Expression LedFudge(Expression left, Token fTok)
     {
         if (!IsArg(left)) throw Error("Fudge count must be a Number or a parenthesized expression.");
 
-        var fudge = new FudgeExpression(left, [], fTok.Pos);
-        return AttachModifiers(fudge);
+        return new FudgeExpression(left, ParseModifiers(), fTok.Pos);
     }
 
     // ---------- Modifiers (suffix loop bound to a dice node only) ----------
-
-    private Expression AttachModifiers(DiceExpression dice)
+    private ImmutableList<Modifier> ParseModifiers()
     {
         var mods = new List<Modifier>();
         while (true)
@@ -164,38 +159,8 @@ internal sealed class Parser
             }
             else break;
         }
-        return dice with { Modifiers = mods.ToImmutableList() };
-    }
 
-    private Expression AttachModifiers(FudgeExpression fudge)
-    {
-        var mods = new List<Modifier>();
-        while (true)
-        {
-            if (Match(TokenKind.Exploding))
-            {
-                var bang = Consume();
-                Expression? th = null;
-                if (Match(TokenKind.Number) || Match(TokenKind.GroupStart))
-                    th = ParseArg();
-                mods.Add(new ExplodingModifier(th, bang.Pos));
-            }
-            else if (Match(TokenKind.Keep) || Match(TokenKind.Drop) || Match(TokenKind.KeepLowest))
-            {
-                var op = Consume();
-                var arg = ParseArg();
-                var kind = op.Kind switch
-                {
-                    TokenKind.Keep => SelectKind.KeepHigh,
-                    TokenKind.Drop => SelectKind.DropLow,
-                    TokenKind.KeepLowest => SelectKind.KeepLow,
-                    _ => throw Error("Invalid selection modifier")
-                };
-                mods.Add(new SelectModifier(kind, arg, op.Pos));
-            }
-            else break;
-        }
-        return fudge with { Modifiers = mods.ToImmutableList() };
+        return [.. mods];
     }
 
     // ---------- Arg (INT or '(' expression ')') ----------

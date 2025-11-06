@@ -11,19 +11,19 @@ internal sealed record BinaryExpression(Expression Left, BinaryOperator Operator
 
 internal sealed record UnaryExpression(UnaryOperator Operator, Expression Operand, Position Pos) : Expression(Pos);
 
-internal abstract record DiceExpressionBase(Position Pos) : Expression(Pos);
+internal abstract record DiceExpressionBase(IReadOnlyList<Modifier> Modifiers, Position Pos) : Expression(Pos);
 
 internal sealed record DiceExpression(
     Expression? CountArg,
     bool HasPercentSides,
     Expression? SidesArg,
     IReadOnlyList<Modifier> Modifiers,
-    Position Pos) : DiceExpressionBase(Pos);
+    Position Pos) : DiceExpressionBase(Modifiers, Pos);
 
 internal sealed record FudgeExpression(
     Expression? CountArg,
     IReadOnlyList<Modifier> Modifiers,
-    Position Pos) : DiceExpressionBase(Pos);
+    Position Pos) : DiceExpressionBase(Modifiers, Pos);
 
 internal abstract record Modifier(Position Pos);
 

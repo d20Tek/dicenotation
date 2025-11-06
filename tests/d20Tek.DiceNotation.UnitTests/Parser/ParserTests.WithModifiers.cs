@@ -46,6 +46,7 @@ public class ParserTestsWithModifiers
         ["6d6!", new DiceExpr(new NumberExpression(6, new(0)), false, new NumberExpression(6, new(2)), [new ExplodingModifier(null, new(3))], new(1))],
         ["10d6!", new DiceExpr(new NumberExpression(10, new(0)), false, new NumberExpression(6, new(3)), [new ExplodingModifier(null, new(4))], new(2))],
         //["6d6!+2", new BinaryExpression(new DiceExpr(new NumberExpression(6, new(0)), false, new NumberExpression(6, new(2)), [new ExplodingModifier(null, new(3))], new(1)), BinaryOperator.Add, new NumberExpression(2, new(5)), new(4))],
+        ["3f!", new FudgeExpression(new NumberExpression(3, new(0)), [new ExplodingModifier(null, new(2))], new(1))]
     ];
 
     [TestMethod]
@@ -60,7 +61,10 @@ public class ParserTestsWithModifiers
         var result = parser.ParseExpression();
 
         // assert
-        AssertExpressionsAreEquivalent((DiceExpr)expectedExpression, (DiceExpr)result);
+        if (result is FudgeExpression expr)
+            AssertExpressionsAreEquivalent((FudgeExpression)expectedExpression, expr);
+        else
+            AssertExpressionsAreEquivalent((DiceExpr)expectedExpression, (DiceExpr)result);
     }
 
     [ExcludeFromCodeCoverage]
