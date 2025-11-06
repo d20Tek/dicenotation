@@ -4,6 +4,8 @@ internal static class Precedence
 {
     private static Dictionary<TokenKind, int> _precedenceTable = new()
     {
+        { TokenKind.GroupStart, 40 },
+        { TokenKind.GroupEnd, 40 },
         { TokenKind.Dice, 40 },
         { TokenKind.FudgeDice, 40 },
         { TokenKind.Star, 20 },
