@@ -84,7 +84,7 @@ internal sealed class Parser
     private Expression NudFudgePrefix(Token dTok) => new FudgeExpression(null, ParseModifiers(), dTok.Pos);
 
     // ---------- Led (infix / postfix) ----------
-    private Expression Led(Token op, Expression left) => op.Kind switch
+    internal Expression Led(Token op, Expression left) => op.Kind switch
     {
         TokenKind.Plus => LedBinary(left, BinaryOperator.Add, op.Pos, 10),
         TokenKind.Minus => LedBinary(left, BinaryOperator.Subtract, op.Pos, 10),
@@ -95,16 +95,13 @@ internal sealed class Parser
         _ => throw Error($"Unexpected token {op.Kind} in infix/postfix position.")
     };
 
-    private Expression LedBinary(Expression left, BinaryOperator op, Position pos, int bp)
-    {
-        var right = Parse(bp);
-        return new BinaryExpression(left, op, right, pos);
-    }
+    private Expression LedBinary(Expression left, BinaryOperator op, Position pos, int bp) =>
+        new BinaryExpression(left, op, Parse(bp), pos);
 
     private Expression LedDice(Expression left, Token dTok)
     {
         // Enforce Arg Parentheses for COUNT on the left:
-        if (!IsArg(left)) throw Error("Dice count must be a Number or a parenthesized expression.");
+        ParseException.ThrowIfFalse(IsArg(left), "Dice count must be a Number or a parenthesized expression.", dTok.Pos);
 
         // sides: '%' | arg
         bool percent;
@@ -125,8 +122,7 @@ internal sealed class Parser
 
     private Expression LedFudge(Expression left, Token fTok)
     {
-        if (!IsArg(left)) throw Error("Fudge count must be a Number or a parenthesized expression.");
-
+        ParseException.ThrowIfFalse(IsArg(left), "Fudge count must be a Number or a parenthesized expression.", fTok.Pos);
         return new FudgeExpression(left, ParseModifiers(), fTok.Pos);
     }
 
@@ -148,13 +144,7 @@ internal sealed class Parser
             {
                 var op = Consume();
                 var arg = ParseArg();
-                var kind = op.Kind switch
-                {
-                    TokenKind.Keep => SelectKind.KeepHigh,
-                    TokenKind.Drop => SelectKind.DropLow,
-                    TokenKind.KeepLowest => SelectKind.KeepLow,
-                    _ => throw Error("Invalid selection modifier")
-                };
+                var kind = SelectKindMapper.FromTokenKind(op.Kind, op.Pos);
                 mods.Add(new SelectModifier(kind, arg, op.Pos));
             }
             else break;

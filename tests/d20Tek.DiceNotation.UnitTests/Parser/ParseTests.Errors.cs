@@ -22,6 +22,8 @@ public class ParserTestsErrors
         ["2d6f"],
         ["6fd"],
         [""],
+        ["2k3"],
+        ["1!"],
         ["(2+1d20+2+3))x3-10+(3)"],
         ["(2+1d20+(2+3)x3-10+(3)"],
         ["(2+1d20+(2+3))x3-10+()"]
@@ -37,5 +39,17 @@ public class ParserTestsErrors
 
         // act - assert
         Assert.ThrowsExactly<ParseException>(parser.ParseExpression);
+    }
+
+    [TestMethod]
+    public void Led_WithUnexpectedTokenKind_ThrowsParseException()
+    {
+        // arrange
+        var lexer = new Lexer("1!");
+        var parser = new Parse(lexer);
+
+        // act - assert
+        Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage]() =>
+            parser.Led(new Token(TokenKind.Exploding, "!", null, new(1)), new NumberExpression(1, new(0))));
     }
 }
