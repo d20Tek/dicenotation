@@ -15,7 +15,7 @@ internal sealed class Parser
 
     public Expression ParseExpression()
     {
-        var expr = Parse(0);
+        var expr = Parse(Precedence.None);
         Expect(TokenKind.EndOfInput);
         return expr;
     }
@@ -24,7 +24,7 @@ internal sealed class Parser
     {
         var t = Advance();
         var left = Nud(t);
-        while (rbp < Lbp(PeekKind()))
+        while (rbp < Precedence.Get(PeekKind()))
         {
             var op = Advance();
             left = Led(op, left);
@@ -32,23 +32,13 @@ internal sealed class Parser
         return left;
     }
 
-    // ---------- Binding powers ----------
-    private static int Lbp(TokenKind k) => k switch
-    {
-        // dice and fudge bind tighter than multiplication
-        TokenKind.FudgeDice or TokenKind.Dice => 40,
-        TokenKind.Star or TokenKind.Times or TokenKind.Divide => 20,
-        TokenKind.Plus or TokenKind.Minus => 10,
-        _ => 0
-    };
-
     // ---------- Nud (prefix / atom) ----------
     private Expression Nud(Token t) => t.Kind switch
     {
         TokenKind.Number => new NumberExpression(t.IntValue!.Value, t.Pos),
         TokenKind.GroupStart => NudGroup(t),
-        TokenKind.Plus => new UnaryExpression(UnaryOperator.Positive, Parse(35), t.Pos),
-        TokenKind.Minus => new UnaryExpression(UnaryOperator.Negative, Parse(35), t.Pos),
+        TokenKind.Plus => new UnaryExpression(UnaryOperator.Positive, Parse(Precedence.Unary), t.Pos),
+        TokenKind.Minus => new UnaryExpression(UnaryOperator.Negative, Parse(Precedence.Unary), t.Pos),
         TokenKind.Dice => NudDicePrefix(t),             // Prefix 'D' for omitted count: d% | d(arg)
         TokenKind.FudgeDice => NudFudgePrefix(t),       // Prefix 'F' for omitted count: f
         _ => throw Error($"Unexpected token {t.Kind} in prefix position.")
@@ -56,7 +46,7 @@ internal sealed class Parser
 
     private Expression NudGroup(Token lp)
     {
-        var inner = Parse(0);
+        var inner = Parse(Precedence.None);
         Expect(TokenKind.GroupEnd);
         Consume();
         return new GroupExpression(inner, lp.Pos);
@@ -86,12 +76,13 @@ internal sealed class Parser
     // ---------- Led (infix / postfix) ----------
     internal Expression Led(Token op, Expression left) => op.Kind switch
     {
-        TokenKind.Plus => LedBinary(left, BinaryOperator.Add, op.Pos, 10),
-        TokenKind.Minus => LedBinary(left, BinaryOperator.Subtract, op.Pos, 10),
-        TokenKind.Star or TokenKind.Times => LedBinary(left, BinaryOperator.Multiply, op.Pos, 20),
-        TokenKind.Divide => LedBinary(left, BinaryOperator.Divide, op.Pos, 20),
-        TokenKind.Dice => LedDice(left, op),            // Infix dice: left (must be arg) 'D' sides
-        TokenKind.FudgeDice => LedFudge(left, op),      // Postfix fudge: left (must be arg) 'F'
+        TokenKind.Plus => LedBinary(left, BinaryOperator.Add, op.Pos, Precedence.Get(TokenKind.Plus)),
+        TokenKind.Minus => LedBinary(left, BinaryOperator.Subtract, op.Pos, Precedence.Get(TokenKind.Minus)),
+        TokenKind.Star => LedBinary(left, BinaryOperator.Multiply, op.Pos, Precedence.Get(TokenKind.Star)),
+        TokenKind.Times => LedBinary(left, BinaryOperator.Multiply, op.Pos, Precedence.Get(TokenKind.Times)),
+        TokenKind.Divide => LedBinary(left, BinaryOperator.Divide, op.Pos, Precedence.Get(TokenKind.Divide)),
+        TokenKind.Dice => LedDice(left, op),                // Infix dice: left (must be arg) 'D' sides
+        TokenKind.FudgeDice => LedFudge(left, op),          // Postfix fudge: left (must be arg) 'F'
         _ => throw Error($"Unexpected token {op.Kind} in infix/postfix position.")
     };
 
@@ -101,7 +92,7 @@ internal sealed class Parser
     private Expression LedDice(Expression left, Token dTok)
     {
         // Enforce Arg Parentheses for COUNT on the left:
-        ParseException.ThrowIfFalse(IsArg(left), "Dice count must be a Number or a parenthesized expression.", dTok.Pos);
+        ParseException.ThrowIfFalse(IsArg(left), "Dice count must be a Number or parenthesized expression.", dTok.Pos);
 
         // sides: '%' | arg
         bool percent;
@@ -122,7 +113,7 @@ internal sealed class Parser
 
     private Expression LedFudge(Expression left, Token fTok)
     {
-        ParseException.ThrowIfFalse(IsArg(left), "Fudge count must be a Number or a parenthesized expression.", fTok.Pos);
+        ParseException.ThrowIfFalse(IsArg(left), "Fudge count must be a Number or parenthesized expression.", fTok.Pos);
         return new FudgeExpression(left, ParseModifiers(), fTok.Pos);
     }
 
@@ -164,12 +155,12 @@ internal sealed class Parser
         if (Match(TokenKind.GroupStart))
         {
             var lp = Consume();
-            var inner = Parse(0);
+            var inner = Parse(Precedence.None);
             Expect(TokenKind.GroupEnd);
             Consume();
             return new GroupExpression(inner, lp.Pos);
         }
-        throw Error("Expected argument: INT or parenthesized expression");
+        throw Error("Expected argument: Number or parenthesized expression.");
     }
 
     private static bool IsArg(Expression e) => e is NumberExpression || e is GroupExpression;
@@ -188,7 +179,7 @@ internal sealed class Parser
 
     private void Expect(TokenKind k)
     {
-        if (_curr.Kind != k) throw Error($"Expected {k}, found {_curr.Kind}");
+        if (_curr.Kind != k) throw Error($"Expected token of kind {k}, found {_curr.Kind}.");
     }
 
     private Token Consume() => Advance();
