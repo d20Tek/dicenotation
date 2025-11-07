@@ -21,13 +21,13 @@ internal sealed class Parser(TokenCursor cursor) : IParser
     public Expression Parse(int rightPrec)
     {
         var token = Advance();
-        var prefixParselet = _parselets.GetPrefixParselet(token);
+        var prefixParselet = _parselets.GetPrefix(token);
         var left = prefixParselet.Parse(this, token);
 
         while (rightPrec < _parselets.GetInfixPrecedence(_cursor.Current))
         {
             var opToken = Advance();
-            var infix = _parselets.GetInfixParselet(opToken);
+            var infix = _parselets.GetInfix(opToken);
             left = infix.Parse(this, left, opToken);
         }
         return left;

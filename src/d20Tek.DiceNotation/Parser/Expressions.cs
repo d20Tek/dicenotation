@@ -16,7 +16,7 @@ internal abstract record DiceExpressionBase(IReadOnlyList<Modifier> Modifiers, P
 internal sealed record DiceExpression(
     Expression? CountArg,
     bool HasPercentSides,
-    Expression? SidesArg,
+    Expression SidesArg,
     IReadOnlyList<Modifier> Modifiers,
     Position Pos) : DiceExpressionBase(Modifiers, Pos);
 

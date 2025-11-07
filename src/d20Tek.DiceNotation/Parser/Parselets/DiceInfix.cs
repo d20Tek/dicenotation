@@ -1,6 +1,7 @@
 ﻿namespace d20Tek.DiceNotation.Parser.Parselets;
 
-internal sealed class DiceInfix(ModifierParser mod, ArgParser args, int precedence) : IInfixParselet
+internal sealed class DiceInfix(ModifierParser mod, ArgParser args, int precedence) :
+    DiceParseletBase(mod, args), IInfixParselet
 {
     public int Precedence => precedence;
 
@@ -11,20 +12,6 @@ internal sealed class DiceInfix(ModifierParser mod, ArgParser args, int preceden
             "Dice count must be a Number or parenthesized expression.",
             diceToken.Pos);
 
-        // sides: '%' | arg
-        bool percent;
-        Expression? sidesArg = null;
-        if (parser.Match(TokenKind.Percent))
-        {
-            parser.Advance();
-            percent = true;
-        }
-        else
-        {
-            sidesArg = args.Parse(parser);
-            percent = false;
-        }
-
-        return new DiceExpression(left, percent, sidesArg, mod.Parse(parser, args), diceToken.Pos);
+        return ParseInternal(parser, left, diceToken);
     }
 }

@@ -2,23 +2,24 @@
 
 internal sealed class ArgParser()
 {
-    public Expression Parse(IParser parser)
+    public Expression Parse(IParser parser) =>
+        parser.Match(TokenKind.Number) ? ParseNumberExpression(parser) :
+            parser.Match(TokenKind.GroupStart) ? ParseGroupExpression(parser) :
+            throw parser.Error("Expected argument: Number or parenthesized expression.");
+
+    private static GroupExpression ParseGroupExpression(IParser parser)
     {
-        if (parser.Match(TokenKind.Number))
-        {
-            var token = parser.Advance();
-            return new NumberExpression(token.IntValue!.Value, token.Pos);
-        }
+        var groupStart = parser.Advance();
+        var inner = parser.Parse(Precedence.None);
+        parser.Consume(TokenKind.GroupEnd);
 
-        if (parser.Match(TokenKind.GroupStart))
-        {
-            var groupStart = parser.Advance();
-            var inner = parser.Parse(Precedence.None);
-            parser.Consume(TokenKind.GroupEnd);
-            return new GroupExpression(inner, groupStart.Pos);
-        }
+        return new(inner, groupStart.Pos);
+    }
 
-        throw parser.Error("Expected argument: Number or parenthesized expression.");
+    private static NumberExpression ParseNumberExpression(IParser parser)
+    {
+        var token = parser.Advance();
+        return new(token.IntValue!.Value, token.Pos);
     }
 
     public static bool IsArg(Expression expression) => expression is NumberExpression || expression is GroupExpression;

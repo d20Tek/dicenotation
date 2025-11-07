@@ -25,12 +25,12 @@ internal class ParseletTable
         { TokenKind.FudgeDice, new FudgeDiceInfix(_modParser, _argParser, Precedence.Get(TokenKind.FudgeDice)) },
     };
 
-    public IPrefixParselet GetPrefixParselet(Token token) =>
+    public IPrefixParselet GetPrefix(Token token) =>
         _prefixParselets.TryGetValue(token.Kind, out var prefix)
             ? prefix
             : throw new ParseException($"Unexpected token {token.Kind} for prefix parsers.", token.Pos);
 
-    public IInfixParselet GetInfixParselet(Token token) =>
+    public IInfixParselet GetInfix(Token token) =>
         _infixParselets.TryGetValue(token.Kind, out var infix)
             ? infix
             : throw new ParseException($"Unexpected token {token.Kind} in infix parsers.", token.Pos);
