@@ -18,13 +18,13 @@ internal sealed class Parser(TokenCursor cursor) : IParser
         return expr;
     }
 
-    public Expression Parse(int rightPrec)
+    public Expression Parse(int rightPrecedence)
     {
         var token = Advance();
         var prefixParselet = _parselets.GetPrefix(token);
         var left = prefixParselet.Parse(this, token);
 
-        while (rightPrec < _parselets.GetInfixPrecedence(_cursor.Current))
+        while (rightPrecedence < _parselets.GetInfixPrecedence(_cursor.Current))
         {
             var opToken = Advance();
             var infix = _parselets.GetInfix(opToken);
@@ -33,11 +33,11 @@ internal sealed class Parser(TokenCursor cursor) : IParser
         return left;
     }
 
-    public bool Match(TokenKind k) => _cursor.Match(k);
+    public bool Match(TokenKind kind) => _cursor.Match(kind);
 
     public Token Advance() => _cursor.Advance();
 
-    public void Consume(TokenKind k) => _cursor.Consume(k);
+    public void Consume(TokenKind kind) => _cursor.Consume(kind);
 
     public ParseException Error(string message) => new(message, _cursor.Current.Pos);
 }

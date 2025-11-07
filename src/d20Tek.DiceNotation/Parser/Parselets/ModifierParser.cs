@@ -32,10 +32,10 @@ internal class ModifierParser
 
     private static SelectModifier ParseSelectModifier(IParser parser, ArgParser args)
     {
-        var expToken = parser.Advance();
+        var selectToken = parser.Advance();
         var threshold = args.Parse(parser);
-        var kind = SelectKindMapper.FromTokenKind(expToken.Kind, expToken.Pos);
+        var kind = SelectKindMapper.FromTokenKind(selectToken.Kind, selectToken.Pos);
 
-        return new SelectModifier(kind, threshold, expToken.Pos);
+        return new SelectModifier(kind, threshold, selectToken.Pos);
     }
 }

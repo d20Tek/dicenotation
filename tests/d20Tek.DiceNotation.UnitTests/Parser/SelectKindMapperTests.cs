@@ -1,4 +1,5 @@
 ﻿using d20Tek.DiceNotation.Parser;
+using d20Tek.DiceNotation.Parser.Parselets;
 
 namespace d20Tek.DiceNotation.UnitTests.Parser;
 
@@ -11,7 +12,7 @@ public class SelectKindMapperTests
         // arrange
 
         // act
-        var result = SelectKindMapper.FromTokenKind(TokenKind.Keep);
+        var result = SelectKindMapper.FromTokenKind(TokenKind.Keep, new(1, 1, 2));
 
         // assert
         Assert.AreEqual(SelectKind.KeepHigh, result);
@@ -24,6 +25,6 @@ public class SelectKindMapperTests
 
         // act - assert
         Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage]() =>
-            SelectKindMapper.FromTokenKind(TokenKind.Percent));
+            SelectKindMapper.FromTokenKind(TokenKind.Percent, new()));
     }
 }

@@ -2,13 +2,13 @@
 
 internal interface IParser
 {
-    Expression Parse(int rightPrec);
+    Expression Parse(int rightPrecendence);
 
-    bool Match(TokenKind k);
+    bool Match(TokenKind kind);
 
     Token Advance();
 
-    void Consume(TokenKind k);
+    void Consume(TokenKind kind);
 
     ParseException Error(string message);
 }

@@ -83,7 +83,7 @@ public class LexerTests
 
         // act - assert
         var exception = Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage]() => TokenizeNotation(lexer));
-        Assert.AreEqual(new(3, 1, 4), exception.Position);
+        Assert.AreEqual(new Position(3, 1, 4).ToString(), exception.Position);
     }
 
     [ExcludeFromCodeCoverage]

@@ -2,7 +2,7 @@
 
 internal static class Precedence
 {
-    private static Dictionary<TokenKind, int> _precedenceTable = new()
+    private static readonly Dictionary<TokenKind, int> _precedenceTable = new()
     {
         { TokenKind.GroupStart, 40 },
         { TokenKind.GroupEnd, 40 },
