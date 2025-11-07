@@ -28,4 +28,24 @@ internal static partial class Grammar
         )
         """, RegexOptions.Compiled | RegexOptions.CultureInvariant)]
     public static partial Regex GetRegex();
+
+    public static readonly IReadOnlyDictionary<string, Func<Match, (TokenKind, string, int?)>> MatchFactories =
+        new Dictionary<string, Func<Match, (TokenKind, string, int?)>>
+        {
+            ["NUMBER"]      = m => (TokenKind.Number, m.Value, int.Parse(m.Value)),
+            ["PLUS"]        = m => (TokenKind.Plus, m.Value, null),
+            ["MINUS"]       = m => (TokenKind.Minus, m.Value, null),
+            ["STAR"]        = m => (TokenKind.Star, m.Value, null),
+            ["TIMES"]       = m => (TokenKind.Times, m.Value, null),
+            ["DIVIDE"]      = m => (TokenKind.Divide, m.Value, null),
+            ["GROUPSTART"]  = m => (TokenKind.GroupStart, m.Value, null),
+            ["GROUPEND"]    = m => (TokenKind.GroupEnd, m.Value, null),
+            ["DICE"]        = m => (TokenKind.Dice, m.Value, null),
+            ["FUDGEDICE"]   = m => (TokenKind.FudgeDice, m.Value, null),
+            ["PERCENT"]     = m => (TokenKind.Percent, m.Value, null),
+            ["EXPLODING"]   = m => (TokenKind.Exploding, m.Value, null),
+            ["KEEP"]        = m => (TokenKind.Keep, m.Value, null),
+            ["DROP"]        = m => (TokenKind.Drop, m.Value, null),
+            ["KEEPLOWEST"]  = m => (TokenKind.KeepLowest, m.Value, null)
+        };
 }
