@@ -5,7 +5,7 @@ internal sealed class ArgParser()
     public Expression Parse(IParser parser) =>
         parser.Match(TokenKind.Number) ? ParseNumberExpression(parser) :
             parser.Match(TokenKind.GroupStart) ? ParseGroupExpression(parser) :
-            throw parser.Error("Expected argument: Number or parenthesized expression.");
+            throw parser.Error(Constants.Errors.UnexpectedArgument);
 
     private static GroupExpression ParseGroupExpression(IParser parser)
     {

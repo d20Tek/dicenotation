@@ -10,9 +10,10 @@ public class SelectKindMapperTests
     public void FromTokenKind_WithSelectKind_ReturnsSelectKind()
     {
         // arrange
+        var token = new Token(TokenKind.Keep, "k", null, new(1, 1, 2));
 
         // act
-        var result = SelectKindMapper.FromTokenKind(TokenKind.Keep, new(1, 1, 2));
+        var result = SelectKindMapper.FromTokenKind(token);
 
         // assert
         Assert.AreEqual(SelectKind.KeepHigh, result);
@@ -22,9 +23,10 @@ public class SelectKindMapperTests
     public void FromTokenKind_WithInvalidMapping_ThrowsException()
     {
         // arrange
+        var token = new Token(TokenKind.Percent, "%", null, new());
 
         // act - assert
         Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage]() =>
-            SelectKindMapper.FromTokenKind(TokenKind.Percent, new()));
+            SelectKindMapper.FromTokenKind(token));
     }
 }

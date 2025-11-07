@@ -2,12 +2,12 @@
 
 internal sealed class SelectKindMapper
 {
-    public static SelectKind FromTokenKind(TokenKind kind, Position pos) =>
-        kind switch
+    public static SelectKind FromTokenKind(Token token) =>
+        token.Kind switch
         {
             TokenKind.Keep => SelectKind.KeepHigh,
             TokenKind.Drop => SelectKind.DropLow,
             TokenKind.KeepLowest => SelectKind.KeepLow,
-            _ => throw new ParseException($"Invalid selection modifier for {kind}.", pos)
+            _ => throw new ParseException(Constants.Errors.UnexpectedSelectKind(token.Kind), token.Pos)
         };
 }

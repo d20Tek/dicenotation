@@ -8,6 +8,6 @@ internal readonly record struct Token(TokenKind Kind, string Lexeme, int? IntVal
     public void EnsureExpectedKind(TokenKind expectedKind)
     {
         if (Kind != expectedKind)
-            throw new ParseException($"Expected token of kind {expectedKind}, but actual kind - {Kind}.", Pos);
+            throw new ParseException(Constants.Errors.UnexpectedTokenKind(expectedKind, Kind), Pos);
     }
 }

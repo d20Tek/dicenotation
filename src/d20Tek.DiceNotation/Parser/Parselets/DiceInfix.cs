@@ -7,10 +7,7 @@ internal sealed class DiceInfix(ModifierParser mod, ArgParser args, int preceden
 
     public Expression Parse(IParser parser, Expression left, Token diceToken)
     {
-        ParseException.ThrowIfFalse(
-            ArgParser.IsArg(left),
-            "Dice count must be a Number or parenthesized expression.",
-            diceToken.Pos);
+        ParseException.ThrowIfFalse(ArgParser.IsArg(left), Constants.Errors.DiceNumber, diceToken.Pos);
 
         return ParseInternal(parser, left, diceToken);
     }

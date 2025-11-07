@@ -6,10 +6,7 @@ internal sealed class FudgeDiceInfix(ModifierParser mod, ArgParser args, int pre
 
     public Expression Parse(IParser parser, Expression left, Token fudgeToken)
     {
-        ParseException.ThrowIfFalse(
-            ArgParser.IsArg(left),
-            "Fudge count must be a Number or parenthesized expression.",
-            fudgeToken.Pos);
+        ParseException.ThrowIfFalse(ArgParser.IsArg(left), Constants.Errors.FudgDiceNumber, fudgeToken.Pos);
 
         return new FudgeExpression(left, mod.Parse(parser, args), fudgeToken.Pos);
     }

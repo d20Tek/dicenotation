@@ -34,7 +34,7 @@ internal class ModifierParser
     {
         var selectToken = parser.Advance();
         var threshold = args.Parse(parser);
-        var kind = SelectKindMapper.FromTokenKind(selectToken.Kind, selectToken.Pos);
+        var kind = SelectKindMapper.FromTokenKind(selectToken);
 
         return new SelectModifier(kind, threshold, selectToken.Pos);
     }
