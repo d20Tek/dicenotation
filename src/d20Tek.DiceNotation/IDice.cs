@@ -8,7 +8,5 @@ public interface IDice
 
     DiceResult Roll(DiceExpression expression, IDieRoller? dieRoller = null);
 
-    DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null);
-
     DiceResult Roll(string notation, IDieRoller? dieRoller = null);
 }

@@ -17,14 +17,6 @@ public class Dice : IDice
     public DiceResult Roll(string notation, IDieRoller? dieRoller = null) =>
         _evaluator.Evaluate(notation, dieRoller ?? Configuration.DefaultDieRoller, Configuration);
 
-    public DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null)
-    {
-        List<IExpressionTerm> terms = [ diceRequest.ToDiceTerm() ];
-        if (diceRequest.Bonus != 0) terms.Add(new ConstantTerm(diceRequest.Bonus));
-
-        return RollTerms(terms, dieRoller ?? Configuration.DefaultDieRoller);
-    }
-
     public DiceResult Roll(DiceExpression expression, IDieRoller? dieRoller = null) =>
         RollTerms(expression.Evaluate(), dieRoller ?? Configuration.DefaultDieRoller);
 
