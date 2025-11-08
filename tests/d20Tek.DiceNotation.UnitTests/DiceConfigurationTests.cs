@@ -38,6 +38,18 @@ public class DiceConfigurationTests
         Assert.AreEqual(3, result.Value);
     }
 
+    [TestMethod]
+    public void DiceConfiguration_SetDefaultDieSidesTest()
+    {
+        // arrange
+
+        // act
+        _dice.Configuration.SetDefaultDieSides(10);
+
+        // assert
+        Assert.AreEqual(10, _dice.Configuration.DefaultDieSides);
+    }
+
     // todo: default die sides not supported in latest parser, removing test until we bring back support.
     //[TestMethod]
     //public void DiceConfiguration_SetDefaultDieSidesTest()
