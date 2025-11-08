@@ -1,6 +1,6 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
 using d20Tek.DiceNotation.Parser;
-using d20Tek.DiceNotation.Parser.Evalutors;
+using d20Tek.DiceNotation.Parser.Evaluatorlets;
 
 namespace d20Tek.DiceNotation.UnitTests.Parser;
 

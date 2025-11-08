@@ -1,7 +1,7 @@
 ﻿using d20Tek.DiceNotation.DiceTerms;
 using d20Tek.DiceNotation.Results;
 
-namespace d20Tek.DiceNotation.Parser.Evalutors;
+namespace d20Tek.DiceNotation.Parser.Evaluatorlets;
 
 internal class FudgeDiceEvaluator(ModifierEvaluator modsEval) : IEvaluatorlet<FudgeExpression>
 {

@@ -1,4 +1,4 @@
-﻿using d20Tek.DiceNotation.Parser.Evalutors;
+﻿using d20Tek.DiceNotation.Parser.Evaluatorlets;
 using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.Parser;

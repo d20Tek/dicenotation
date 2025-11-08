@@ -1,6 +1,6 @@
 ﻿using d20Tek.DiceNotation.Results;
 
-namespace d20Tek.DiceNotation.Parser.Evalutors;
+namespace d20Tek.DiceNotation.Parser.Evaluatorlets;
 
 internal class NumberEvaluator : IEvaluatorlet<NumberExpression>
 {
