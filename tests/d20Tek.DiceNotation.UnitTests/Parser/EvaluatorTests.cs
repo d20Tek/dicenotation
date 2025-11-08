@@ -178,7 +178,7 @@ public class EvaluatorTests
     }
 
     [TestMethod]
-    public void Evaluator_EvaluateWithError()
+    public void Evaluator_EvaluateWithParseError()
     {
         // arrange
         var eval = new Evaluator();
@@ -191,4 +191,63 @@ public class EvaluatorTests
         Assert.IsNotEmpty(result.Error);
         Assert.IsTrue(result.HasError);
     }
+
+    [TestMethod]
+    public void Evaluator_EvaluateWithEvalError()
+    {
+        // arrange
+        var eval = new Evaluator();
+
+        // act
+        var result = eval.Evaluate("2d8+2/0", _testRoller, _config);
+
+        // assert
+        Assert.AreEqual("2d8+2/0", result.DiceExpression);
+        Assert.IsNotEmpty(result.Error);
+        Assert.IsTrue(result.HasError);
+    }
+
+    [TestMethod]
+    public void ProcessException_WithUnknowException_ReturnErrorDiceResult()
+    {
+        // arrange
+
+        // act
+        var result = Evaluator.ProcessException(new NotImplementedException(), "d20");
+
+        // assert
+        Assert.AreEqual("d20", result.DiceExpression);
+        Assert.IsNotEmpty(result.Error);
+        Assert.IsTrue(result.HasError);
+    }
+
+    [TestMethod]
+    public void EvalBinary_WithUnknownOperation_ThrowsEvalException()
+    {
+        // arrange
+        var eval = new Evaluator();
+        var expr = new BinaryExpression(
+            new NumberExpression(3, new(0)),
+            (BinaryOperator)99,
+            new NumberExpression(2, new(2)), new(1));
+
+        // act - assert
+        Assert.ThrowsExactly<EvalException>([ExcludeFromCodeCoverage] () =>
+            eval.EvalBinary(_testRoller, [], expr));
+    }
+
+    [TestMethod]
+    public void EvalInternal_WithUnknownExpression_ThrowsEvalException()
+    {
+        // arrange
+        var unkExpr = new UnknownExpression(new(0, 1, 1));
+        var eval = new Evaluator();
+
+        // act - assert
+        Assert.ThrowsExactly<EvalException>([ExcludeFromCodeCoverage] () =>
+            eval.EvalInternal(unkExpr, _testRoller, []));
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal record UnknownExpression(Position Pos) : Expression(Pos) { }
 }
