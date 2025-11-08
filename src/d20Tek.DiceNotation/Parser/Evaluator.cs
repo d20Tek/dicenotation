@@ -1,9 +1,21 @@
-﻿using d20Tek.DiceNotation.Results;
+﻿using d20Tek.DiceNotation.Parser.Evalutors;
+using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.Parser;
 
 public sealed class Evaluator
 {
+    private static readonly ModifierEvaluator _modsEval = new();
+    private static readonly Dictionary<Type, object> _evaluatorlets = new()
+    {
+        { typeof(NumberExpression), new NumberEvaluator() },
+        { typeof(UnaryExpression), new UnaryEvaluator() },
+        { typeof(BinaryExpression), new BinaryEvaluator() },
+        { typeof(GroupExpression), new GroupEvaluator() },
+        { typeof(DiceExpression), new DiceEvaluator(_modsEval) },
+        { typeof(FudgeExpression), new FudgeDiceEvaluator(_modsEval) },
+    };
+
     public DiceResult Evaluate(string notation, IDieRoller roller, IDiceConfiguration config)
     {
         try
@@ -23,25 +35,11 @@ public sealed class Evaluator
     }
 
     internal static DiceResult ProcessException(Exception ex, string notation) => new(
-        (ex is ParseException || ex is EvalException) ? ex.Message : $"Unexpected error: {ex.Message}",
+        (ex is ParseException || ex is EvalException) ? ex.Message : Constants.Errors.UnknownException(ex.Message),
         notation);
 
-    internal int EvalInternal(Expression expr, IDieRoller roller, List<TermResult> terms) => expr switch
-    {
-        NumberExpression num => num.Value,
-        UnaryExpression unary => EvalUnary(roller, terms, unary),
-        BinaryExpression binary => this.EvalBinary(roller, terms, binary),
-        DiceExpression dice => this.EvalDice(roller, terms, dice),
-        FudgeExpression fudge => this.EvalFudgeDice(roller, terms, fudge),
-        GroupExpression group => EvalInternal(group.Inner, roller, terms),
-        _ => throw new EvalException($"Unknown expression type: {expr.GetType().Name}"),
-    };
-
-    private int EvalUnary(IDieRoller roller, List<TermResult> terms, UnaryExpression unary)
-    {
-        var operand = EvalInternal(unary.Operand, roller, terms);
-        var result = unary.Operator == UnaryOperator.Negative ? -operand : operand;
-
-        return result;
-    }
+    internal int EvalInternal(Expression expr, IDieRoller roller, List<TermResult> terms) =>
+        _evaluatorlets.TryGetValue(expr.GetType(), out var eval)
+            ? ((dynamic)eval).Eval(this, roller, terms, (dynamic)expr)
+            : throw new EvalException(Constants.Errors.UnknownExpression(expr));
 }

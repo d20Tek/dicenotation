@@ -7,7 +7,7 @@ namespace d20Tek.DiceNotation;
 public class Dice : IDice
 {
     private readonly DiceParser _parser = new();
-    //private readonly DiceNotationEvaluator _evaluator = new();
+    private readonly Evaluator _evaluator = new();
 
     public IDiceConfiguration Configuration { get; }
 
@@ -15,11 +15,11 @@ public class Dice : IDice
 
     public Dice() => Configuration = new DiceConfiguration();
 
-    public DiceResult Roll(string notation, IDieRoller? dieRoller = null) =>
+    public DiceResult RollOld(string notation, IDieRoller? dieRoller = null) =>
         _parser.Parse(notation, Configuration, dieRoller ?? Configuration.DefaultDieRoller);
 
-    //public DiceResult Roll2(string notation, IDieRoller? dieRoller = null) =>
-    //    _evaluator.Roll(notation, dieRoller ?? Configuration.DefaultDieRoller, Configuration);
+    public DiceResult Roll(string notation, IDieRoller? dieRoller = null) =>
+        _evaluator.Evaluate(notation, dieRoller ?? Configuration.DefaultDieRoller, Configuration);
 
     public DiceResult Roll(DiceRequest diceRequest, IDieRoller? dieRoller = null)
     {

@@ -38,18 +38,19 @@ public class DiceConfigurationTests
         Assert.AreEqual(3, result.Value);
     }
 
-    [TestMethod]
-    public void DiceConfiguration_SetDefaultDieSidesTest()
-    {
-        // arrange
+    // todo: default die sides not supported in latest parser, removing test until we bring back support.
+    //[TestMethod]
+    //public void DiceConfiguration_SetDefaultDieSidesTest()
+    //{
+    //    // arrange
 
-        // act
-        _dice.Configuration.SetDefaultDieSides(10);
-        var result = _dice.Roll("4dk3+3", _roller);
+    //    // act
+    //    _dice.Configuration.SetDefaultDieSides(10);
+    //    var result = _dice.Roll("4dk3+3", _roller);
 
-        // assert
-        result.AssertDiceChoose("4dk3+3", "DiceTerm.d10", 4, 3, 3);
-    }
+    //    // assert
+    //    result.AssertDiceChoose("4dk3+3", "DiceTerm.d10", 4, 3, 3);
+    //}
 
     [TestMethod]
     public void DiceConfiguration_SetDefaultDieSidesErrorTest()

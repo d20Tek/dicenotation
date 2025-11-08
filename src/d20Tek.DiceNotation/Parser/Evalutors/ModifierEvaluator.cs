@@ -1,11 +1,11 @@
 ﻿using d20Tek.DiceNotation.Results;
 
-namespace d20Tek.DiceNotation.Parser;
+namespace d20Tek.DiceNotation.Parser.Evalutors;
 
-internal static class ModifierEvaluator
+internal class ModifierEvaluator
 {
-    public static int? EvalChoose(
-        this Evaluator evaluator,
+    public int? EvalChoose(
+        Evaluator evaluator,
         IReadOnlyList<Modifier> mods,
         int diceCount,
         IDieRoller roller,
@@ -21,8 +21,8 @@ internal static class ModifierEvaluator
         };
     }
 
-    public static int? EvalExploding(
-        this Evaluator evaluator,
+    public int? EvalExploding(
+        Evaluator evaluator,
         IReadOnlyList<Modifier> mods,
         int diceCount,
         IDieRoller roller,

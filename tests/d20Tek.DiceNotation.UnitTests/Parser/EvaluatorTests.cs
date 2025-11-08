@@ -1,5 +1,6 @@
 ﻿using d20Tek.DiceNotation.DieRoller;
 using d20Tek.DiceNotation.Parser;
+using d20Tek.DiceNotation.Parser.Evalutors;
 
 namespace d20Tek.DiceNotation.UnitTests.Parser;
 
@@ -225,7 +226,8 @@ public class EvaluatorTests
     public void EvalBinary_WithUnknownOperation_ThrowsEvalException()
     {
         // arrange
-        var eval = new Evaluator();
+        var evaluator = new Evaluator();
+        var eval = new BinaryEvaluator();
         var expr = new BinaryExpression(
             new NumberExpression(3, new(0)),
             (BinaryOperator)99,
@@ -233,7 +235,7 @@ public class EvaluatorTests
 
         // act - assert
         Assert.ThrowsExactly<EvalException>([ExcludeFromCodeCoverage] () =>
-            eval.EvalBinary(_testRoller, [], expr));
+            eval.Eval(evaluator, _testRoller, [], expr));
     }
 
     [TestMethod]

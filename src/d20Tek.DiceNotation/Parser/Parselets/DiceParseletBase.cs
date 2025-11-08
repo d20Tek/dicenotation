@@ -13,7 +13,7 @@ internal abstract class DiceParseletBase(ModifierParser mod, ArgParser args)
 
     protected static (bool, Expression?) ConsumePercentage(IParser parser)
     {
-        var t = parser.Advance();
-        return (true, new NumberExpression(100, t.Pos));
+        parser.Advance();
+        return (true, null);
     }
 }

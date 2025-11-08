@@ -22,9 +22,3 @@ internal sealed record DiceExpression(
 
 internal sealed record FudgeExpression(Expression? CountArg, IReadOnlyList<Modifier> Modifiers, Position Pos) :
     DiceExpressionBase(Modifiers, Pos);
-
-internal abstract record Modifier(Position Pos);
-
-internal sealed record ExplodingModifier(Expression? ThresholdArg, Position Pos) : Modifier(Pos);
-
-internal sealed record SelectModifier(SelectKind Kind, Expression CountArg, Position Pos) : Modifier(Pos);

@@ -4,6 +4,6 @@ internal sealed class BinaryInfix(BinaryOperator op, int precedence) : IInfixPar
 {
     public int Precedence => precedence;
 
-    public Expression Parse(IParser parser, Expression left, Token token)
-        => new BinaryExpression(left, op, parser.Parse(precedence), token.Pos);
+    public Expression Parse(IParser parser, Expression left, Token token) =>
+        new BinaryExpression(left, op, parser.Parse(precedence), token.Pos);
 }
