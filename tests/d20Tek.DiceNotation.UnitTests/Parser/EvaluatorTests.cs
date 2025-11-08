@@ -252,4 +252,21 @@ public class EvaluatorTests
 
     [ExcludeFromCodeCoverage]
     internal record UnknownExpression(Position Pos) : Expression(Pos) { }
+
+    [TestMethod]
+    public void EvalDice_WithNullSidesArg_ReturnsSidesDefault()
+    {
+        // arrange
+        var evaluator = new Evaluator();
+        var mods = new ModifierEvaluator();
+        var expr = new DiceNotation.Parser.DiceExpression(new NumberExpression(2, new(0)), false, null, [], new(1));
+
+        var eval = new DiceEvaluator(mods);
+
+        // act
+        var result = eval.Eval(evaluator, new ConstantDieRoller(1), [], expr);
+
+        // assert
+        Assert.AreEqual(2, result);
+    }
 }
