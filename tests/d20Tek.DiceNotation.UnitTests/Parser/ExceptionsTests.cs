@@ -15,7 +15,7 @@ public class ExceptionsTests
 
         // assert
         Assert.IsNotNull(ex);
-        Assert.AreEqual("test error @(I:1,L:2,C:3)", ex.Message);
+        Assert.AreEqual("Parse error: test error @(I:1,L:2,C:3)", ex.Message);
         Assert.AreEqual(new Position(1, 2, 3).ToString(), ex.Position);
     }
 
@@ -48,6 +48,6 @@ public class ExceptionsTests
 
         // assert
         Assert.IsNotNull(ex);
-        Assert.AreEqual("test error", ex.Message);
+        Assert.AreEqual("Evaluation error: test error", ex.Message);
     }
 }

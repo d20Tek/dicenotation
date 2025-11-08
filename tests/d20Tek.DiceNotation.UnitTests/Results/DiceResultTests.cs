@@ -116,14 +116,14 @@ public class DiceResultTests
         var termList = CreateSimpleTerms(5);
 
         // act
-        var result = new DiceResult("Unexpected error.");
+        var result = new DiceResult("Unexpected error.", "1d20+5");
 
         // assert
         Assert.IsNotNull(result);
         Assert.AreEqual("Unexpected error.", result.Error);
         Assert.IsTrue(result.HasError);
         Assert.AreEqual(-404, result.Value);
-        Assert.IsEmpty(result.DiceExpression);
+        Assert.AreEqual("1d20+5", result.DiceExpression);
         Assert.IsEmpty(result.DieRollerUsed);
         Assert.IsEmpty(result.Results);
     }

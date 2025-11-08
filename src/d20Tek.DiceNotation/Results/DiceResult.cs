@@ -41,8 +41,9 @@ public class DiceResult
     }
 
 
-    public DiceResult(string error)
+    public DiceResult(string error, string expression)
     {
+        DiceExpression = expression;
         Error = error;
         Value = _errorValue;
     }

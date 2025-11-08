@@ -7,7 +7,7 @@ public sealed class ParseException : Exception
     public string Position => _pos.ToString();
 
     internal ParseException(string message, Position pos)
-        : base($"{message} @({pos})") => 
+        : base($"Parse error: {message} @({pos})") => 
         _pos = pos;
 
     internal static void ThrowIfFalse(bool condition, string message, Position pos)
@@ -16,6 +16,6 @@ public sealed class ParseException : Exception
     }
 }
 
-public sealed class EvalException(string message) : Exception(message)
+public sealed class EvalException(string message) : Exception($"Evaluation error: {message}")
 {
 }
