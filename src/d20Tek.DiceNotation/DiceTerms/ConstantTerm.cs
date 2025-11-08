@@ -2,7 +2,7 @@
 
 namespace d20Tek.DiceNotation.DiceTerms;
 
-public class ConstantTerm(int constant) : IExpressionTerm
+internal class ConstantTerm(int constant) : IExpressionTerm
 {
     private readonly int _constant = constant;
 

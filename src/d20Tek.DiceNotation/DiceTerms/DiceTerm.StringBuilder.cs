@@ -1,6 +1,6 @@
 ﻿namespace d20Tek.DiceNotation.DiceTerms;
 
-public partial class DiceTerm
+internal partial class DiceTerm
 {
     public override string ToString()
     {

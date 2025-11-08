@@ -2,7 +2,7 @@
 
 namespace d20Tek.DiceNotation.Results;
 
-public class TypeException
+internal class TypeException
 {
     public static void ThrowIfNot<T>(
         Type targetType,

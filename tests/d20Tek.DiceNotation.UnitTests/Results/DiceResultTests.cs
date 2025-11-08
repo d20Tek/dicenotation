@@ -109,6 +109,26 @@ public class DiceResultTests
         AssertDiceResult(result, termList, _randomRollerType, "2d6", 5, "5, 3*");
     }
 
+    [TestMethod]
+    public void Constructor_WithErrorCondition()
+    {
+        // arrange
+        var termList = CreateSimpleTerms(5);
+
+        // act
+        var result = new DiceResult("Unexpected error.");
+
+        // assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Unexpected error.", result.Error);
+        Assert.IsTrue(result.HasError);
+        Assert.AreEqual(-404, result.Value);
+        Assert.IsEmpty(result.DiceExpression);
+        Assert.IsEmpty(result.DieRollerUsed);
+        Assert.IsEmpty(result.Results);
+    }
+
+
     private static List<TermResult> CreateSimpleTerms(int value) =>
         [ new() { Scalar = 1, Type = _diceTermType, Value = value, AppliesToResultCalculation = true } ];
 
@@ -127,5 +147,7 @@ public class DiceResultTests
         CollectionAssert.AreEqual(expectedTerms, result.Results?.ToList());
         Assert.AreEqual(expectedValue, result.Value);
         Assert.AreEqual(rollText, result.RollsDisplayText);
+        Assert.IsNull(result.Error);
+        Assert.IsFalse(result.HasError);
     }
 }

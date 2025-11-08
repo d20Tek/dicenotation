@@ -37,8 +37,7 @@ public class DiceExpression
         return this;
     }
 
-    // todo: rename function to Evaluate
-    public IReadOnlyList<IExpressionTerm> Roll() => _terms;
+    public IReadOnlyList<IExpressionTerm> Evaluate() => _terms;
 
     public override string ToString() => string.Join("+", _terms).Replace("+-", "-");
 

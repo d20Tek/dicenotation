@@ -2,7 +2,7 @@
 
 namespace d20Tek.DiceNotation.DiceTerms;
 
-public partial class DiceTerm : IExpressionTerm
+internal partial class DiceTerm : IExpressionTerm
 {
     private readonly int _numberDice;
     private readonly int _sides;

@@ -2,6 +2,7 @@
 
 namespace d20Tek.DiceNotation;
 
+// todo: is this class even needed anymore now that DiceExpression has been exposed?
 public class DiceRequest
 {
     public int NumberDice { get; private init; }
@@ -49,5 +50,5 @@ public class DiceRequest
         Exploding = exploding;
     }
 
-    public DiceTerm ToDiceTerm() => new(NumberDice, Sides, Scalar, Choose, Exploding);
+    internal DiceTerm ToDiceTerm() => new(NumberDice, Sides, Scalar, Choose, Exploding);
 }

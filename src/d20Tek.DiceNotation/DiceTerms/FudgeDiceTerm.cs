@@ -1,6 +1,6 @@
 ﻿namespace d20Tek.DiceNotation.DiceTerms;
 
-public class FudgeDiceTerm : DiceTerm
+internal class FudgeDiceTerm : DiceTerm
 {
     private const string FudgeFormatResultType = "{0}.dF";
     private const string FudgeFormatDiceTermText = "{0}f{2}";

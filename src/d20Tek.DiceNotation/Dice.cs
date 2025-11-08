@@ -30,7 +30,7 @@ public class Dice : IDice
     }
 
     public DiceResult Roll(DiceExpression expression, IDieRoller? dieRoller = null) =>
-        RollTerms(expression.Roll(), dieRoller ?? Configuration.DefaultDieRoller);
+        RollTerms(expression.Evaluate(), dieRoller ?? Configuration.DefaultDieRoller);
 
     private DiceResult RollTerms(IReadOnlyList<IExpressionTerm> expresssionTerms, IDieRoller dieRoller) =>
         new(

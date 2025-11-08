@@ -6,6 +6,7 @@ public class DiceResult
 {
     private const string FudgeDiceIdentifier = "f";
     private const string _defaultLocale = "en-us";
+    private const int _errorValue = -404;
     private static readonly TermResultListConverter Converter = new();
 
     public string DiceExpression { get; set; } = string.Empty;
@@ -15,6 +16,10 @@ public class DiceResult
     public IReadOnlyList<TermResult> Results { get; set; } = [];
 
     public int Value { get; set; }
+
+    public string? Error { get; set; }
+
+    public bool HasError => Error is not null;
 
     [JsonIgnore]
     public string RollsDisplayText => (Results is null)
@@ -33,6 +38,13 @@ public class DiceResult
 
         bool boundedResult = !expression.Contains(FudgeDiceIdentifier) && config.HasBoundedResult;
         Value = boundedResult ? Math.Max(value, config.BoundedResultMinimum) : value;
+    }
+
+
+    public DiceResult(string error)
+    {
+        Error = error;
+        Value = _errorValue;
     }
 
     public DiceResult() { }

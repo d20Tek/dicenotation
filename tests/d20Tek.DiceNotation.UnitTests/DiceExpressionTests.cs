@@ -13,7 +13,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddConstant(3).Roll();
+        var result = _expression.AddConstant(3).Evaluate();
 
         // assert
         AssertSingleTerm<ConstantTerm>(result, "3");
@@ -25,7 +25,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(20).Roll();
+        var result = _expression.AddDice(20).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "1d20");
@@ -37,7 +37,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(6, 3).Roll();
+        var result = _expression.AddDice(6, 3).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "3d6");
@@ -49,7 +49,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(8, 2, 10).Roll();
+        var result = _expression.AddDice(8, 2, 10).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "2d8x10");
@@ -61,7 +61,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(6, 4, choose: 3).Roll();
+        var result = _expression.AddDice(6, 4, choose: 3).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "4d6k3");
@@ -73,7 +73,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(6, 4, exploding: 6).Roll();
+        var result = _expression.AddDice(6, 4, exploding: 6).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "4d6!6");
@@ -85,7 +85,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(6, 4, choose: 3).AddDice(8).AddConstant(5).Roll();
+        var result = _expression.AddDice(6, 4, choose: 3).AddDice(8).AddConstant(5).Evaluate();
 
         // assert
         Assert.HasCount(3, result);
@@ -101,7 +101,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddDice(1).Roll();
+        var result = _expression.AddDice(1).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "1d1");
@@ -114,7 +114,7 @@ public class DiceExpressionTests
         _expression.AddDice(6, 4, choose: 3).AddDice(8).AddConstant(5);
 
         // act
-        var result = _expression.Clear().Roll();
+        var result = _expression.Clear().Evaluate();
 
         // assert
         Assert.IsEmpty(result);
@@ -126,7 +126,7 @@ public class DiceExpressionTests
         // arrange
 
         // act
-        var result = _expression.AddFudgeDice(3, null).Roll();
+        var result = _expression.AddFudgeDice(3, null).Evaluate();
 
         // assert
         AssertSingleTerm<FudgeDiceTerm>(result, "3f");
@@ -140,7 +140,7 @@ public class DiceExpressionTests
         var otherExpression = DiceExpression.Create().AddDice(8).AddConstant(5);
 
         // act
-        var result = _expression.Concat(otherExpression).Roll();
+        var result = _expression.Concat(otherExpression).Evaluate();
 
         // assert
         Assert.HasCount(3, result);
@@ -158,7 +158,7 @@ public class DiceExpressionTests
         var otherExpression = DiceExpression.Create();
 
         // act
-        var result = _expression.Concat(otherExpression).Roll();
+        var result = _expression.Concat(otherExpression).Evaluate();
 
         // assert
         AssertSingleTerm<DiceTerm>(result, "4d6k3");
