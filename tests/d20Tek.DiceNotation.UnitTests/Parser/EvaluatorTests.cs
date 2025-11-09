@@ -33,7 +33,7 @@ public class EvaluatorTests
     [DataRow("2+1d20+2+3x3-10", 1, 5)]
     [DataRow("+1+d20", 1, 3)]
     [DataRow("-1+2d6", 2, 3)]
-    public void Evaluator_ParseSimpleDiceTest(string expression, int expectedCount, int expectedResult)
+    public void Evaluate_ParseSimpleDiceTest(string expression, int expectedCount, int expectedResult)
     {
         // arrange
         var eval = new Evaluator();
@@ -51,7 +51,7 @@ public class EvaluatorTests
     [DataRow("4d6p1", 4, 3)]
     [DataRow("6d6l2", 6, 2)]
     [DataRow("4d6l1", 4, 1)]
-    public void Evaluator_ParseDiceWithChooseTest(string expression, int expectedCount, int expectedResult)
+    public void Evaluate_ParseDiceWithChooseTest(string expression, int expectedCount, int expectedResult)
     {
         // arrange
         var eval = new Evaluator();
@@ -68,7 +68,7 @@ public class EvaluatorTests
     [DataRow("10d6 ! 6", "10d6!6", 10, 20)]
     [DataRow("6d6 ! ", "6d6!", 6, 12)]
     [DataRow("6d6! + 3", "6d6!+3", 6, 15)]
-    public void Evaluator_ParseDiceWithExplodeTest(
+    public void Evaluate_ParseDiceWithExplodeTest(
         string expression,
         string expectedExpression,
         int expectedCount,
@@ -88,7 +88,7 @@ public class EvaluatorTests
     [DataRow(" 4  d6 k 3+  2    ", "4d6k3+2", 4, 3, 2)]
     [DataRow("4d6k3 + d8 + 2", "4d6k3+d8+2", 5, 4, 2)]
     [DataRow("2 + 4d6k3 + d8", "2+4d6k3+d8", 5, 4, 2)]
-    public void Evaluator_ParseDiceChooseWithWhitepaceTest(
+    public void Evaluate_ParseDiceChooseWithWhitepaceTest(
         string inputExpression,
         string expectedExpression,
         int expectedCount,
@@ -116,7 +116,7 @@ public class EvaluatorTests
     [DataRow("4 + 2", "4+2", 0, 6)]
     [DataRow("4x2", "4x2", 0, 8)]
     [DataRow("4/2", "4/2", 0, 2)]
-    public void Evaluator_ParseDiceWithWhitespaceTest(
+    public void Evaluate_ParseDiceWithWhitespaceTest(
         string inputExpression,
         string expectedExpression,
         int expectedCount,
@@ -139,7 +139,7 @@ public class EvaluatorTests
     [DataRow("6fk4", "6fk4", 6, 4, 0)]
     [DataRow("6fp3", "6fp3", 6, 3, 0)]
     [DataRow("6 f l 2", "6fl2", 6, 2, 0)]
-    public void Evaluator_ParseFudgeDiceTest(
+    public void Evaluate_ParseFudgeDiceTest(
         string inputExpression,
         string expectedExpression,
         int expectedCount,
@@ -166,7 +166,7 @@ public class EvaluatorTests
     [DataRow("(2+1d20+(2+3))x3-10", 1, 17)]
     [DataRow("(2+1d20+(2+3))x3-10+(3)", 1, 20)]
     [DataRow("(((2+1d20)+(2+3))x3-10+(3))", 1, 20)]
-    public void Evaluator_EvaluateGroupingTest(string expression, int expectedCount, int expectedResult)
+    public void Evaluate_EvaluateGroupingTest(string expression, int expectedCount, int expectedResult)
     {
         // arrange
         var eval = new Evaluator();
@@ -179,7 +179,7 @@ public class EvaluatorTests
     }
 
     [TestMethod]
-    public void Evaluator_EvaluateWithParseError()
+    public void Evaluate_WithParseError()
     {
         // arrange
         var eval = new Evaluator();
@@ -194,7 +194,7 @@ public class EvaluatorTests
     }
 
     [TestMethod]
-    public void Evaluator_EvaluateWithEvalError()
+    public void Evaluate_WithEvalError()
     {
         // arrange
         var eval = new Evaluator();

@@ -49,7 +49,7 @@ public class ParserTests
 
     [TestMethod]
     [DynamicData(nameof(SimpleDiceCases))]
-    public void DiceParser_ParseSimpleDice(string notation, object expectedExpression)
+    public void Parsee_WithSimpleDice(string notation, object expectedExpression)
     {
         // arrange
         var lexer = new Lexer(notation);
@@ -74,7 +74,7 @@ public class ParserTests
 
     [TestMethod]
     [DynamicData(nameof(ConstantsCases))]
-    public void DiceParser_ParseConstants(string notation, object expectedExpression)
+    public void Parse_WithConstants(string notation, object expectedExpression)
     {
         // arrange
         var lexer = new Lexer(notation);
@@ -102,7 +102,7 @@ public class ParserTests
 
     [TestMethod]
     [DynamicData(nameof(GroupingCases))]
-    public void DiceParser_ParseGroupings(string notation, object expectedExpression)
+    public void Parse_WithGroupings(string notation, object expectedExpression)
     {
         // arrange
         var lexer = new Lexer(notation);

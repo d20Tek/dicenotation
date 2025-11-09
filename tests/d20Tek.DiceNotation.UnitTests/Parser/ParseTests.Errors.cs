@@ -31,7 +31,7 @@ public class ParserTestsErrors
 
     [TestMethod]
     [DynamicData(nameof(ErrorDiceCases))]
-    public void DiceParser_WithErrors_ThrowsParseExpection(string notation)
+    public void Parse_WithErrors_ThrowsParseExpection(string notation)
     {
         // arrange
         var lexer = new Lexer(notation);

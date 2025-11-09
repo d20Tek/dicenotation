@@ -23,7 +23,7 @@ public class ParserTestsWithModifiers
 
     [TestMethod]
     [DynamicData(nameof(ChooseDiceCases))]
-    public void DiceParser_ParseDiceWithChoose(string notation, object expectedExpression)
+    public void Parse_DiceWithChoose(string notation, object expectedExpression)
     {
         // arrange
         var lexer = new Lexer(notation);
@@ -51,7 +51,7 @@ public class ParserTestsWithModifiers
 
     [TestMethod]
     [DynamicData(nameof(ExplodingDiceCases))]
-    public void DiceParser_ParseDiceWithExploding(string notation, object expectedExpression)
+    public void Parse_WithExploding(string notation, object expectedExpression)
     {
         // arrange
         var lexer = new Lexer(notation);
