@@ -5,10 +5,9 @@ namespace d20Tek.DiceNotation.DieRoller;
 
 public class DieRollTracker : IDieRollTracker
 {
-    private const int DefaultTrackerDataLimit = 250000;
     private List<DieTrackingData> rollData = [];
 
-    public int TrackerDataLimit { get; set; } = DefaultTrackerDataLimit;
+    public int TrackerDataLimit { get; set; } = Constants.DefaultTrackerDataLimit;
 
     public void AddDieRoll(int dieSides, int result, Type dieRoller)
     {
@@ -65,7 +64,7 @@ public class DieRollTracker : IDieRollTracker
                                     DieSides = sides.Key,
                                     Result = resultGroup.Key,
                                     Count = resultGroup.Count(),
-                                    Percentage = (float)Math.Round(resultGroup.Count() / total * 100, 1)
+                                    Percentage = (float)Math.Round(resultGroup.Count() / total * Constants.Percentage, 1)
                                 });
                 })
             );

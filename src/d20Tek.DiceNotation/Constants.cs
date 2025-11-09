@@ -10,6 +10,8 @@ internal static class Constants
     public const string DefaultParameterName = "none";
     public const string ChooseToken = "k";
     public const string ExplodingToken = "!";
+    public const int Percentage = 100;
+    public const int DefaultTrackerDataLimit = 250000;
 
     public const int MaxRerollsAllowed = 1000;
     public const string DiceFormatResultType = "{0}.d{1}";

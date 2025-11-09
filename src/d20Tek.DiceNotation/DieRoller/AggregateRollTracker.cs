@@ -48,7 +48,7 @@ public class AggregateRollTracker : IAggregateRollTracker
                         DieSides = entry.DieSides,
                         Result = entry.Result,
                         Count = entry.Count,
-                        Percentage = (float)Math.Round(entry.Count / total * 100, 1)
+                        Percentage = (float)Math.Round(entry.Count / total * Constants.Percentage, 1)
                     });
                 })
             );
