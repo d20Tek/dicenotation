@@ -4,8 +4,6 @@ namespace d20Tek.DiceNotation.Results;
 
 public class DiceResult
 {
-    private const string FudgeDiceIdentifier = "f";
-    private const string _defaultLocale = "en-us";
     private const int _errorValue = -404;
     private static readonly TermResultListConverter Converter = new();
 
@@ -24,7 +22,7 @@ public class DiceResult
     [JsonIgnore]
     public string RollsDisplayText => (Results is null)
             ? string.Empty
-            : Converter.Convert(Results.ToList(), typeof(string), string.Empty, _defaultLocale).ToString()!;
+            : $"{Converter.Convert(Results.ToList(), typeof(string), string.Empty, Constants.DefaultLocale)}";
 
     public DiceResult(string expression, List<TermResult> results, string rollerUsed, IDiceConfiguration config)
         : this(expression, results.Sum(CalculateResult), results, rollerUsed, config)
@@ -36,7 +34,7 @@ public class DiceResult
         DieRollerUsed = roller;
         Results = [.. results];
 
-        bool boundedResult = !expression.Contains(FudgeDiceIdentifier) && config.HasBoundedResult;
+        bool boundedResult = !expression.Contains(Constants.FudgeDiceIdentifier) && config.HasBoundedResult;
         Value = boundedResult ? Math.Max(value, config.BoundedResultMinimum) : value;
     }
 

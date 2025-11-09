@@ -10,9 +10,9 @@ internal partial class DiceTerm : IExpressionTerm
     private readonly int? _choose;
     private readonly int? _exploding;
 
-    protected string FormatResultType { get; set; } = DiceTermHelper.DiceFormatResultType;
+    protected string FormatResultType { get; set; } = Constants.DiceFormatResultType;
 
-    protected string FormatDiceTermText { get; set; } = DiceTermHelper.DiceFormatDiceTermText;
+    protected string FormatDiceTermText { get; set; } = Constants.DiceFormatDiceTermText;
 
     public DiceTerm(int numberDice, int sides, double scalar = 1, int? choose = null, int? exploding = null)
     {

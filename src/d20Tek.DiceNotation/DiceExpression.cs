@@ -39,7 +39,7 @@ public class DiceExpression
 
     public IReadOnlyList<IExpressionTerm> Evaluate() => _terms;
 
-    public override string ToString() => string.Join("+", _terms).Replace("+-", "-");
+    public override string ToString() => Constants.JoinSigns(_terms);
 
     private DiceExpression AddDiceTerm(IExpressionTerm term)
     {

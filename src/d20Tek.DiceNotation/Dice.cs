@@ -22,7 +22,7 @@ public class Dice : IDice
 
     private DiceResult RollTerms(IReadOnlyList<IExpressionTerm> expresssionTerms, IDieRoller dieRoller) =>
         new(
-            string.Join("+", expresssionTerms).Replace("+-", "-"),
+            Constants.JoinSigns(expresssionTerms),
             [.. expresssionTerms.SelectMany(t => t.CalculateResults(dieRoller))],
             dieRoller.GetType().ToString(),
             Configuration);

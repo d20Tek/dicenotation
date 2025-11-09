@@ -4,15 +4,15 @@ public class DiceResultConverter
 {
     public virtual object Convert(object value, Type targetType, object parameter, string language)
     {
-        TypeException.ThrowIfNot<string>(targetType, "Unexpected type passed to converter.");
+        TypeException.ThrowIfNot<string>(targetType, Constants.Errors.UnexpectedConverterType);
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
         if (value is not DiceResult dr)
         {
-            throw new ArgumentException("Object not of type DiceResult.", nameof(value));
+            throw new ArgumentException(Constants.Errors.NotDiceResult, nameof(value));
         }
 
-        return $"{dr.Value} ({dr.DiceExpression})";
+        return Constants.FormatDiceResult(dr);
     }
 
     public virtual object ConvertBack(object value, Type targetType, object parameter, string language) =>
