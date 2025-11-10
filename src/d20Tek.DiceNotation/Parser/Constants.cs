@@ -36,7 +36,8 @@ internal static class Constants
 
         public static string UnknownException(string msg) => $"Unexpected error: {msg}.";
 
-        public static string ParseException(string msg, Position pos) => $"Parse error: {msg} @({pos})";
+        public static string ParseException(string msg, Position pos) =>
+            $"Parse error: {msg} @(Line: {pos.Line}, Column: {pos.Column})";
 
         public static string EvalException(string msg) => $"Evaluation error: {msg}";
     }

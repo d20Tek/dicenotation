@@ -2,6 +2,7 @@
 
 public class TermResultListConverter
 {
+    // todo: move strings to constants.
     private const int _maxTerms = 100;
     private const string _separator = ", ";
     private const string _diceTerm = "DiceTerm";

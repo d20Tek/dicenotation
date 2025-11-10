@@ -7,7 +7,7 @@ public sealed class ParseException : Exception
     public string Position => _pos.ToString();
 
     internal ParseException(string message, Position pos)
-        : base(Constants.Errors.ParseException(message, pos)) => 
+        : base(Constants.Errors.ParseException(message, pos)) =>
         _pos = pos;
 
     internal static void ThrowIfFalse(bool condition, string message, Position pos)
