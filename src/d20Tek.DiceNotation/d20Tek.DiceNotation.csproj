@@ -9,7 +9,7 @@
 	<Authors>DarthPedro</Authors>
 	<Product>DiceNotation Parsing and Rolling</Product>
 	<Description>Library to parse and roll any dice notation. Use this library in your applications to roll random dice without having to write all of the code yourself.</Description>
-	<Copyright>Copyright (c) 2024 d20Tek. All rights reserved.</Copyright>
+	<Copyright>Copyright (c) 2025 d20Tek. All rights reserved.</Copyright>
 	<PackageProjectUrl>https://github.com/d20Tek/dicenotation</PackageProjectUrl>
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Dice DiceNotation d20 DiceRolls DiceRoller</PackageTags>

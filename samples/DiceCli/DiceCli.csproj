@@ -5,6 +5,19 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Dice Cli</Title>
+    <Authors>DarthPedro</Authors>
+    <Company>d20Tek</Company>
+    <Copyright>Copyright (c) 2025 d20Tek. All rights reserved</Copyright>
+    <Description>A command-line to to roll dice randomly. You can specify which dice to roll using the common dice notation used by roleplaying games (like Dungeons &amp; Dragons). For example 3d6+1, rolls with three 6-sided dice, adds the results, and adds a bonus of 1.</Description>
+    <PackageProjectUrl>https://github.com/d20Tek/dicenotation</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/d20Tek/dicenotation</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>dice; dice rolls; rolling dice; dice notation; random generation</PackageTags>
+    <PackageReleaseNotes>Initial version with ability to roll dice based on known dice notation.</PackageReleaseNotes>
+    <PackAsTool>True</PackAsTool>
+    <ToolCommandName>dice-cli</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
