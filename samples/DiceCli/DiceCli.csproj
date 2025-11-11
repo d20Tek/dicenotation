@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="D20Tek.Spectre.Console.Extensions" Version="1.52.2" />
+    <PackageReference Include="D20Tek.Spectre.Console.Extensions" Version="1.53.1" />
   </ItemGroup>
 
   <ItemGroup>

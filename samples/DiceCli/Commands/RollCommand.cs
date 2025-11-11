@@ -1,10 +1,10 @@
 ﻿using d20Tek.DiceNotation;
-using d20Tek.DiceNotation.Results;
+using DiceCli.Common;
 using System.ComponentModel;
 
 namespace DiceCli.Commands;
 
-internal sealed class RollCommand(IAnsiConsole console, IDice dice, TermResultListConverter converter)
+internal sealed class RollCommand(IAnsiConsole console, IDice dice)
     : Command<RollCommand.Request>
 {
     public sealed class Request : CommandSettings
@@ -16,22 +16,12 @@ internal sealed class RollCommand(IAnsiConsole console, IDice dice, TermResultLi
 
     private readonly IAnsiConsole _console = console;
     private readonly IDice _dice = dice;
-    private readonly TermResultListConverter _converter = converter;
 
-    public override int Execute(CommandContext context, Request request)
+    public override int Execute(CommandContext context, Request request, CancellationToken cancellation)
     {
         _console.MarkupLine($"Rolling dice for '{request.Notation}':");
+
         var result = _dice.Roll(request.Notation!);
-        if (result.HasError)
-        {
-            _console.MarkupLine($"[red]{result.Error}[/]" ?? "");
-            return -1;
-        }
-
-        _console.MarkupLine($"Total result: {result.Value}");
-        _console.MarkupLine($"Dice rolls: {_converter.Convert(result.Results, typeof(string), null!, "default")}");
-
-        return 0;
+        return _console.WriteDiceResult(result);
     }
-
 }

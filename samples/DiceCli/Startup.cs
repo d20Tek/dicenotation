@@ -1,6 +1,5 @@
 ﻿using d20Tek.DiceNotation;
 using d20Tek.DiceNotation.DieRoller;
-using d20Tek.DiceNotation.Results;
 using D20Tek.Spectre.Console.Extensions.Injection;
 using DiceCli.Commands;
 
@@ -20,19 +19,20 @@ internal sealed class Startup : StartupBase
               .WithExample(["start"]);
 
         config.AddCommand<RollCommand>("roll")
+              .WithAlias("r")
               .WithDescription("Rolls the dice described by the notation string.")
               .WithExample(["roll", "1d20+5"]);
 
-        //config.AddCommand<GetNetWorthCommand>("get-worth")
-        //      .WithAlias("w")
-        //      .WithDescription("Requests current input for net worth.")
-        //      .WithExample(["get-worth"]);
+        config.AddCommand<NotationCommand>("notation")
+              .WithAlias("note")
+              .WithAlias("n")
+              .WithDescription("Display details about how dice notations are defined and written.")
+              .WithExample(["notation"]);
 
         return config;
     }
 
     public override void ConfigureServices(ITypeRegistrar registrar) =>
         registrar.WithLifetimes().RegisterSingleton<IDice, Dice>()
-                                 .RegisterSingleton<IDieRoller, RandomDieRoller>()
-                                 .RegisterSingleton<TermResultListConverter, TermResultListConverter>();
+                                 .RegisterSingleton<IDieRoller, RandomDieRoller>();
 }
