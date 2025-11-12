@@ -1,12 +1,20 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current release (4.0):
+### Current release (5.0.1):
+* Updated to latest package dependency versions.
+* Implemented a brand new lexer/parser/evaluator to parse dice notation strings and roll equivalent dice.
+* Simplified the library and IDice interface (making unnecessary items internal and removing unused code).
+* Refactored this package code to more modern C# constructs.
+* Upgraded to MsTest 4 and fixed up all breaking unit tests.
+* Added the DiceCli as a sample application for using this package.
+
+### Release (4.0):
 Upgrade libraries to .NET 8.
 * Minor breaking changes to upgrade library design to .NET standards and use latest language features.
 * Added simplified DiceRoll method using a DiceRequest.
 
-### Current release (3.4):
+### Release (3.4):
 Upgrade libraries to .NET 7.
 
 ### Release (3.3):

@@ -3,18 +3,12 @@
 namespace d20Tek.DiceNotation.UnitTests.Results;
 
 [TestClass]
-public class DiceResultTests
+public partial class DiceResultTests
 {
     private const string _expectedRollerType = "ConstantDieRoller";
     private const string _randomRollerType = "RandomDieRoller";
     private const string _diceTermType = "DiceTerm";
-    private readonly Mock<IDiceConfiguration> config = new();
-
-    public DiceResultTests()
-    {
-        config.Setup(x => x.HasBoundedResult).Returns(true);
-        config.Setup(x => x.BoundedResultMinimum).Returns(1);
-    }
+    private readonly MockDiceConfiguration config = new();
 
     [TestMethod]
     public void ValidateProperties()
@@ -60,7 +54,7 @@ public class DiceResultTests
         var termList = CreateSimpleTerms(5);
 
         // act
-        var result = new DiceResult("d6", 5, termList, _randomRollerType, config.Object);
+        var result = new DiceResult("d6", 5, termList, _randomRollerType, config);
 
         // assert
         AssertDiceResult(result, termList, _randomRollerType, "d6", 5);
@@ -73,7 +67,7 @@ public class DiceResultTests
         var termList = CreateSimpleTerms(5);
 
         // act
-        var result = new DiceResult("d6", termList, _randomRollerType, config.Object);
+        var result = new DiceResult("d6", termList, _randomRollerType, config);
 
         // assert
         AssertDiceResult(result, termList, _randomRollerType, "d6", 5);
@@ -86,7 +80,7 @@ public class DiceResultTests
         var termList = CreateSimpleTerms(1);
 
         // act
-        var result = new DiceResult("1f", 1, termList, "FudgeDieRoller", config.Object);
+        var result = new DiceResult("1f", 1, termList, "FudgeDieRoller", config);
 
         // assert
         AssertDiceResult(result, termList, "FudgeDieRoller", "1f", 1);
@@ -103,7 +97,7 @@ public class DiceResultTests
         ];
 
         // act
-        var result = new DiceResult("2d6", termList, _randomRollerType, config.Object);
+        var result = new DiceResult("2d6", termList, _randomRollerType, config);
 
         // assert
         AssertDiceResult(result, termList, _randomRollerType, "2d6", 5, "5, 3*");
