@@ -1,6 +1,6 @@
 # Introduction 
 ## d20Tek.DiceNotation
-DiceNotation library written to provide dice notation parsing, evaluation, and rolling. This library is built on .NET 8, so you can incorporate it into any of your .NET Core and beyond projects.
+DiceNotation library written to provide dice notation parsing, evaluation, and rolling. This library is built on .NET 9, so you can incorporate it into any of your .NET Core and beyond projects.
 
 Dice notation (also known as dice algebra, common dice notation, RPG dice notation, and several other titles) is a system to represent different combinations of dice in role-playing games using simple algebra-like notation such as 2d6+12.
 
@@ -11,7 +11,7 @@ To build the source code, please read [Building Code](docs/BuildProject.md) page
 # Installation
 This library is a NuGet package so it is easy to add to your project. To install these packages into your solution, you can use the Package Manager. In PM, please use the following commands:
 ```  
-PM > Install-Package d20tek-dicenotation -Version 4.0.6
+PM > Install-Package d20tek-dicenotation -Version 5.0.1
 ``` 
 
 To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for d20Tek.dicenotation and install it from there.
@@ -26,9 +26,12 @@ You can build up the dice to roll by coding the various parts that make up a dic
 
 ```csharp
 IDice dice = new Dice();
+
 // equivalent of dice expression: 4d6k3 + d8 + 5
-dice.Dice(6, 4, choose: 3).Dice(8).Constant(5);
-DiceResult result = dice.Roll(new RandomDieRoller());
+var expression = DiceExpression.Create().AddDice(6, 4, choose: 3)
+					.AddDice(8)
+					.AddConstant(5);
+DiceResult result = dice.Roll(expression, new RandomDieRoller());
 Console.WriteLine("Roll result = " + result.Value);
 ```
    
@@ -52,6 +55,7 @@ Finally, the library defines a IDieRoller interface that you can use to build yo
 ### Samples:
 For more detailed examples on how to use this DiceNotation library, please review the following samples:
 
+* [Sample - DiceCli](samples/DiceCli)
 * [Sample - DiceRoller Windows 10](docs/SampleWin10.md)
 * [Sample - DiceRoller ASP.NET MVC](docs/SampleWebMvc.md)
 

@@ -15,16 +15,14 @@ This code takes input from the UI for number of dice, dice sides, and modifier t
     /// <param name="e">event args</param>
     private void RollButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
     {
-        // first clear any expression in the dice service
-        this.diceService.Clear();
-
         // setup the dice expression
         DiceType diceType = (DiceType)this.DiceTypeCombobox.SelectedItem;
-        this.diceService.Dice(diceType.DiceSides, (int)this.DiceNumberNumeric.Value);
-        this.diceService.Constant((int)this.DiceModifierNumeric.Value);
+        var expression = DiceExpression.Create()
+                                       .AddDice(diceType.DiceSides, (int)this.DiceNumberNumeric.Value)
+                                       .AddConstant((int)this.DiceModifierNumeric.Value);
 
         // roll the dice and save the results
-        DiceResult result = this.diceService.Roll(this.dieRoller);
+        DiceResult result = this.diceService.Roll(expression, this.dieRoller);
         this.DiceRollResults.Insert(0, result);
     }
 ```
