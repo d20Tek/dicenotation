@@ -29,8 +29,8 @@ IDice dice = new Dice();
 
 // equivalent of dice expression: 4d6k3 + d8 + 5
 var expression = DiceExpression.Create().AddDice(6, 4, choose: 3)
-					.AddDice(8)
-					.AddConstant(5);
+										.AddDice(8)
+										.AddConstant(5);
 DiceResult result = dice.Roll(expression, new RandomDieRoller());
 Console.WriteLine("Roll result = " + result.Value);
 ```
