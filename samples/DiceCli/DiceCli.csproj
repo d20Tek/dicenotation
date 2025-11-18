@@ -18,6 +18,7 @@
     <PackageReleaseNotes>Initial version with ability to roll dice based on known dice notation.</PackageReleaseNotes>
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>dice-cli</ToolCommandName>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\d20Tek.DiceNotation\d20Tek.DiceNotation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
