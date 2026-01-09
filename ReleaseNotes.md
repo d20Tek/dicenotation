@@ -1,6 +1,11 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
+### Current release (5.1.1):
+* Updated library package to support .NET 9 & 10.
+* Updated to latest package dependency versions.
+* Updated build scripts to require .NET 10.
+
 ### Current release (5.0.1):
 * Updated to latest package dependency versions.
 * Implemented a brand new lexer/parser/evaluator to parse dice notation strings and roll equivalent dice.

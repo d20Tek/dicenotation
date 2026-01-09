@@ -45,6 +45,7 @@
 	<RepositoryUrl>https://github.com/d20Tek/dicenotation</RepositoryUrl>
 	<PackageId>d20tek-dicenotation</PackageId>
 	<Title>d20Tek DiceNotation Parsing and Rolling</Title>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,5 +54,12 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="d20Tek.DiceNotation.UnitTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
