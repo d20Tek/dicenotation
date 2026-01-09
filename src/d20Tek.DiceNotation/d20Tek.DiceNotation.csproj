@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -15,7 +15,7 @@
 	<PackageTags>Dice DiceNotation d20 DiceRolls DiceRoller</PackageTags>
 	<PackageReleaseNotes>
 		Current release:
-		Upgrade library packages to .NET 8.
+		Upgrade library packages to .NET 10.
 
 		Release 1.0.5:
 		* Add dice notation for keep lowest by using L token in the notation. Changed drop lowest notation to use P token.
