@@ -1,5 +1,4 @@
 ﻿using DiceCli.Models;
-using Spectre.Console;
 
 namespace DiceCli.Commands.Favorites;
 
@@ -9,12 +8,12 @@ internal class ListFavoritesCommand(IAnsiConsole console, LowDb<FavoriteRollsDoc
     private readonly LowDb<FavoriteRollsDocument> _db = db;
 
     public override int Execute(CommandContext context, CancellationToken cancellationToken) =>
-        db.Get().ToIdentity()
-          .Iter(favoriteDoc =>
+        _db.Get().ToIdentity()
+           .Iter(favoriteDoc =>
                 (favoriteDoc.Rolls.Count is 0).IfTrueOrElse(
                     () => _console.WriteLine("No favorite rolls found. Add some favorites..."),
                     () => DisplayRollsList(favoriteDoc.Rolls)))
-          .Map(_ => 0);
+           .Map(_ => 0);
 
     private void DisplayRollsList(IEnumerable<FavoriteRoll> rolls) =>
         CreateFavoritesTable()
