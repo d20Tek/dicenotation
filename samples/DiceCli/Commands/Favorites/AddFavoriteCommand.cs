@@ -25,8 +25,9 @@ internal class AddFavoriteCommand(IAnsiConsole console, LowDb<FavoriteRollsDocum
 
     public override int Execute(CommandContext context, Settings request, CancellationToken _)
     {
+        _console.WriteMessages("Add Favorite", "------------");
         var favoriteRoll = CreateFavoriteRoll(request);
-        _console.WriteLine();
+        _console.WriteMessages();
 
         _db.Update(x => SaveFavoriteRoll(x, favoriteRoll));
         return 0;

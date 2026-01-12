@@ -12,7 +12,7 @@ internal class ListFavoritesCommand(IAnsiConsole console, LowDb<FavoriteRollsDoc
            .Iter(favoriteDoc =>
                 (favoriteDoc.Rolls.Count is 0).IfTrueOrElse(
                     () => _console.WriteLine("No favorite rolls found. Add some favorites..."),
-                    () => DisplayRollsList(favoriteDoc.Rolls)))
+                    () => DisplayRollsList(favoriteDoc.Rolls.OrderBy(r => r.Id))))
            .Map(_ => 0);
 
     private void DisplayRollsList(IEnumerable<FavoriteRoll> rolls) =>
