@@ -1,6 +1,5 @@
 ﻿using d20Tek.DiceNotation;
 using d20Tek.DiceNotation.DieRoller;
-using D20Tek.LowDb;
 using D20Tek.Spectre.Console.Extensions.Injection;
 using DiceCli.Commands;
 using DiceCli.Commands.Favorites;

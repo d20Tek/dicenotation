@@ -6,5 +6,8 @@ internal static class AnsiConsoleExtensions
     {
         public T PromptIfNull<T>(T? value, string promptLabel) where T : notnull => 
             value ?? console.Prompt(new TextPrompt<T>(promptLabel));
+
+        public T PromptIfNull<T>(T? value, string promptLabel, T prevValue) where T : notnull =>
+            value ?? console.Prompt(new TextPrompt<T>($"{promptLabel}").DefaultValue(prevValue));
     }
 }

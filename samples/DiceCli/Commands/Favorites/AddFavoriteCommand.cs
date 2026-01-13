@@ -33,12 +33,12 @@ internal class AddFavoriteCommand(IAnsiConsole console, LowDb<FavoriteRollsDocum
         return 0;
     }
 
-    private FavoriteRoll CreateFavoriteRoll(Settings request) => new()
-    {
-        Id = _console.PromptIfNull(request.Id, "Enter the unique identifier:"),
-        Name = _console.PromptIfNull(request.Name, "Enter the roll display name:"),
-        Expression = _console.PromptIfNull(request.Expression, "Enter the dice notation:")
-    };
+    private FavoriteRoll CreateFavoriteRoll(Settings request) => new
+    (
+        _console.PromptIfNull(request.Id, "Enter the unique identifier:"),
+        _console.PromptIfNull(request.Name, "Enter the roll display name:"),
+        _console.PromptIfNull(request.Expression, "Enter the dice notation:")
+    );
 
     private void SaveFavoriteRoll(FavoriteRollsDocument doc, FavoriteRoll favoriteRoll) => 
         doc.Rolls.Any(t => t.Id == favoriteRoll.Id).IfTrueOrElse(

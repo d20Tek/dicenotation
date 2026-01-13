@@ -7,7 +7,7 @@ internal class ListFavoritesCommand(IAnsiConsole console, LowDb<FavoriteRollsDoc
     private readonly IAnsiConsole _console = console;
     private readonly LowDb<FavoriteRollsDocument> _db = db;
 
-    public override int Execute(CommandContext context, CancellationToken cancellationToken) =>
+    public override int Execute(CommandContext context, CancellationToken _) =>
         _db.Get().ToIdentity()
            .Iter(favoriteDoc =>
                 (favoriteDoc.Rolls.Count is 0).IfTrueOrElse(
