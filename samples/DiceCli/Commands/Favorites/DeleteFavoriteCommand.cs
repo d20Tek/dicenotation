@@ -1,5 +1,4 @@
-﻿
-using DiceCli.Models;
+﻿using DiceCli.Models;
 
 namespace DiceCli.Commands.Favorites;
 

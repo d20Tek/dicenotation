@@ -1,6 +1,4 @@
 ﻿using d20Tek.DiceNotation;
-using DiceCli.Common;
-using System.ComponentModel;
 
 namespace DiceCli.Commands;
 
@@ -19,7 +17,7 @@ internal sealed class RollCommand(IAnsiConsole console, IDice dice)
 
     public override int Execute(CommandContext context, Request request, CancellationToken cancellation)
     {
-        _console.MarkupLine($"Rolling dice for '{request.Notation}':");
+        _console.MarkupLine($"[yellow]Rolling dice for '{request.Notation}'[/]:");
 
         var result = _dice.Roll(request.Notation!);
         return _console.WriteDiceResult(result);

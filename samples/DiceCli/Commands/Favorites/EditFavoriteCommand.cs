@@ -1,7 +1,4 @@
-﻿using D20Tek.Functional;
-using DiceCli.Models;
-using System;
-using static DiceCli.Commands.RollCommand;
+﻿using DiceCli.Models;
 
 namespace DiceCli.Commands.Favorites;
 
