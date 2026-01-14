@@ -24,8 +24,8 @@ internal sealed class Startup : StartupBase
     {
         config.CaseSensitivity(CaseSensitivity.None)
               .SetApplicationName("dice-cli")
-              .SetApplicationVersion("1.0");
-              //.ValidateExamples();
+              .SetApplicationVersion("1.0")
+              .ValidateExamples();
 
         config.AddCommand<InteractiveCommand>("start")
               .WithDescription("Starts an interactive prompt for this sample CLI.")

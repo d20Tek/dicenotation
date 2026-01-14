@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "DiceCli - Interactive": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "DiceCli - Help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    },
+    "DiceCli - Roll": {
+      "commandName": "Project",
+      "commandLineArgs": "roll 1d20+5"
+    }
+  }
+}
