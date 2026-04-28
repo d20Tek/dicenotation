@@ -17,7 +17,7 @@ internal class RollFavoriteCommand(IAnsiConsole console, LowDb<FavoriteRollsDocu
     private readonly LowDb<FavoriteRollsDocument> _db = db;
     private readonly IDice _dice = dice;
 
-    public override int Execute(CommandContext context, Settings request, CancellationToken _)
+    protected override int Execute(CommandContext context, Settings request, CancellationToken _)
     {
         _console.WriteMessages("Roll Favorite", "-------------");
 

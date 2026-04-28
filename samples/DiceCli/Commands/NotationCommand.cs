@@ -4,7 +4,7 @@ internal sealed class NotationCommand(IAnsiConsole console) : Command
 {
     private readonly IAnsiConsole _console = console;
 
-    public override int Execute(CommandContext context, CancellationToken cancellation)
+    protected override int Execute(CommandContext context, CancellationToken cancellation)
     {
         _console.WriteMessages(
             "[bold]Basic Dice Notation[/]",

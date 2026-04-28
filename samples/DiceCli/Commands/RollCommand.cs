@@ -15,7 +15,7 @@ internal sealed class RollCommand(IAnsiConsole console, IDice dice)
     private readonly IAnsiConsole _console = console;
     private readonly IDice _dice = dice;
 
-    public override int Execute(CommandContext context, Request request, CancellationToken cancellation)
+    protected override int Execute(CommandContext context, Request request, CancellationToken cancellation)
     {
         _console.MarkupLine($"[yellow]Rolling dice for '{request.Notation}'[/]:");
 

@@ -23,7 +23,7 @@ internal class EditFavoriteCommand(IAnsiConsole console, LowDb<FavoriteRollsDocu
     private readonly IAnsiConsole _console = console;
     private readonly LowDb<FavoriteRollsDocument> _db = db;
 
-    public override int Execute(CommandContext context, Settings request, CancellationToken _)
+    protected override int Execute(CommandContext context, Settings request, CancellationToken _)
     {
         _console.WriteMessages("Edit Favorite", "-------------");
         var id = _console.PromptIfNull(request.Id, "Enter the identifier of favorite to edit:");
