@@ -38,7 +38,7 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
 
     - name: Publish packages (local)
-      run: dotnet nuget push "D20Tek.*.nupkg" --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
+      run: dotnet nuget push "*.nupkg" --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -49,4 +49,4 @@ jobs:
         user: ${{ secrets.NUGET_USER }}
 
     - name: Publish packages (nuget.org)
-      run: dotnet nuget push "D20Tek.*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push "*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
