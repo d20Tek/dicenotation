@@ -1,12 +1,16 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current release (5.1.1):
+### Current release (5.1.6):
+- Updated nuget-release script to use Nuget Trusted Publishing.
+- Updated package references to newest versions.
+
+### Release (5.1.1):
 * Updated library package to support .NET 9 & 10.
 * Updated to latest package dependency versions.
 * Updated build scripts to require .NET 10.
 
-### Current release (5.0.1):
+### Release (5.0.1):
 * Updated to latest package dependency versions.
 * Implemented a brand new lexer/parser/evaluator to parse dice notation strings and roll equivalent dice.
 * Simplified the library and IDice interface (making unnecessary items internal and removing unused code).

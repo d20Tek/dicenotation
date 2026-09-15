@@ -4,6 +4,12 @@ on:
   push:
     tags:
     - "v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: read
+  packages: write     # required to push to GitHub Packages with GITHUB_TOKEN
+  id-token: write     # REQUIRED for OIDC -> NuGet temporary API key
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,22 +37,16 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
 
-    - name: Publish d20Tek.DiceNotation
-      run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
+    - name: Publish packages (local)
+      run: dotnet nuget push "D20Tek.*.nupkg" --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Publish d20Tek.DiceNotation (nuget.org)
-      run: dotnet nuget push d20tek-dicenotation.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    - name: NuGet login (OIDC -> temporary API key)
+      id: login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
 
-    - name: Publish DiceCli
-      run: dotnet nuget push DiceCli.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Publish DiceCli (nuget.org)
-      run: dotnet nuget push DiceCli.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    - name: Publish packages (nuget.org)
+      run: dotnet nuget push "D20Tek.*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
