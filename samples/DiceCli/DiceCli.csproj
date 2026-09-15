@@ -20,6 +20,7 @@
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>dice-cli</ToolCommandName>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>package-icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +34,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="README.md">
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\package-icon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
