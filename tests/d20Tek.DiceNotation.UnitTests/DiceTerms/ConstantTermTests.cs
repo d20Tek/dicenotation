@@ -44,7 +44,7 @@ public class ConstantTermTests
         var term = new ConstantTerm(constantValue);
 
         // act
-        IReadOnlyList<TermResult> results = term.CalculateResults(null);
+        IReadOnlyList<TermResult> results = term.CalculateResults(null!);
 
         // assert
         results.AssertConstant(1, _expectedTermType, constantValue);

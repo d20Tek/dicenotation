@@ -1,18 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Version>4.0.1</Version>
-	<Authors>DarthPedro</Authors>
 	<Product>DiceNotation Parsing and Rolling</Product>
 	<Description>Library to parse and roll any dice notation. Use this library in your applications to roll random dice without having to write all of the code yourself.</Description>
-	<Copyright>Copyright (c) 2025 d20Tek. All rights reserved.</Copyright>
-	<PackageProjectUrl>https://github.com/d20Tek/dicenotation</PackageProjectUrl>
-	<RepositoryType>git</RepositoryType>
 	<PackageTags>Dice DiceNotation d20 DiceRolls DiceRoller</PackageTags>
 	<PackageReleaseNotes>
 		Current release:
@@ -43,16 +37,15 @@
 		* Added support for grouping using ( ). Now you can parse dice expressions like - (2+1)d4 - (4-2).
 		* Test validation for new expressions and grouping.
 	</PackageReleaseNotes>
-	<RepositoryUrl>https://github.com/d20Tek/dicenotation</RepositoryUrl>
 	<PackageId>d20tek-dicenotation</PackageId>
 	<Title>d20Tek DiceNotation Parsing and Rolling</Title>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<PackageIcon>package-icon.png</PackageIcon>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MathNet.Numerics" />
+	</ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="d20Tek.DiceNotation.UnitTests" />

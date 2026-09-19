@@ -76,6 +76,6 @@ public class DiceTermErrorTests
         var term = new DiceTerm(1, 10);
 
         // act - assert
-        Assert.ThrowsExactly<ArgumentNullException>(() => term.CalculateResults(null));
+        Assert.ThrowsExactly<ArgumentNullException>(() => term.CalculateResults(null!));
     }
 }

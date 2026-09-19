@@ -189,7 +189,7 @@ public class EvaluatorTests
 
         // assert
         Assert.AreEqual("2d+3", result.DiceExpression);
-        Assert.IsNotEmpty(result.Error);
+        Assert.IsNotEmpty(result.Error!);
         Assert.IsTrue(result.HasError);
     }
 
@@ -204,7 +204,7 @@ public class EvaluatorTests
 
         // assert
         Assert.AreEqual("2d8+2/0", result.DiceExpression);
-        Assert.IsNotEmpty(result.Error);
+        Assert.IsNotEmpty(result.Error!);
         Assert.IsTrue(result.HasError);
     }
 
@@ -218,7 +218,7 @@ public class EvaluatorTests
 
         // assert
         Assert.AreEqual("d20", result.DiceExpression);
-        Assert.IsNotEmpty(result.Error);
+        Assert.IsNotEmpty(result.Error!);
         Assert.IsTrue(result.HasError);
     }
 

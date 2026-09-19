@@ -39,7 +39,7 @@ public class TermResultListConverterTests
         };
 
         // act
-        var result = _conv.Convert(diceResult.Results, typeof(string), null, _locale) as string;
+        var result = _conv.Convert(diceResult.Results, typeof(string), null!, _locale) as string;
 
         // assert
         Assert.AreEqual("3", result);
@@ -66,7 +66,7 @@ public class TermResultListConverterTests
         };
 
         // act
-        var result = _conv.Convert(diceResult.Results, typeof(string), null, _locale) as string;
+        var result = _conv.Convert(diceResult.Results, typeof(string), null!, _locale) as string;
 
         // assert
         Assert.AreEqual("3, 3, 3, 3*, 3*, 3*", result);
@@ -92,7 +92,7 @@ public class TermResultListConverterTests
         };
 
         // act
-        var result = _conv.Convert(diceResult.Results, typeof(string), null, _locale) as string;
+        var result = _conv.Convert(diceResult.Results, typeof(string), null!, _locale) as string;
 
         // assert
         Assert.AreEqual("3, 3, 3, 3*, 3", result);
@@ -105,7 +105,7 @@ public class TermResultListConverterTests
         IReadOnlyList<TermResult> list = [];
 
         // act
-        var result = _conv.Convert(list, typeof(string), null, _locale) as string;
+        var result = _conv.Convert(list, typeof(string), null!, _locale) as string;
 
         // assert
         Assert.AreEqual(string.Empty, result);
@@ -128,7 +128,7 @@ public class TermResultListConverterTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentException>(
-            [ExcludeFromCodeCoverage] () => _conv.Convert(diceResult.Results, typeof(int), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.Convert(diceResult.Results, typeof(int), null!, _locale));
     }
 
     [TestMethod]
@@ -138,7 +138,7 @@ public class TermResultListConverterTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentNullException>(
-            [ExcludeFromCodeCoverage] () => _conv.Convert(null, typeof(string), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.Convert(null!, typeof(string), null!, _locale));
     }
 
     [TestMethod]
@@ -149,7 +149,7 @@ public class TermResultListConverterTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentException>(
-            [ExcludeFromCodeCoverage] () => _conv.Convert(value, typeof(string), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.Convert(value, typeof(string), null!, _locale));
     }
 
     [TestMethod]
@@ -160,6 +160,6 @@ public class TermResultListConverterTests
 
         // act - assert
         Assert.ThrowsExactly<NotSupportedException>(
-            [ExcludeFromCodeCoverage] () => _conv.ConvertBack(value, typeof(string), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.ConvertBack(value, typeof(string), null!, _locale));
     }
 }
