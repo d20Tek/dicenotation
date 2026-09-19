@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34408.163
+# Visual Studio Version 18
+VisualStudioVersion = 18.10.12201.205 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "d20Tek.DiceNotation", "src\d20Tek.DiceNotation\d20Tek.DiceNotation.csproj", "{FA511E01-EAE2-4810-85EB-82684C017B68}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiceCli", "samples\DiceCli\DiceCli.csproj", "{14FE8E35-5FCC-4041-8BD6-22A189C841ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".plans", ".plans", "{33DAD1CA-C80F-401D-800D-ED3FC27BDE31}"
+	ProjectSection(SolutionItems) = preProject
+		.plans\future-features.md = .plans\future-features.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

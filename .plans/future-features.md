@@ -29,7 +29,7 @@ frequency statistics.
 
 ## Integration and Infrastructure
 
-- **DI extension package**: `AddDiceNotation()` service-collection extensions to register `IDice`,
+- [DONE] **DI extension package**: `AddDiceNotation()` service-collection extensions to register `IDice`,
   configuration, roller, and tracker cleanly.
 
 ## Highest-Value Priorities

@@ -12,6 +12,9 @@ by namespace. The descriptions are derived from the library's XML documentation 
   - [DiceConfiguration](#diceconfiguration)
   - [DiceExpression](#diceexpression)
   - [IDieRoller](#idieroller)
+- [Namespace: d20Tek.DiceNotation.DependencyInjection](#namespace-d20tekdicenotationdependencyinjection)
+  - [DiceServiceCollectionExtensions](#diceservicecollectionextensions)
+  - [DiceNotationOptionsBuilder](#dicenotationoptionsbuilder)
 - [Namespace: d20Tek.DiceNotation.DiceTerms](#namespace-d20tekdicenotationdiceterms)
   - [IExpressionTerm](#iexpressionterm)
 - [Namespace: d20Tek.DiceNotation.DieRoller](#namespace-d20tekdicenotationdieroller)
@@ -587,3 +590,77 @@ Converts a list of `TermResult` values to a comma-separated display string.
 
 Not supported. Converting back from a display string is not implemented and always throws
 `NotSupportedException`.
+
+---
+
+## Namespace: d20Tek.DiceNotation.DependencyInjection
+
+This namespace provides integration with `Microsoft.Extensions.DependencyInjection`, allowing the
+dice notation services to be registered cleanly in an application's service container.
+
+### DiceServiceCollectionExtensions
+
+Provides extension methods for registering d20Tek.DiceNotation services with an `IServiceCollection`.
+
+**Methods**
+
+`static IServiceCollection AddDiceNotation(this IServiceCollection services, Action<DiceNotationOptionsBuilder> configure = null, ServiceLifetime lifetime = ServiceLifetime.Scoped)`
+
+Registers the dice notation services, including `IDiceConfiguration`, `IDieRoller`, and `IDice`, with
+the specified service collection.
+
+- `services` - The service collection to add the services to.
+- `configure` - An optional delegate used to configure dice behavior, the die roller, and roll tracking.
+- `lifetime` - The service lifetime used for the registered services. Defaults to `ServiceLifetime.Scoped`.
+- Returns the same service collection so that additional calls can be chained.
+- Throws `ArgumentNullException` when `services` is `null`.
+
+### DiceNotationOptionsBuilder
+
+Provides a fluent builder for configuring the services registered by `AddDiceNotation`.
+
+**Methods**
+
+`DiceNotationOptionsBuilder WithDefaultDieSides(int dieSides)`
+
+Sets the default number of die sides used when a notation omits an explicit side count.
+
+`DiceNotationOptionsBuilder WithBoundedResult(bool hasBoundedResult, int boundedMinimum = 1)`
+
+Configures whether roll results are bounded by a minimum value and sets that minimum.
+
+`DiceNotationOptionsBuilder UseRandomDieRoller()`
+
+Configures the default die roller to use the standard `RandomDieRoller`.
+
+`DiceNotationOptionsBuilder UseCryptoDieRoller()`
+
+Configures the default die roller to use the cryptographically secure `CryptoDieRoller`.
+
+`DiceNotationOptionsBuilder UseMathNetDieRoller()`
+
+Configures the default die roller to use the Math.NET based `MathNetDieRoller`.
+
+`DiceNotationOptionsBuilder UseConstantDieRoller(int rollValue = 1)`
+
+Configures the default die roller to use a `ConstantDieRoller` that always returns the specified value.
+
+`DiceNotationOptionsBuilder UseDieRoller(Func<IServiceProvider, IDieRoller> dieRollerFactory)`
+
+Configures the default die roller using a custom factory. Throws `ArgumentNullException` when
+`dieRollerFactory` is `null`.
+
+`DiceNotationOptionsBuilder UseRollTracker()`
+
+Registers a `DieRollTracker` as the roll tracker, exposed through `IDieRollTracker` and
+`IAllowRollTrackerEntry`.
+
+`DiceNotationOptionsBuilder UseAggregateRollTracker()`
+
+Registers an `AggregateRollTracker` as the roll tracker, exposed through `IAggregateRollTracker` and
+`IAllowRollTrackerEntry`.
+
+`DiceNotationOptionsBuilder UseRollTracker<TTracker, TService>()`
+
+Registers a custom roll tracker implementation, exposed through the specified tracker service type as
+well as `IAllowRollTrackerEntry`.

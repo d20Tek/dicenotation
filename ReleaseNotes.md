@@ -2,6 +2,8 @@
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
 ### Current Release (5.1.7):
+- Added `AddDiceNotation()` service-collection extensions to register `IDice`, configuration, die roller, and optional roll tracker cleanly through dependency injection.
+- Added the `DiceNotationOptionsBuilder` fluent API for configuring die sides, bounded results, the die roller, and roll tracking.
 - Added xml documentation to the public API for the DiceNotation library.
 - Added full documentation set for the DiceNotation library.
 - Migrated the solution to use central package and central build management.

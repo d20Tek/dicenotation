@@ -45,6 +45,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="MathNet.Numerics" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
 	</ItemGroup>
 
   <ItemGroup>
