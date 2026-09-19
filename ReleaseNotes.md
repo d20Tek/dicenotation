@@ -1,7 +1,13 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current release (5.1.6):
+### Current Release (5.1.7):
+- Added xml documentation to the public API for the DiceNotation library.
+- Added full documentation set for the DiceNotation library.
+- Migrated the solution to use central package and central build management.
+- Updated package references to newest versions.
+
+### Release (5.1.6):
 - Updated nuget-release script to use Nuget Trusted Publishing.
 - Updated package references to newest versions.
 
