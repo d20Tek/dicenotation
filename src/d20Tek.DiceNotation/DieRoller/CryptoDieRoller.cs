@@ -2,10 +2,15 @@
 
 namespace d20Tek.DiceNotation.DieRoller;
 
+/// <summary>
+/// A die roller that uses a cryptographically secure random number generator.
+/// </summary>
+/// <param name="tracker">An optional tracker used to record roll entries.</param>
 public class CryptoDieRoller(IAllowRollTrackerEntry? tracker = null) : RandomDieRollerBase(tracker)
 {
     private static readonly RandomNumberGenerator Generator = RandomNumberGenerator.Create();
 
+    /// <inheritdoc />
     protected override int GetNextRandom(int sides)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(sides, 0);

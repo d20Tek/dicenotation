@@ -3,6 +3,9 @@ using d20Tek.DiceNotation.Results;
 
 namespace d20Tek.DiceNotation.Parser;
 
+/// <summary>
+/// Parses dice notation and evaluates the resulting expression tree into a dice result.
+/// </summary>
 public sealed class Evaluator
 {
     private static readonly ModifierEvaluator _modsEval = new();
@@ -16,6 +19,13 @@ public sealed class Evaluator
         { typeof(FudgeExpression), new FudgeDiceEvaluator(_modsEval) },
     };
 
+    /// <summary>
+    /// Parses and evaluates the specified dice notation into a <see cref="DiceResult"/>.
+    /// </summary>
+    /// <param name="notation">The dice notation to parse and evaluate.</param>
+    /// <param name="roller">The die roller used to generate random values.</param>
+    /// <param name="config">The configuration that controls default dice behavior.</param>
+    /// <returns>A <see cref="DiceResult"/> containing the outcome of the evaluation.</returns>
     public DiceResult Evaluate(string notation, IDieRoller roller, IDiceConfiguration config)
     {
         try
