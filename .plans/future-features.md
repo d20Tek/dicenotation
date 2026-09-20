@@ -24,7 +24,7 @@ frequency statistics.
 
 - [DONE] **Verbose/structured breakdown**: A richer result model showing which dice were kept, dropped,
   rerolled, or exploded, useful for UI display and audit trails.
-- **Seeded/replayable rolling** (low priority / nice-to-have): Supply a seed to produce reproducible
+- [DONE] **Seeded/replayable rolling** (low priority / nice-to-have): Supply a seed to produce reproducible
   roll sequences, useful for reroll "original versus rerolled" testing and for app-level replay
   (reproducing a reported sequence or replaying a session). The main gaps this
   fills are asserting that a reroll yields a different value than the original, and runtime replay.
@@ -47,10 +47,3 @@ frequency statistics.
 
 - [DONE] **DI extension package**: `AddDiceNotation()` service-collection extensions to register `IDice`,
   configuration, roller, and tracker cleanly.
-
-## Highest-Value Priorities
-
-If prioritizing, the following provide the most value:
-
-1. **Rerolls and success-counting notation**: Fills the biggest gaps versus dice expectations.
-2. **A DI extensions package**: Low effort, improves adoption in modern .NET applications.

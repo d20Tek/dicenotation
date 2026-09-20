@@ -64,6 +64,37 @@ public sealed class DiceNotationOptionsBuilder
         UseDieRoller(sp => new MathNetDieRoller(sp.GetService<IAllowRollTrackerEntry>()));
 
     /// <summary>
+    /// Configures the default die roller to use a seeded <see cref="RandomDieRoller"/> that produces a
+    /// reproducible, replayable sequence of rolls.
+    /// </summary>
+    /// <param name="seed">The seed used to initialize the random generator.</param>
+    /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
+    public DiceNotationOptionsBuilder UseSeededDieRoller(int seed) =>
+        UseDieRoller(sp => new RandomDieRoller(seed, sp.GetService<IAllowRollTrackerEntry>()));
+
+    /// <summary>
+    /// Configures the default die roller to use a seeded <see cref="MathNetDieRoller"/> that produces a
+    /// reproducible, replayable sequence of rolls.
+    /// </summary>
+    /// <param name="seed">The seed used to initialize the Math.NET generator.</param>
+    /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
+    public DiceNotationOptionsBuilder UseSeededMathNetDieRoller(int seed) =>
+        UseDieRoller(sp => new MathNetDieRoller(seed, sp.GetService<IAllowRollTrackerEntry>()));
+
+    /// <summary>
+    /// Configures the default die roller to reproduce a previously captured roll sequence from a
+    /// <see cref="ReplayToken"/>.
+    /// </summary>
+    /// <param name="token">The replay token describing the algorithm and seed to reproduce.</param>
+    /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="token"/> is <see langword="null"/>.</exception>
+    public DiceNotationOptionsBuilder UseReplayDieRoller(ReplayToken token)
+    {
+        ArgumentNullException.ThrowIfNull(token);
+        return UseDieRoller(sp => DieRollerFactory.CreateFromReplayToken(token, sp.GetService<IAllowRollTrackerEntry>()));
+    }
+
+    /// <summary>
     /// Configures the default die roller to use a <see cref="ConstantDieRoller"/> that always returns the specified value.
     /// </summary>
     /// <param name="rollValue">The constant value returned by every roll.</param>

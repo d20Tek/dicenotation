@@ -147,7 +147,8 @@ public class DiceResult
     {
         var annotations = new List<string>();
         if (result.Roles.HasFlag(DieRollRole.Exploded)) annotations.Add("exploded");
-        if (result.Roles.HasFlag(DieRollRole.Rerolled)) annotations.Add("rerolled");
+        // todo: add rerolled annotation when implemented
+        // if (result.Roles.HasFlag(DieRollRole.Rerolled)) annotations.Add("rerolled");
         if (result.Roles.HasFlag(DieRollRole.Dropped)) annotations.Add("dropped");
 
         return annotations.Count == 0 ? $"{result.Value}" : $"{result.Value} ({string.Join(", ", annotations)})";
