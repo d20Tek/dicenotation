@@ -9,6 +9,7 @@ public class DiceResult
 {
     private const int _errorValue = -404;
     private static readonly TermResultListConverter Converter = new();
+    private const string _diceTermType = "DiceTerm";
 
     /// <summary>
     /// Gets or sets the dice expression that produced this result.
@@ -47,6 +48,37 @@ public class DiceResult
     public string RollsDisplayText => (Results is null)
             ? string.Empty
             : $"{Converter.Convert(Results.ToList(), typeof(string), string.Empty, Constants.DefaultLocale)}";
+
+    /// <summary>
+    /// Gets the dice term results that were kept and contribute to the overall calculation.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<TermResult> KeptResults => FilterDiceRoles(DieRollRole.Kept);
+
+    /// <summary>
+    /// Gets the dice term results that were dropped by a keep-highest or drop-lowest selection.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<TermResult> DroppedResults => FilterDiceRoles(DieRollRole.Dropped);
+
+    /// <summary>
+    /// Gets the dice term results that were produced by an exploding roll.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<TermResult> ExplodedResults => FilterDiceRoles(DieRollRole.Exploded);
+
+    /// <summary>
+    /// Gets the dice term results that were rerolled because they met a reroll condition.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<TermResult> RerolledResults => FilterDiceRoles(DieRollRole.Rerolled);
+
+    /// <summary>
+    /// Gets a verbose display text that annotates each individual die roll with its role, such as
+    /// dropped, exploded, or rerolled.
+    /// </summary>
+    [JsonIgnore]
+    public string VerboseDisplayText => BuildVerboseDisplayText();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiceResult"/> class, calculating the value from the results.
@@ -97,4 +129,27 @@ public class DiceResult
 
     private static int CalculateResult(TermResult r) =>
         (int)Math.Round(r.AppliesToResultCalculation ? r.Value * r.Scalar : 0);
+
+    private IReadOnlyList<TermResult> FilterDiceRoles(DieRollRole role) =>
+        (Results is null)
+            ? []
+            : [.. Results.Where(r => r.Type.Contains(_diceTermType) && r.Roles.HasFlag(role))];
+
+    private string BuildVerboseDisplayText()
+    {
+        if (Results is null) return string.Empty;
+
+        var dice = Results.Where(r => r.Type.Contains(_diceTermType)).Select(FormatVerboseDie);
+        return string.Join(", ", dice);
+    }
+
+    private static string FormatVerboseDie(TermResult result)
+    {
+        var annotations = new List<string>();
+        if (result.Roles.HasFlag(DieRollRole.Exploded)) annotations.Add("exploded");
+        if (result.Roles.HasFlag(DieRollRole.Rerolled)) annotations.Add("rerolled");
+        if (result.Roles.HasFlag(DieRollRole.Dropped)) annotations.Add("dropped");
+
+        return annotations.Count == 0 ? $"{result.Value}" : $"{result.Value} ({string.Join(", ", annotations)})";
+    }
 }

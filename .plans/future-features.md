@@ -22,10 +22,26 @@ frequency statistics.
 
 ## Result and API Enhancements
 
-- **Verbose/structured breakdown**: A richer result model showing which dice were kept, dropped,
+- [DONE] **Verbose/structured breakdown**: A richer result model showing which dice were kept, dropped,
   rerolled, or exploded, useful for UI display and audit trails.
-- **Seeded/deterministic rolling**: A convenient way to supply a seed for reproducible sequences,
-  helpful for testing and replay.
+- **Seeded/replayable rolling** (low priority / nice-to-have): Supply a seed to produce reproducible
+  roll sequences, useful for reroll "original versus rerolled" testing and for app-level replay
+  (reproducing a reported sequence or replaying a session). The main gaps this
+  fills are asserting that a reroll yields a different value than the original, and runtime replay.
+
+  Reproducibility depends on whether the underlying generator is seedable, not merely on being
+  "random," so this applies to more than the pseudo-random roller. The cleaner abstraction is a roller
+  wrapping a seedable source, capturing `(algorithm, seed)` as the replay token rather than a single
+  `SeededDieRoller`. Per-roller support:
+
+  - **RandomDieRoller** (supported): `System.Random` accepts a seed via `new Random(seed)` and
+    produces a fully deterministic sequence. This is the natural home for seeded rolling.
+  - **MathNetDieRoller** (supported, with caveats): MathNet random sources (for example
+    `MersenneTwister`, `Mrg32k3a`, `SystemRandomSource`) accept a seed. Reproducibility is only
+    guaranteed for the same generator type, MathNet version, and platform, so replay data must record
+    which generator was used, not just the seed.
+  - **CryptoDieRoller** (not supported by design): `RandomNumberGenerator` is a CSPRNG that pulls from
+    OS entropy and exposes no seed, because reproducibility would undermine its security guarantees.
 
 ## Integration and Infrastructure
 

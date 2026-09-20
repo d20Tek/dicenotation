@@ -4,6 +4,8 @@ These are the release notes for our various updates. You can see how the library
 ### Current Release (5.1.7):
 - Added `AddDiceNotation()` service-collection extensions to register `IDice`, configuration, die roller, and optional roll tracker cleanly through dependency injection.
 - Added the `DiceNotationOptionsBuilder` fluent API for configuring die sides, bounded results, the die roller, and roll tracking.
+- Added a verbose/structured breakdown to dice results: each rolled die now records its role (kept, dropped, exploded, or rerolled) through the new `DieRollRole` flags enum and the `TermResult.Roles` property.
+- Added `DiceResult` breakdown helpers (`KeptResults`, `DroppedResults`, `ExplodedResults`, `RerolledResults`) and a `VerboseDisplayText` property that annotates each die roll with its role.
 - Added xml documentation to the public API for the DiceNotation library.
 - Added full documentation set for the DiceNotation library.
 - Migrated the solution to use central package and central build management.

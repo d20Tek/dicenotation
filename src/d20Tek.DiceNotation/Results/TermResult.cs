@@ -26,6 +26,12 @@ public class TermResult
     public bool AppliesToResultCalculation { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the role or roles this die roll played within its term, such as being kept,
+    /// dropped, exploded, or rerolled.
+    /// </summary>
+    public DieRollRole Roles { get; set; } = DieRollRole.Kept;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="TermResult"/> class.
     /// </summary>
     /// <param name="scalar">The scalar multiplier applied to the value.</param>

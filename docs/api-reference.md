@@ -38,6 +38,7 @@ by namespace. The descriptions are derived from the library's XML documentation 
 - [Namespace: d20Tek.DiceNotation.Results](#namespace-d20tekdicenotationresults)
   - [DiceResult](#diceresult)
   - [TermResult](#termresult)
+  - [DieRollRole](#dierollrole)
   - [DiceResultConverter](#diceresultconverter)
   - [TermResultListConverter](#termresultlistconverter)
 
@@ -528,6 +529,11 @@ results.
 | `string? Error { get; set; }` | Gets or sets the error message describing why the roll failed, if any. |
 | `bool HasError { get; }` | Gets a value indicating whether this result represents an error. |
 | `string RollsDisplayText { get; }` | Gets the display text describing the individual dice rolls. |
+| `IReadOnlyList<TermResult> KeptResults { get; }` | Gets the dice term results that were kept and contribute to the overall calculation. |
+| `IReadOnlyList<TermResult> DroppedResults { get; }` | Gets the dice term results that were dropped by a keep-highest or drop-lowest selection. |
+| `IReadOnlyList<TermResult> ExplodedResults { get; }` | Gets the dice term results that were produced by an exploding roll. |
+| `IReadOnlyList<TermResult> RerolledResults { get; }` | Gets the dice term results that were rerolled because they met a reroll condition. |
+| `string VerboseDisplayText { get; }` | Gets a verbose display text that annotates each individual die roll with its role. |
 
 ### TermResult
 
@@ -548,6 +554,23 @@ Represents the result of evaluating a single term within a dice expression.
 | `int Value { get; set; }` | Gets or sets the value produced by the term. |
 | `string Type { get; set; }` | Gets or sets the type identifier of the term that produced this result. |
 | `bool AppliesToResultCalculation { get; set; }` | Gets or sets a value indicating whether this result contributes to the overall calculation. |
+| `DieRollRole Roles { get; set; }` | Gets or sets the role or roles this die roll played within its term, such as being kept, dropped, exploded, or rerolled. |
+
+### DieRollRole
+
+A `[Flags]` enumeration describing the role or roles a single die roll played within a dice term
+result. Because the values are combinable, a die can hold more than one role (for example, a die that
+exploded and was then dropped by a keep/drop selection).
+
+**Values**
+
+| Member | Description |
+| --- | --- |
+| `None` | The die has no special role assigned. |
+| `Kept` | The die was kept and contributes to the overall calculation. |
+| `Dropped` | The die was dropped by a keep-highest or drop-lowest selection and does not contribute to the overall calculation. |
+| `Exploded` | The die was produced by an exploding roll that met or exceeded the exploding threshold. |
+| `Rerolled` | The die was rerolled because it met a reroll condition. |
 
 ### DiceResultConverter
 
