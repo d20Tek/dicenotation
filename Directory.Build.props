@@ -1,0 +1,18 @@
+<Project>
+
+  <PropertyGroup>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+	<Authors>DarthPedro</Authors>
+	<Company>d20Tek</Company>
+	<Copyright>Copyright (c) 2025 d20Tek. All rights reserved.</Copyright>
+	<PackageProjectUrl>https://github.com/d20Tek/dicenotation</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/d20Tek/dicenotation</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>

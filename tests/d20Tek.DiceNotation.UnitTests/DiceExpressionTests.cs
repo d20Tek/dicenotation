@@ -168,6 +168,6 @@ public class DiceExpressionTests
     {
         Assert.HasCount(1, result);
         var term = Assert.IsInstanceOfType<T>(result[0]);
-        Assert.AreEqual(expected, term.ToString());
+        Assert.AreEqual(expected, term!.ToString());
     }
 }

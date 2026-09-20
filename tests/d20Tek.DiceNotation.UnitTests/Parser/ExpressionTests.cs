@@ -27,7 +27,7 @@ public class ExpressionTests
     {
         // arrange
         var inner = new NumberExpression(4, new());
-        var expr = new GroupExpression(null, new());
+        var expr = new GroupExpression(null!, new());
 
         // act
         var result = expr with { Inner = inner, Pos = new(1, 2, 3) };
@@ -43,7 +43,7 @@ public class ExpressionTests
     {
         // arrange
         var operand = new NumberExpression(5, new());
-        var expr = new UnaryExpression(UnaryOperator.Positive, null, new());
+        var expr = new UnaryExpression(UnaryOperator.Positive, null!, new());
 
         // act
         var result = expr with { Operator = UnaryOperator.Negative, Operand = operand, Pos = new(1, 2, 3) };
@@ -61,7 +61,7 @@ public class ExpressionTests
         // arrange
         var left = new NumberExpression(1, new());
         var right = new NumberExpression(9, new());
-        var expr = new BinaryExpression(null, BinaryOperator.Subtract, null, new());
+        var expr = new BinaryExpression(null!, BinaryOperator.Subtract, null!, new());
 
         // act
         var result = expr with { Left = left, Operator = BinaryOperator.Add, Right = right, Pos = new(1, 2, 3) };
@@ -98,7 +98,7 @@ public class ExpressionTests
         Assert.AreEqual(count, result.CountArg);
         Assert.AreEqual(sides, result.SidesArg);
         Assert.IsFalse(result.HasPercentSides);
-        CollectionAssert.AreEqual(mods, result.Modifiers.ToArray());
+        Assert.AreSequenceEqual(mods, [.. result.Modifiers]);
         Assert.AreEqual(_expectedPos, result.Pos);
     }
 
@@ -121,7 +121,7 @@ public class ExpressionTests
         // assert
         Assert.IsNotNull(result);
         Assert.AreEqual(count, result.CountArg);
-        CollectionAssert.AreEqual(mods, result.Modifiers.ToArray());
+        Assert.AreSequenceEqual(mods, [.. result.Modifiers]);
         Assert.AreEqual(_expectedPos, result.Pos);
     }
 
@@ -146,7 +146,7 @@ public class ExpressionTests
     {
         // arrange
         var count = new NumberExpression(3, new());
-        var expr = new SelectModifier(SelectKind.KeepHigh, null, new());
+        var expr = new SelectModifier(SelectKind.KeepHigh, null!, new());
 
         // act
         var result = expr with { Kind = SelectKind.KeepHigh, CountArg = count, Pos = new(1, 2, 3) };

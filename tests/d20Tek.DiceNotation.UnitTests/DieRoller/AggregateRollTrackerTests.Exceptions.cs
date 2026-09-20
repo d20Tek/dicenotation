@@ -64,7 +64,7 @@ public class AggreateRollTrackerExceptionTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentNullException>(
-            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(6, 4, null));
+            [ExcludeFromCodeCoverage] () => _tracker.AddDieRoll(6, 4, null!));
     }
 
     [TestMethod]

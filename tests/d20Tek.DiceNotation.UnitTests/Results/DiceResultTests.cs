@@ -39,12 +39,12 @@ public partial class DiceResultTests
         {
             DiceExpression = "d6",
             DieRollerUsed = _expectedRollerType,
-            Results = null,
+            Results = null!,
             Value = 3,
         };
 
         // assert
-        AssertDiceResult(result, null, _expectedRollerType, "d6", 3, string.Empty);
+        AssertDiceResult(result, null!, _expectedRollerType, "d6", 3, string.Empty);
     }
 
     [TestMethod]
@@ -133,12 +133,12 @@ public partial class DiceResultTests
         string rollerType,
         string expression,
         int expectedValue,
-        string rollText = null)
+        string? rollText = null)
     {
         rollText ??= $"{expectedValue}";
         Assert.AreEqual(expression, result.DiceExpression);
         Assert.AreEqual(rollerType, result.DieRollerUsed);
-        CollectionAssert.AreEqual(expectedTerms, result.Results?.ToList());
+        Assert.AreSequenceEqual(expectedTerms, result.Results?.ToList());
         Assert.AreEqual(expectedValue, result.Value);
         Assert.AreEqual(rollText, result.RollsDisplayText);
         Assert.IsNull(result.Error);

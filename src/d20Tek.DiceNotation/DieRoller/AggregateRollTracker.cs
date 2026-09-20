@@ -3,10 +3,14 @@ using System.Text.Json;
 
 namespace d20Tek.DiceNotation.DieRoller;
 
+/// <summary>
+/// Provides an in-memory tracker that aggregates die roll frequency data synchronously.
+/// </summary>
 public class AggregateRollTracker : IAggregateRollTracker
 {
     private List<AggregateDieTrackingData> _aggRollData = [];
 
+    /// <inheritdoc />
     public void AddDieRoll(int dieSides, int result, Type dieRoller)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(dieSides, 2);
@@ -30,8 +34,10 @@ public class AggregateRollTracker : IAggregateRollTracker
         return entry;
     }
 
+    /// <inheritdoc />
     public void Clear() => _aggRollData.Clear();
 
+    /// <inheritdoc />
     public IList<AggregateDieTrackingData> GetFrequencyDataView()
     {
         var updated = GetOrderedData()
@@ -57,12 +63,14 @@ public class AggregateRollTracker : IAggregateRollTracker
         return _aggRollData;
     }
 
+    /// <inheritdoc />
     public void LoadFromJson(string jsonText)
     {
         if (string.IsNullOrEmpty(jsonText)) return;
         _aggRollData = JsonSerializer.Deserialize<List<AggregateDieTrackingData>>(jsonText)!;
     }
 
+    /// <inheritdoc />
     public string ToJson() => JsonSerializer.Serialize(_aggRollData);
 
     private List<AggregateDieTrackingData> GetOrderedData() =>

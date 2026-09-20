@@ -4,8 +4,6 @@ namespace DiceCli.Common;
 
 internal static class DiceResultDisplay
 {
-    private static readonly TermResultListConverter _converter = new();
-
     public static int WriteDiceResult(this IAnsiConsole console, DiceResult diceResult)
     {
         if (diceResult.HasError)
@@ -16,7 +14,20 @@ internal static class DiceResultDisplay
 
         console.WriteMessages(
             $"Total result: {diceResult.Value}",
-            $"Dice rolls: {_converter.Convert(diceResult.Results, typeof(string), null!, "default")}");
+            $"Dice rolls: {diceResult.VerboseDisplayText}");
+
+        WriteRoleSummary(console, "Kept", diceResult.KeptResults);
+        WriteRoleSummary(console, "Dropped", diceResult.DroppedResults);
+        WriteRoleSummary(console, "Exploded", diceResult.ExplodedResults);
+        WriteRoleSummary(console, "Rerolled", diceResult.RerolledResults);
         return 0;
+    }
+
+    private static void WriteRoleSummary(IAnsiConsole console, string label, IReadOnlyList<TermResult> results)
+    {
+        if (results.Count == 0) return;
+
+        var values = string.Join(", ", results.Select(r => r.Value));
+        console.WriteMessages($"{label}: {values}");
     }
 }

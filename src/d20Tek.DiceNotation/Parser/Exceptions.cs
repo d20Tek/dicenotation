@@ -1,9 +1,15 @@
 ﻿namespace d20Tek.DiceNotation.Parser;
 
+/// <summary>
+/// The exception thrown when dice notation cannot be parsed.
+/// </summary>
 public sealed class ParseException : Exception
 {
     private readonly Position _pos;
 
+    /// <summary>
+    /// Gets the position within the notation where the parse error occurred.
+    /// </summary>
     public string Position => _pos.ToString();
 
     internal ParseException(string message, Position pos)
@@ -16,6 +22,10 @@ public sealed class ParseException : Exception
     }
 }
 
+/// <summary>
+/// The exception thrown when a parsed dice expression cannot be evaluated.
+/// </summary>
+/// <param name="message">The message that describes the evaluation error.</param>
 public sealed class EvalException(string message) : Exception(Constants.Errors.EvalException(message))
 {
 }

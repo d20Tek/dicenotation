@@ -1,7 +1,19 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current release (5.1.6):
+### Current Release (5.1.7):
+- Added `AddDiceNotation()` service-collection extensions to register `IDice`, configuration, die roller, and optional roll tracker cleanly through dependency injection.
+- Added the `DiceNotationOptionsBuilder` fluent API for configuring die sides, bounded results, the die roller, and roll tracking.
+- Added a verbose/structured breakdown to dice results: each rolled die now records its role (kept, dropped, exploded, or rerolled) through the new `DieRollRole` flags enum and the `TermResult.Roles` property.
+- Added `DiceResult` breakdown helpers (`KeptResults`, `DroppedResults`, `ExplodedResults`, `RerolledResults`) and a `VerboseDisplayText` property that annotates each die roll with its role.
+- Added seeded/replayable rolling: `RandomDieRoller` and `MathNetDieRoller` now accept a seed, implement the new `IReplayableDieRoller` interface, and expose a `ReplayToken` that captures the algorithm and seed for reproducing a roll sequence.
+- Added the `DieRollerFactory` with `CreateSeeded` and `CreateFromReplayToken` methods, plus `UseSeededDieRoller`, `UseSeededMathNetDieRoller`, and `UseReplayDieRoller` options on `DiceNotationOptionsBuilder`. Cryptographic rollers are intentionally excluded because their generators are not seedable.
+- Added xml documentation to the public API for the DiceNotation library.
+- Added full documentation set for the DiceNotation library.
+- Migrated the solution to use central package and central build management.
+- Updated package references to newest versions.
+
+### Release (5.1.6):
 - Updated nuget-release script to use Nuget Trusted Publishing.
 - Updated package references to newest versions.
 

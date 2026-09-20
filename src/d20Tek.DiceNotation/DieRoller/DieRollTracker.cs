@@ -3,12 +3,17 @@ using System.Text.Json;
 
 namespace d20Tek.DiceNotation.DieRoller;
 
+/// <summary>
+/// Provides a tracker that records individual die rolls and produces statistical views asynchronously.
+/// </summary>
 public class DieRollTracker : IDieRollTracker
 {
     private List<DieTrackingData> rollData = [];
 
+    /// <inheritdoc />
     public int TrackerDataLimit { get; set; } = Constants.DefaultTrackerDataLimit;
 
+    /// <inheritdoc />
     public void AddDieRoll(int dieSides, int result, Type dieRoller)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(dieSides, 2);
@@ -20,17 +25,21 @@ public class DieRollTracker : IDieRollTracker
         rollData.Add(DieTrackingData.Create(dieRoller.Name, dieSides, result));
     }
 
+    /// <inheritdoc />
     public async Task<IList<DieTrackingData>> GetTrackingDataAsync(string? dieType = null, string? dieSides = null) =>
         await Task.Run(() => GetTrackingData(dieType, dieSides));
 
+    /// <inheritdoc />
     public void Clear() => rollData.Clear();
 
+    /// <inheritdoc />
     public async Task<string> ToJsonAsync() => await Task.Run(() =>
     {
         rollData = [.. GetTrimmedData()];
         return JsonSerializer.Serialize(rollData);
     });
 
+    /// <inheritdoc />
     public async Task LoadFromJsonAsync(string jsonText) => await Task.Run(() =>
     {
         if (string.IsNullOrEmpty(jsonText)) return;
@@ -39,6 +48,7 @@ public class DieRollTracker : IDieRollTracker
         rollData = [.. data.Take(TrackerDataLimit)];
     });
 
+    /// <inheritdoc />
     public async Task<IList<AggregateDieTrackingData>> GetFrequencyDataViewAsync() =>
         await Task.Run(GetFrequencyDataView);
 

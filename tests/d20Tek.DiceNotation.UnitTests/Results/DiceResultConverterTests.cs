@@ -40,7 +40,7 @@ public class DiceResultConverterTests
         };
 
         // act
-        var result = _conv.Convert(diceResult, typeof(string), null, _locale) as string;
+        var result = _conv.Convert(diceResult, typeof(string), null!, _locale) as string;
 
         // assert
         Assert.AreEqual("3 (d6)", result);
@@ -67,7 +67,7 @@ public class DiceResultConverterTests
         };
 
         // act
-        var result = _conv.Convert(diceResult, typeof(string), null, _locale) as string;
+        var result = _conv.Convert(diceResult, typeof(string), null!, _locale) as string;
 
         // assert
         Assert.AreEqual("17 (4d6k3+d8+5)", result);
@@ -90,7 +90,7 @@ public class DiceResultConverterTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentException>(
-            [ExcludeFromCodeCoverage] () => _conv.Convert(diceResult, typeof(int), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.Convert(diceResult, typeof(int), null!, _locale));
     }
 
     [TestMethod]
@@ -100,7 +100,7 @@ public class DiceResultConverterTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentNullException>(
-            [ExcludeFromCodeCoverage] () => _conv.Convert(null, typeof(string), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.Convert(null!, typeof(string), null!, _locale));
     }
 
     [TestMethod]
@@ -111,7 +111,7 @@ public class DiceResultConverterTests
 
         // act - assert
         Assert.ThrowsExactly<ArgumentException>(
-            [ExcludeFromCodeCoverage] () => _conv.Convert(value, typeof(string), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.Convert(value, typeof(string), null!, _locale));
     }
 
     [TestMethod]
@@ -122,6 +122,6 @@ public class DiceResultConverterTests
 
         // act - assert
         Assert.ThrowsExactly<NotSupportedException>(
-            [ExcludeFromCodeCoverage] () => _conv.ConvertBack(value, typeof(string), null, _locale));
+            [ExcludeFromCodeCoverage] () => _conv.ConvertBack(value, typeof(string), null!, _locale));
     }
 }

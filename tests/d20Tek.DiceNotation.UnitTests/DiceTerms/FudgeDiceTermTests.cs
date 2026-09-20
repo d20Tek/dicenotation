@@ -68,7 +68,7 @@ public class FudgeDiceTermTests
         var term = new FudgeDiceTerm(1);
 
         // act - assert
-        Assert.ThrowsExactly<ArgumentNullException>([ExcludeFromCodeCoverage] () => term.CalculateResults(null));
+        Assert.ThrowsExactly<ArgumentNullException>([ExcludeFromCodeCoverage] () => term.CalculateResults(null!));
     }
 
     [TestMethod]

@@ -19,9 +19,16 @@ internal static class DiceTermHelper
                         [.. results.OrderByDescending(d => d.Value)] :
                         results.OrderBy(d => d.Value).ToList();
 
-        for (int i = Math.Abs(tempChoose); i < ordered.Count; i++)
+        for (int i = 0; i < ordered.Count; i++)
         {
-            ordered[i].AppliesToResultCalculation = false;
+            var dropped = i >= Math.Abs(tempChoose);
+            if (dropped)
+            {
+                ordered[i].AppliesToResultCalculation = false;
+            }
+
+            ordered[i].Roles = (ordered[i].Roles & ~(DieRollRole.Kept | DieRollRole.Dropped)) |
+                               (dropped ? DieRollRole.Dropped : DieRollRole.Kept);
         }
 
         return ordered;

@@ -25,4 +25,29 @@ public class TermResultTests
         Assert.AreEqual("DiceResult", result.Type);
         Assert.AreEqual(3, result.Value);
     }
+
+    [TestMethod]
+    public void Roles_ByDefault_IsKept()
+    {
+        // arrange
+
+        // act
+        var result = new TermResult();
+
+        // validate
+        Assert.AreEqual(DieRollRole.Kept, result.Roles);
+    }
+
+    [TestMethod]
+    public void Roles_WhenSetToCombinedFlags_RetainsAllFlags()
+    {
+        // arrange
+
+        // act
+        var result = new TermResult { Roles = DieRollRole.Exploded | DieRollRole.Dropped };
+
+        // validate
+        Assert.IsTrue(result.Roles.HasFlag(DieRollRole.Exploded));
+        Assert.IsTrue(result.Roles.HasFlag(DieRollRole.Dropped));
+    }
 }

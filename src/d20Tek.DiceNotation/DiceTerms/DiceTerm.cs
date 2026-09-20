@@ -52,7 +52,13 @@ internal partial class DiceTerm : IExpressionTerm
         for (int i = 0; i < _numberDice + rerolls; i++)
         {
             int value = RollTerm(dieRoller, _sides);
-            results.Add(new(_scalar, value, termType));
+            var result = new TermResult(_scalar, value, termType);
+            if (_exploding is not null && value >= _exploding)
+            {
+                result.Roles |= DieRollRole.Exploded;
+            }
+
+            results.Add(result);
 
             rerolls = DiceTermHelper.EvaluateExplodingDice(rerolls, value, _exploding);
         }
