@@ -7,8 +7,8 @@ namespace d20Tek.DiceNotation.DieRoller;
 /// </summary>
 /// <param name="source">The Math.NET random source used to generate values.</param>
 /// <param name="tracker">An optional tracker used to record roll entries.</param>
-public class MathNetDieRoller(RandomSource source, IAllowRollTrackerEntry? tracker = null) :
-    RandomDieRollerBase(tracker), IReplayableDieRoller
+public class MathNetDieRoller(RandomSource source, IAllowRollTrackerEntry? tracker = null) 
+    : RandomDieRollerBase(tracker), IReplayableDieRoller
 {
     private readonly RandomSource _randomSource = source;
 

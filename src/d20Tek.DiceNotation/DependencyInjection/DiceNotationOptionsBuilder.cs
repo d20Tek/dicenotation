@@ -143,9 +143,9 @@ public sealed class DiceNotationOptionsBuilder
     {
         _trackerRegistrar = (services, lifetime) =>
         {
-            services.Add(new ServiceDescriptor(typeof(TTracker), typeof(TTracker), lifetime));
-            services.Add(new ServiceDescriptor(typeof(TService), sp => sp.GetRequiredService<TTracker>(), lifetime));
-            services.Add(new ServiceDescriptor(
+            services.Add(new(typeof(TTracker), typeof(TTracker), lifetime));
+            services.Add(new(typeof(TService), sp => sp.GetRequiredService<TTracker>(), lifetime));
+            services.Add(new(
                 typeof(IAllowRollTrackerEntry), sp => sp.GetRequiredService<TTracker>(), lifetime));
         };
         return this;

@@ -35,9 +35,7 @@ public static class DieRollerFactory
     /// <returns>A replayable die roller equivalent to the one that produced the token.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="token"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the token's algorithm is not supported for replay.</exception>
-    public static IReplayableDieRoller CreateFromReplayToken(
-        ReplayToken token,
-        IAllowRollTrackerEntry? tracker = null)
+    public static IReplayableDieRoller CreateFromReplayToken(ReplayToken token, IAllowRollTrackerEntry? tracker = null)
     {
         ArgumentNullException.ThrowIfNull(token);
         return CreateSeeded(token.Seed, token.Algorithm, tracker);

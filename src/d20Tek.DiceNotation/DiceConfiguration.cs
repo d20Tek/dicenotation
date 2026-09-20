@@ -43,8 +43,7 @@ public class DiceConfiguration : IDiceConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="DiceConfiguration"/> class with default settings.
     /// </summary>
-    public DiceConfiguration() 
-        : this(Constants.Config.DefaultDieSides, Constants.Config.DefaultBoundedMin, true) { }
+    public DiceConfiguration() : this(Constants.Config.DefaultDieSides, Constants.Config.DefaultBoundedMin, true) { }
 
     /// <inheritdoc />
     public void SetDefaultDieSides(int dieSides)
