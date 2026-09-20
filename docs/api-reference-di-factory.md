@@ -5,6 +5,9 @@ seeded/replayable die rolling for the d20Tek.DiceNotation library. For the core 
 the main [API Reference](api-reference.md). The descriptions are derived from the library's XML
 documentation comments.
 
+For a task-focused walkthrough of seeded and replayable rolling, see the
+[Reproducible Rolling guide](guide-reproducible-rolling.md).
+
 ## Table of Contents
 
 - [Namespace: d20Tek.DiceNotation.DieRoller (Replayable Rolling)](#namespace-d20tekdicenotationdieroller-replayable-rolling)
