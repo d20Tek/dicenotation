@@ -67,11 +67,12 @@ public class AggregateRollTracker : IAggregateRollTracker
     public void LoadFromJson(string jsonText)
     {
         if (string.IsNullOrEmpty(jsonText)) return;
-        _aggRollData = JsonSerializer.Deserialize<List<AggregateDieTrackingData>>(jsonText)!;
+        _aggRollData = JsonSerializer.Deserialize(jsonText, DieTrackingJsonContext.Default.ListAggregateDieTrackingData)!;
     }
 
     /// <inheritdoc />
-    public string ToJson() => JsonSerializer.Serialize(_aggRollData);
+    public string ToJson() => 
+        JsonSerializer.Serialize(_aggRollData, DieTrackingJsonContext.Default.ListAggregateDieTrackingData);
 
     private List<AggregateDieTrackingData> GetOrderedData() =>
         [.. _aggRollData.OrderBy(p => p.RollerType).ThenBy(p => p.DieSides).ThenBy(p => p.Result)];

@@ -33,6 +33,25 @@ public class Dice : IDice
     public DiceResult Roll(DiceExpression expression, IDieRoller? dieRoller = null) =>
         RollTerms(expression.Evaluate(), dieRoller ?? Configuration.DefaultDieRoller);
 
+    /// <inheritdoc />
+    public IReadOnlyList<DiceResult> RollMany(string notation, int count, IDieRoller? dieRoller = null)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(count, 1, nameof(count));
+        var roller = dieRoller ?? Configuration.DefaultDieRoller;
+
+        return [.. Enumerable.Range(0, count).Select(_ => Roll(notation, roller))];
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<DiceResult> RollMany(DiceExpression expression, int count, IDieRoller? dieRoller = null)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(count, 1, nameof(count));
+        var roller = dieRoller ?? Configuration.DefaultDieRoller;
+        var expressionTerms = expression.Evaluate();
+
+        return [.. Enumerable.Range(0, count).Select(_ => RollTerms(expressionTerms, roller))];
+    }
+
     private DiceResult RollTerms(IReadOnlyList<IExpressionTerm> expresssionTerms, IDieRoller dieRoller) =>
         new(
             Constants.JoinSigns(expresssionTerms),

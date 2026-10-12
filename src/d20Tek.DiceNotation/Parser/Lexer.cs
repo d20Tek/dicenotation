@@ -39,10 +39,30 @@ internal sealed class Lexer(string source)
 
     private (TokenKind kind, string lexeme, int? intValue) MapMatch(Match m)
     {
-        var (key, factoryFunc) = Grammar.MatchFactories.FirstOrDefault(e => m.Groups[e.Key].Success);
-        return key is null
-            ? throw new ParseException(Constants.Errors.UnexpectedCharacter(m.Value), CurrentPos)
-            : factoryFunc(m);        
+        string lexeme = m.Value;
+        char first = lexeme[0];
+
+        if (char.IsAsciiDigit(first))
+            return (TokenKind.Number, lexeme, int.Parse(lexeme));
+
+        return first switch
+        {
+            '+' => (TokenKind.Plus, lexeme, null),
+            '-' => (TokenKind.Minus, lexeme, null),
+            '*' => (TokenKind.Star, lexeme, null),
+            'x' or 'X' => (TokenKind.Times, lexeme, null),
+            '/' => (TokenKind.Divide, lexeme, null),
+            '(' => (TokenKind.GroupStart, lexeme, null),
+            ')' => (TokenKind.GroupEnd, lexeme, null),
+            'd' or 'D' => (TokenKind.Dice, lexeme, null),
+            'f' or 'F' => (TokenKind.FudgeDice, lexeme, null),
+            '%' => (TokenKind.Percent, lexeme, null),
+            '!' => (TokenKind.Exploding, lexeme, null),
+            'k' or 'K' => (TokenKind.Keep, lexeme, null),
+            'p' or 'P' => (TokenKind.Drop, lexeme, null),
+            'l' or 'L' => (TokenKind.KeepLowest, lexeme, null),
+            _ => throw new ParseException(Constants.Errors.UnexpectedCharacter(lexeme), CurrentPos)
+        };
     }
 
     private void Advance(Match m)

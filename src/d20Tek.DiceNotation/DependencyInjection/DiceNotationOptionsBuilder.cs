@@ -1,5 +1,6 @@
 using d20Tek.DiceNotation.DieRoller;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace d20Tek.DiceNotation.DependencyInjection;
 
@@ -137,7 +138,9 @@ public sealed class DiceNotationOptionsBuilder
     /// <typeparam name="TTracker">The concrete tracker implementation type.</typeparam>
     /// <typeparam name="TService">The tracker service interface to expose.</typeparam>
     /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
-    public DiceNotationOptionsBuilder UseRollTracker<TTracker, TService>()
+    public DiceNotationOptionsBuilder UseRollTracker<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTracker,
+        TService>()
         where TTracker : class, TService, IAllowRollTrackerEntry
         where TService : class
     {
