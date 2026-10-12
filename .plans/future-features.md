@@ -65,8 +65,9 @@ frequency statistics.
 
 ## API Enhancements
 
-- **`IDice` batch rolling**: Add a method such as `RollMany(string notation, int count)` returning
-  `IEnumerable<DiceResult>` to support simulation and statistics use cases, pairing naturally with
+- [DONE] **`IDice` batch rolling**: Added `RollMany(string notation, int count, IDieRoller? dieRoller = null)`
+  and `RollMany(DiceExpression expression, int count, IDieRoller? dieRoller = null)` returning
+  `IReadOnlyList<DiceResult>` to support simulation and statistics use cases, pairing naturally with
   `IAggregateRollTracker` for aggregating results across the batch.
 
 ## Testing and Quality Infrastructure
