@@ -14,8 +14,7 @@ public class NotationRollBenchmarks
     private IDice _dice = null!;
     private IDieRoller _roller = null!;
 
-    //[Params("1d20", "4d6+2", "4d6k3+1d8+5", "(2+1)d4+2d6!6-3")]
-    [Params("(2+1)d4+2d6!6-3")]
+    [Params("1d20", "4d6+2", "4d6k3+1d8+5", "(2+1)d4+2d6!6-3")]
     public string Notation { get; set; } = "1d20";
 
     [GlobalSetup]

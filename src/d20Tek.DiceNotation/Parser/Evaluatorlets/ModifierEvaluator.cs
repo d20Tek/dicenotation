@@ -11,7 +11,16 @@ internal class ModifierEvaluator
         IDieRoller roller,
         List<TermResult> terms)
     {
-        var selectMod = mods.OfType<SelectModifier>().LastOrDefault();
+        SelectModifier? selectMod = null;
+        for (int i = mods.Count - 1; i >= 0; i--)
+        {
+            if (mods[i] is SelectModifier sm)
+            {
+                selectMod = sm;
+                break;
+            }
+        }
+
         return selectMod switch
         {
             { Kind: SelectKind.KeepHigh } => evaluator.EvalInternal(selectMod.CountArg, roller, terms),
@@ -28,7 +37,16 @@ internal class ModifierEvaluator
         IDieRoller roller,
         List<TermResult> terms)
     {
-        var mod = mods.OfType<ExplodingModifier>().LastOrDefault();
+        ExplodingModifier? mod = null;
+        for (int i = mods.Count - 1; i >= 0; i--)
+        {
+            if (mods[i] is ExplodingModifier em)
+            {
+                mod = em;
+                break;
+            }
+        }
+
         if (mod is null) return null;
 
         return mod.ThresholdArg is null ? diceCount : evaluator.EvalInternal(mod.ThresholdArg, roller, terms);

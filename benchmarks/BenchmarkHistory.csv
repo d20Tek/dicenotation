@@ -1,0 +1,9 @@
+﻿Timestamp,GitCommit,Class,Method,Params,Mean_ns,Allocated_bytes
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.BatchRollBenchmarks,RollMany,Count=10,11270,34385.92
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.BatchRollBenchmarks,RollMany,Count=100,113950,340817.92
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.BatchRollBenchmarks,RollMany,Count=1000,1250390,3400960
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.ExpressionRollBenchmarks,RollExpression,,758.9,2007.04
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.NotationRollBenchmarks,RollNotation,Notation=(2+1)d4+2d6!6-3,2787,8550.4
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.NotationRollBenchmarks,RollNotation,Notation=1d20,686.2,2140.16
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.NotationRollBenchmarks,RollNotation,Notation=4d6+2,1308.4,3379.2
+2026-10-12T19:38:29.4861291Z,a2232d0,d20Tek.DiceNotation.Benchmarks.NotationRollBenchmarks,RollNotation,Notation=4d6k3+1d8+5,2377.2,6707.2

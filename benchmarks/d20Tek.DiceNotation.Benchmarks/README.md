@@ -33,4 +33,26 @@ dotnet run -c Release --project benchmarks\d20Tek.DiceNotation.Benchmarks --filt
 ```
 
 Results, including allocation data from `[MemoryDiagnoser]`, are written to the console and to
-`BenchmarkDotNet.Artifacts/results` as Markdown, CSV, and HTML reports.
+`BenchmarkDotNet.Artifacts/results` as Markdown, CSV, and HTML reports. The `BenchmarkDotNet.Artifacts`
+folder is gitignored since it contains full per-run diagnostics that do not need to be tracked.
+
+## Tracking Results Over Time (Regression Detection)
+
+To guard against speed/allocation regressions without committing full diagnostic artifacts, use
+`Update-BenchmarkHistory.ps1`. It runs the benchmarks, then appends one trimmed row per
+benchmark/parameter combination (timestamp, git commit, class, method, params, mean time,
+allocated bytes/op) to `benchmarks\BenchmarkHistory.csv`, which is tracked in source control.
+
+```
+.\benchmarks\d20Tek.DiceNotation.Benchmarks\Update-BenchmarkHistory.ps1
+```
+
+To scope to a subset of benchmarks:
+
+```
+.\benchmarks\d20Tek.DiceNotation.Benchmarks\Update-BenchmarkHistory.ps1 -Filter "*NotationRollBenchmarks*"
+```
+
+Diff `BenchmarkHistory.csv` against a prior commit (or open it in Excel/a CSV viewer) to compare
+`Mean_ns`/`Allocated_bytes` across runs and confirm a change improved, rather than regressed,
+performance.
