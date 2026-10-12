@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="BenchmarkDotNet" Version="0.15.4" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="D20Tek.Functional" Version="1.1.12" />
     <PackageVersion Include="D20Tek.Spectre.Console.Extensions" Version="1.57.3" />
