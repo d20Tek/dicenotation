@@ -77,8 +77,10 @@ frequency statistics.
 
 - **Property-based/fuzz testing**: Add a lightweight generator-based or fuzz testing pass for the
   parser to catch edge cases in notation combinations beyond the hand-written unit tests.
-- **Benchmark project**: Add a BenchmarkDotNet project tracking roll/parse throughput over time to
-  guard against performance regressions as features are added. This pairs well with the
-  seeded/replayable rolling feature, since seeded rollers give reproducible benchmark inputs.
+- [DONE] **Benchmark project**: Added `benchmarks\d20Tek.DiceNotation.Benchmarks`, a BenchmarkDotNet
+  project with `NotationRollBenchmarks`, `ExpressionRollBenchmarks`, and `BatchRollBenchmarks`,
+  using a seeded `RandomDieRoller` for reproducible inputs. `[MemoryDiagnoser]` reports allocations
+  per operation, giving a baseline to guide the parser/evaluator allocation work above and to guard
+  against performance regressions over time.
 - **Mutation testing**: Run a mutation testing pass (for example, with Stryker.NET) to validate the
   strength of the existing unit test suite.

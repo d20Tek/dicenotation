@@ -6,6 +6,7 @@ These are the release notes for our various updates. You can see how the library
 - Fixed DiceCli commands due to breaking changes in Spectre.Console.Cli Command and AsyncCommand base classes.
 - Added RollMany() overloads to IDice for rolling a dice expression multiple times and returning a list of DiceResults.
 - Enabled trimming and Native AOT support for the DiceNotation library by replacing dynamic dispatch in Evaluator with a type-safe switch expression, adding a source-generated DieTrackingJsonContext for JSON serialization, and annotating UseRollTracker<TTracker, TService>() with DynamicallyAccessedMembers for generic service registration.
+- Added DiceNotation Benchmarks project to measure performance of the DiceNotation library and compare different die rollers.
 
 ### Current Release (5.1.7):
 - Added `AddDiceNotation()` service-collection extensions to register `IDice`, configuration, die roller, and optional roll tracker cleanly through dependency injection.
