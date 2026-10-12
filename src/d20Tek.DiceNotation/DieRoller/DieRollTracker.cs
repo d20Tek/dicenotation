@@ -36,7 +36,7 @@ public class DieRollTracker : IDieRollTracker
     public async Task<string> ToJsonAsync() => await Task.Run(() =>
     {
         rollData = [.. GetTrimmedData()];
-        return JsonSerializer.Serialize(rollData);
+        return JsonSerializer.Serialize(rollData, DieTrackingJsonContext.Default.ListDieTrackingData);
     });
 
     /// <inheritdoc />
@@ -44,7 +44,7 @@ public class DieRollTracker : IDieRollTracker
     {
         if (string.IsNullOrEmpty(jsonText)) return;
 
-        var data = JsonSerializer.Deserialize<List<DieTrackingData>>(jsonText)!;
+        var data = JsonSerializer.Deserialize(jsonText, DieTrackingJsonContext.Default.ListDieTrackingData)!;
         rollData = [.. data.Take(TrackerDataLimit)];
     });
 

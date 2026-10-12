@@ -8,16 +8,23 @@ namespace d20Tek.DiceNotation.Parser;
 /// </summary>
 public sealed class Evaluator
 {
-    private static readonly ModifierEvaluator _modsEval = new();
-    private static readonly Dictionary<Type, object> _evaluatorlets = new()
+    private readonly ModifierEvaluator _modsEval = new();
+    private readonly NumberEvaluator _numberEval = new();
+    private readonly UnaryEvaluator _unaryEval = new();
+    private readonly BinaryEvaluator _binaryEval = new();
+    private readonly GroupEvaluator _groupEval;
+    private readonly DiceEvaluator _diceEval;
+    private readonly FudgeDiceEvaluator _fudgeEval;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Evaluator"/> class.
+    /// </summary>
+    public Evaluator()
     {
-        { typeof(NumberExpression), new NumberEvaluator() },
-        { typeof(UnaryExpression), new UnaryEvaluator() },
-        { typeof(BinaryExpression), new BinaryEvaluator() },
-        { typeof(GroupExpression), new GroupEvaluator() },
-        { typeof(DiceExpression), new DiceEvaluator(_modsEval) },
-        { typeof(FudgeExpression), new FudgeDiceEvaluator(_modsEval) },
-    };
+        _groupEval = new GroupEvaluator();
+        _diceEval = new DiceEvaluator(_modsEval);
+        _fudgeEval = new FudgeDiceEvaluator(_modsEval);
+    }
 
     /// <summary>
     /// Parses and evaluates the specified dice notation into a <see cref="DiceResult"/>.
@@ -48,8 +55,14 @@ public sealed class Evaluator
         (ex is ParseException || ex is EvalException) ? ex.Message : Constants.Errors.UnknownException(ex.Message),
         notation);
 
-    internal int EvalInternal(Expression expr, IDieRoller roller, List<TermResult> terms) =>
-        _evaluatorlets.TryGetValue(expr.GetType(), out var eval)
-            ? ((dynamic)eval).Eval(this, roller, terms, (dynamic)expr)
-            : throw new EvalException(Constants.Errors.UnknownExpression(expr));
+    internal int EvalInternal(Expression expr, IDieRoller roller, List<TermResult> terms) => expr switch
+    {
+        NumberExpression num => _numberEval.Eval(this, roller, terms, num),
+        UnaryExpression unary => _unaryEval.Eval(this, roller, terms, unary),
+        BinaryExpression binary => _binaryEval.Eval(this, roller, terms, binary),
+        GroupExpression group => _groupEval.Eval(this, roller, terms, group),
+        DiceExpression dice => _diceEval.Eval(this, roller, terms, dice),
+        FudgeExpression fudge => _fudgeEval.Eval(this, roller, terms, fudge),
+        _ => throw new EvalException(Constants.Errors.UnknownExpression(expr)),
+    };
 }

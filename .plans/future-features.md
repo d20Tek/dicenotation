@@ -47,10 +47,13 @@ frequency statistics.
 
 - [DONE] **DI extension package**: `AddDiceNotation()` service-collection extensions to register `IDice`,
   configuration, roller, and tracker cleanly.
-- **Trimming/AOT annotations**: Annotate the library with `IsTrimmable`/`IsAotCompatible` so consumers
-  publishing with trimming or Native AOT (for example, native console or game clients) get full
-  support. The library has no reflection-heavy paths, so this should mainly involve auditing for
-  dynamic code patterns and setting the appropriate MSBuild properties.
+- [DONE] **Trimming/AOT annotations**: Annotated the library with `IsTrimmable`/`IsAotCompatible` (plus
+  the trim and AOT analyzers) so consumers publishing with trimming or Native AOT (for example,
+  native console or game clients) get full support. This involved replacing the `dynamic`-based
+  evaluator dispatch in `Evaluator` with a type-safe `switch` expression, adding a source-generated
+  `DieTrackingJsonContext` (`JsonSerializerContext`) for `DieRollTracker`/`AggregateRollTracker`
+  JSON serialization, and annotating `UseRollTracker<TTracker, TService>()` with
+  `DynamicallyAccessedMembers` for its generic service registration.
 
 ## Performance and Allocation Enhancements
 
