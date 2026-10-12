@@ -15,7 +15,7 @@ internal class DeleteFavoriteCommand(IAnsiConsole console, LowDb<FavoriteRollsDo
     private readonly IAnsiConsole _console = console;
     private readonly LowDb<FavoriteRollsDocument> _db = db;
 
-    protected override int Execute(CommandContext context, Settings request, CancellationToken _)
+    public override int Execute(CommandContext context, Settings request, CancellationToken _)
     {
         _console.WriteMessages("Delete Favorite", "---------------");
         

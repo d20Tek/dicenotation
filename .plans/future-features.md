@@ -47,3 +47,34 @@ frequency statistics.
 
 - [DONE] **DI extension package**: `AddDiceNotation()` service-collection extensions to register `IDice`,
   configuration, roller, and tracker cleanly.
+- **Trimming/AOT annotations**: Annotate the library with `IsTrimmable`/`IsAotCompatible` so consumers
+  publishing with trimming or Native AOT (for example, native console or game clients) get full
+  support. The library has no reflection-heavy paths, so this should mainly involve auditing for
+  dynamic code patterns and setting the appropriate MSBuild properties.
+
+## Performance and Allocation Enhancements
+
+- **Reduce allocations in the parser/evaluator pipeline**: Profile `Lexer`, `Parser`, and `Evaluator`
+  for intermediate list/string allocations on hot paths, especially when the same notation is rolled
+  repeatedly, and consider `Span<char>`-based tokenization to cut down on allocations.
+- **Expression caching/precompilation**: Cache the parsed term tree for a notation string (for
+  example, keyed by the `"4d6+2"` text) so repeated rolls of the same notation skip re-parsing. This
+  is especially useful for simulations that roll the same expression thousands of times.
+- **Pooled buffers for term results**: Use `ArrayPool<T>` or similar pooling for `TermResult` lists in
+  high-volume Monte Carlo or simulation scenarios to reduce GC pressure.
+
+## API Enhancements
+
+- **`IDice` batch rolling**: Add a method such as `RollMany(string notation, int count)` returning
+  `IEnumerable<DiceResult>` to support simulation and statistics use cases, pairing naturally with
+  `IAggregateRollTracker` for aggregating results across the batch.
+
+## Testing and Quality Infrastructure
+
+- **Property-based/fuzz testing**: Add a lightweight generator-based or fuzz testing pass for the
+  parser to catch edge cases in notation combinations beyond the hand-written unit tests.
+- **Benchmark project**: Add a BenchmarkDotNet project tracking roll/parse throughput over time to
+  guard against performance regressions as features are added. This pairs well with the
+  seeded/replayable rolling feature, since seeded rollers give reproducible benchmark inputs.
+- **Mutation testing**: Run a mutation testing pass (for example, with Stryker.NET) to validate the
+  strength of the existing unit test suite.
