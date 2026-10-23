@@ -14,11 +14,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".plans", ".plans", "{33DAD1CA-C80F-401D-800D-ED3FC27BDE31}"
 	ProjectSection(SolutionItems) = preProject
 		.plans\future-features.md = .plans\future-features.md
+		.plans\visual-dice-roller-design.md = .plans\visual-dice-roller-design.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{66320409-64EC-F7C5-3DEF-65E7510DAAD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "d20Tek.DiceNotation.Benchmarks", "benchmarks\d20Tek.DiceNotation.Benchmarks\d20Tek.DiceNotation.Benchmarks.csproj", "{44AC60BE-85A7-4D32-98C3-8C9D056C45CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spikes", "spikes", "{674B3D0D-B3C1-BDFD-64ED-056E74CE37B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D20Tek.DiceNotation.PhysicsSpike", "spikes\D20Tek.DiceNotation.PhysicsSpike\D20Tek.DiceNotation.PhysicsSpike.csproj", "{76CBB628-D1CA-4A6A-833D-1F585C29669B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D20Tek.DiceNotation.BlazorSpike", "spikes\D20Tek.DiceNotation.BlazorSpike\D20Tek.DiceNotation.BlazorSpike.csproj", "{000C982B-6532-419E-BD61-25B731A85889}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +85,30 @@ Global
 		{44AC60BE-85A7-4D32-98C3-8C9D056C45CA}.Release|x64.Build.0 = Release|Any CPU
 		{44AC60BE-85A7-4D32-98C3-8C9D056C45CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{44AC60BE-85A7-4D32-98C3-8C9D056C45CA}.Release|x86.Build.0 = Release|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Debug|x64.Build.0 = Debug|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Debug|x86.Build.0 = Debug|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Release|x64.ActiveCfg = Release|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Release|x64.Build.0 = Release|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Release|x86.ActiveCfg = Release|Any CPU
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B}.Release|x86.Build.0 = Release|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Debug|x64.Build.0 = Debug|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Debug|x86.Build.0 = Debug|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Release|x64.ActiveCfg = Release|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Release|x64.Build.0 = Release|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Release|x86.ActiveCfg = Release|Any CPU
+		{000C982B-6532-419E-BD61-25B731A85889}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +116,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{14FE8E35-5FCC-4041-8BD6-22A189C841ED} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{44AC60BE-85A7-4D32-98C3-8C9D056C45CA} = {66320409-64EC-F7C5-3DEF-65E7510DAAD1}
+		{76CBB628-D1CA-4A6A-833D-1F585C29669B} = {674B3D0D-B3C1-BDFD-64ED-056E74CE37B3}
+		{000C982B-6532-419E-BD61-25B731A85889} = {674B3D0D-B3C1-BDFD-64ED-056E74CE37B3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28421BFA-9DC6-4A11-9E57-0F8D8E6E3EC1}
