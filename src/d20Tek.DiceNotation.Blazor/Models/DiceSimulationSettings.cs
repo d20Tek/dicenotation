@@ -43,6 +43,13 @@ public sealed record DiceSimulationSettings
     /// </summary>
     public int MaxCatchUpSteps { get; init; } = 5;
 
+    /// <summary>
+    /// Gets the largest elapsed time, in seconds, reported for a single animation frame.
+    /// The browser stops scheduling frames for a backgrounded tab, so the first frame
+    /// after resuming is clamped to this value instead of replaying the whole pause.
+    /// </summary>
+    public float MaxFrameSeconds { get; init; } = 0.1f;
+
     /// <summary>Gets the linear velocity at or below which a die is considered at rest.</summary>
     public float LinearSleepThreshold { get; init; } = 0.05f;
 
@@ -77,6 +84,7 @@ public sealed record DiceSimulationSettings
         EnsureNonNegative(MaxLaunchSpeed, nameof(MaxLaunchSpeed));
         EnsureNonNegative(MaxLaunchSpin, nameof(MaxLaunchSpin));
         EnsurePositive(FixedStep, nameof(FixedStep));
+        EnsurePositive(MaxFrameSeconds, nameof(MaxFrameSeconds));
         EnsureNonNegative(LinearSleepThreshold, nameof(LinearSleepThreshold));
         EnsureNonNegative(AngularSleepThreshold, nameof(AngularSleepThreshold));
         EnsureNonNegative(SettleHoldSeconds, nameof(SettleHoldSeconds));

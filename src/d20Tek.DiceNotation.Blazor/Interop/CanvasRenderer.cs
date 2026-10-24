@@ -78,6 +78,51 @@ public sealed class CanvasRenderer : IAsyncDisposable
     }
 
     /// <summary>
+    /// Starts the browser animation scheduler for this canvas. The browser is the only
+    /// frame source, and the supplied reference is invoked once per displayed frame.
+    /// Starting a loop that is already running replaces the previous one.
+    /// </summary>
+    /// <param name="callback">
+    /// A reference to the .NET object exposing the <c>OnFrameAsync</c> frame callback.
+    /// </param>
+    /// <param name="maxFrameSeconds">
+    /// The largest elapsed time reported to .NET for a single frame. This bounds the
+    /// catch-up work produced by a long pause such as a backgrounded tab.
+    /// </param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>A task that completes when the scheduler has started.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="callback"/> is <see langword="null"/>.
+    /// </exception>
+    public async ValueTask StartLoopAsync(
+        object callback,
+        float maxFrameSeconds,
+        CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        ArgumentNullException.ThrowIfNull(callback);
+
+        if (!IsInitialized) return;
+
+        await _module!.InvokeVoidAsync("startLoop", cancellationToken, _handle, callback, maxFrameSeconds);
+    }
+
+    /// <summary>
+    /// Stops the browser animation scheduler for this canvas. Calling this when no loop
+    /// is running has no effect.
+    /// </summary>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>A task that completes when the scheduler has stopped.</returns>
+    public async ValueTask StopLoopAsync(CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (!IsInitialized) return;
+
+        await _module!.InvokeVoidAsync("stopLoop", cancellationToken, _handle);
+    }
+
+    /// <summary>
     /// Recomputes the canvas backing buffer and redraws the current scene.
     /// </summary>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
@@ -106,6 +151,9 @@ public sealed class CanvasRenderer : IAsyncDisposable
             {
                 if (_handle != 0)
                 {
+                    // Stop scheduling frames before releasing the module so a queued
+                    // frame callback cannot run against disposed .NET state.
+                    await _module.InvokeVoidAsync("stopLoop", _handle);
                     await _module.InvokeVoidAsync("dispose", _handle);
                 }
 

@@ -19,7 +19,15 @@ export function initialize(canvas) {
 
     const handle = nextId++;
     const context = canvas.getContext("2d");
-    const state = { canvas, context, scene: null };
+    const state = {
+        canvas,
+        context,
+        scene: null,
+        callback: null,
+        frameId: undefined,
+        lastFrameTime: 0,
+        framePending: false,
+    };
 
     // Redraw on container resize so the scene survives layout changes.
     if (typeof ResizeObserver !== "undefined") {
@@ -67,6 +75,88 @@ export function resize(handle) {
 }
 
 /**
+ * Starts the single animation scheduler for a canvas. The browser's
+ * requestAnimationFrame is the only frame source: C# owns the physics and is
+ * notified once per displayed frame with the elapsed time since the last frame.
+ *
+ * Starting a loop that is already running cancels the previous registration
+ * first, so a canvas can never own more than one scheduler.
+ * @param {number} handle The canvas handle.
+ * @param {object} callback A DotNetObjectReference exposing OnFrameAsync.
+ * @param {number} maxFrameSeconds The largest elapsed value reported to C#.
+ */
+export function startLoop(handle, callback, maxFrameSeconds) {
+    const state = contexts.get(handle);
+    if (!state || !callback) {
+        return;
+    }
+
+    stopLoop(handle);
+
+    const clamp = Number.isFinite(maxFrameSeconds) && maxFrameSeconds > 0
+        ? maxFrameSeconds
+        : 0.1;
+
+    state.callback = callback;
+    state.lastFrameTime = 0;
+    state.framePending = false;
+
+    const onFrame = (timestamp) => {
+        // The loop may have been stopped or disposed between frames.
+        if (state.frameId === undefined || state.callback !== callback) {
+            return;
+        }
+
+        state.frameId = requestAnimationFrame(onFrame);
+
+        // Skip overlapping frames so a slow C# frame cannot queue up work.
+        if (state.framePending) {
+            return;
+        }
+
+        // The first frame has no previous timestamp, and a backgrounded tab can
+        // produce a very large gap, so the delta is always clamped.
+        const previous = state.lastFrameTime || timestamp;
+        state.lastFrameTime = timestamp;
+        const elapsed = Math.min(Math.max((timestamp - previous) / 1000, 0), clamp);
+
+        state.framePending = true;
+        callback.invokeMethodAsync("OnFrameAsync", elapsed)
+            .then(() => {
+                state.framePending = false;
+            })
+            .catch(() => {
+                // A failed frame callback usually means .NET disposed the loop.
+                // Stop scheduling rather than spinning on a broken reference.
+                state.framePending = false;
+                stopLoop(handle);
+            });
+    };
+
+    state.frameId = requestAnimationFrame(onFrame);
+}
+
+/**
+ * Stops the animation scheduler for a canvas. Safe to call when no loop is running.
+ * @param {number} handle The canvas handle.
+ */
+export function stopLoop(handle) {
+    const state = contexts.get(handle);
+    if (!state) {
+        return;
+    }
+
+    if (state.frameId !== undefined) {
+        cancelAnimationFrame(state.frameId);
+        state.frameId = undefined;
+    }
+
+    state.callback = null;
+    state.lastFrameTime = 0;
+    state.framePending = false;
+}
+
+/**
  * Releases the observer and cached state for a canvas.
  * @param {number} handle The canvas handle.
  */
@@ -76,6 +166,7 @@ export function dispose(handle) {
         return;
     }
 
+    stopLoop(handle);
     state.observer?.disconnect();
     contexts.delete(handle);
 }
