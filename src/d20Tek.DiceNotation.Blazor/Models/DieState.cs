@@ -11,6 +11,17 @@ namespace d20Tek.DiceNotation.Blazor.Models;
 /// <param name="Rotation">The rotation of the die, in radians.</param>
 /// <param name="Width">The width of the die.</param>
 /// <param name="Height">The height of the die.</param>
+/// <param name="Energy">
+/// How vigorously the die is moving, normalized to the range 0 to 1, where 0 is fully at
+/// rest and 1 is moving as fast as a launch. The renderer uses this to imply height,
+/// motion, and tumbling. It is a presentation hint only and never affects the result.
+/// </param>
+/// <param name="Sides">The number of faces on the die.</param>
+/// <param name="VelocityX">
+/// The horizontal velocity of the die, in logical units per second. The renderer uses
+/// this to tumble a die forward over its direction of travel.
+/// </param>
+/// <param name="VelocityY">The vertical velocity of the die, in logical units per second.</param>
 public sealed record DieState(
     string Id,
     int Value,
@@ -18,4 +29,8 @@ public sealed record DieState(
     float Y,
     float Rotation,
     float Width,
-    float Height);
+    float Height,
+    float Energy = 0f,
+    int Sides = 6,
+    float VelocityX = 0f,
+    float VelocityY = 0f);

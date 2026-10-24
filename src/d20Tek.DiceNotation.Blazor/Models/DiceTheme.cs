@@ -33,6 +33,25 @@ public sealed record DiceTheme
     /// <summary>Gets the corner radius of each die, in logical units.</summary>
     public float DieCornerRadius { get; init; } = 0.1f;
 
+    /// <summary>
+    /// Gets the color of the lit bevel drawn along the top-left edges of a die. This gives
+    /// a flat square the appearance of a solid cube without any three-dimensional geometry.
+    /// </summary>
+    public string DieBevelLightColor { get; init; } = "rgba(255, 255, 255, 0.9)";
+
+    /// <summary>Gets the color of the shaded bevel drawn along the bottom-right edges of a die.</summary>
+    public string DieBevelDarkColor { get; init; } = "rgba(31, 41, 51, 0.16)";
+
+    /// <summary>Gets the color of the directional smear drawn behind a fast-moving die.</summary>
+    public string DieMotionColor { get; init; } = "rgba(245, 247, 250, 0.22)";
+
+    /// <summary>
+    /// Gets a value indicating whether motion effects are drawn. When this is
+    /// <see langword="false"/> the renderer skips the face churn, the implied height, and
+    /// the motion smear, which suits users who prefer reduced motion.
+    /// </summary>
+    public bool UseMotionEffects { get; init; } = true;
+
     /// <summary>Gets the default light theme.</summary>
     public static DiceTheme Default { get; } = new();
 
@@ -46,6 +65,9 @@ public sealed record DiceTheme
         DieBorderColor = "#b08968",
         DieTextColor = "#f0e6d2",
         DieShadowColor = "rgba(0, 0, 0, 0.55)",
+        DieBevelLightColor = "rgba(224, 196, 154, 0.38)",
+        DieBevelDarkColor = "rgba(0, 0, 0, 0.4)",
+        DieMotionColor = "rgba(176, 137, 104, 0.25)",
     };
 
     /// <summary>Gets a bright theme suited to light application backgrounds.</summary>
@@ -58,6 +80,9 @@ public sealed record DiceTheme
         DieBorderColor = "#a98b5d",
         DieTextColor = "#44372a",
         DieShadowColor = "rgba(68, 55, 42, 0.3)",
+        DieBevelLightColor = "rgba(255, 255, 255, 0.85)",
+        DieBevelDarkColor = "rgba(120, 97, 66, 0.22)",
+        DieMotionColor = "rgba(169, 139, 93, 0.22)",
     };
 
     /// <summary>
@@ -73,6 +98,9 @@ public sealed record DiceTheme
         EnsureColor(DieBorderColor, nameof(DieBorderColor));
         EnsureColor(DieTextColor, nameof(DieTextColor));
         EnsureColor(DieShadowColor, nameof(DieShadowColor));
+        EnsureColor(DieBevelLightColor, nameof(DieBevelLightColor));
+        EnsureColor(DieBevelDarkColor, nameof(DieBevelDarkColor));
+        EnsureColor(DieMotionColor, nameof(DieMotionColor));
         EnsureRadius(TrayCornerRadius, nameof(TrayCornerRadius));
         EnsureRadius(DieCornerRadius, nameof(DieCornerRadius));
     }

@@ -7,6 +7,13 @@
 const contexts = new Map();
 let nextId = 1;
 
+// Fallback tuning used only if a scene arrives without a visuals block.
+const DEFAULT_VISUALS = {
+    lightAngle: -Math.PI * 0.75,
+    bevelThickness: 0.1,
+    smearSteps: 3,
+};
+
 /**
  * Initializes a canvas and returns a handle used by the other exported functions.
  * @param {HTMLCanvasElement} canvas The canvas element to draw on.
@@ -212,8 +219,10 @@ function draw(state) {
 
     drawTray(context, scene, scale, originX, originY);
 
+    const visuals = scene.visuals || DEFAULT_VISUALS;
     for (const die of scene.dice) {
-        drawDie(context, scene.theme, die, scale, originX, originY);
+        // Every presentation decision was already made in C#; this only draws.
+        drawDie(context, scene.theme, visuals, die, scale, originX, originY);
     }
 }
 
@@ -234,51 +243,173 @@ function drawTray(context, scene, scale, originX, originY) {
     context.restore();
 }
 
-function drawDie(context, theme, die, scale, originX, originY) {
+function drawDie(context, theme, visuals, die, scale, originX, originY) {
     // The simulation places the origin at the tray center. Canvas Y grows downward,
     // so the Y axis is inverted here rather than in the physics world.
     const centerX = originX + die.x * scale;
     const centerY = originY - die.y * scale;
-    const width = die.width * scale;
-    const height = die.height * scale;
+
+    // Lift, shadow, and smear all arrive already resolved from C#.
+    const width = die.width * scale * die.lift;
+    const height = die.height * scale * die.lift;
     const radius = Math.max(0, theme.dieCornerRadius * scale);
+
+    if (die.smearStrength > 0) {
+        drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, width, height, radius);
+    }
 
     context.save();
     context.translate(centerX, centerY);
     context.rotate(-die.rotation);
 
     context.shadowColor = theme.dieShadowColor;
-    context.shadowBlur = Math.max(2, scale * 0.12);
-    context.shadowOffsetY = Math.max(1, scale * 0.05);
+    context.shadowBlur = Math.max(2, die.shadowBlur * scale);
+    context.shadowOffsetY = Math.max(1, die.shadowOffset * scale);
 
     context.beginPath();
     roundedRect(context, -width / 2, -height / 2, width, height, radius);
-    context.fillStyle = theme.dieColor;
+    context.fillStyle = buildDieFill(context, theme, visuals, width, height, -die.rotation);
     context.fill();
 
     context.shadowColor = "transparent";
     context.shadowBlur = 0;
     context.shadowOffsetY = 0;
+
+    drawBevel(context, theme, visuals, width, height, radius, -die.rotation);
+
     context.lineWidth = Math.max(1, scale * 0.03);
     context.strokeStyle = theme.dieBorderColor;
+    context.beginPath();
+    roundedRect(context, -width / 2, -height / 2, width, height, radius);
     context.stroke();
-    context.restore();
 
-    drawValue(context, theme, die, centerX, centerY, Math.min(width, height));
+    // The value is drawn inside the rotated transform so it tumbles with the body.
+    drawValue(context, theme, die, Math.min(width, height));
+
+    context.restore();
 }
 
 /**
- * Draws the die's fixed value upright at the die center. The label is intentionally
- * not rotated with the body so it stays legible at any orientation.
+ * Builds a soft gradient across the die face so it reads as a solid object rather
+ * than a flat fill. Falls back to the plain color if gradients are unavailable.
+ *
+ * The gradient direction is counter-rotated by the die's own rotation so the light
+ * appears to come from a fixed point in the scene rather than spinning with the die.
  */
-function drawValue(context, theme, die, centerX, centerY, size) {
+function buildDieFill(context, theme, visuals, width, height, rotation) {
+    if (typeof context.createLinearGradient !== "function") {
+        return theme.dieColor;
+    }
+
+    // Light arrives from a fixed scene direction, expressed in the die's local space.
+    const reach = Math.max(width, height) / 2;
+    const angle = visuals.lightAngle + rotation;
+    const lightX = Math.cos(angle) * reach;
+    const lightY = Math.sin(angle) * reach;
+
+    const gradient = context.createLinearGradient(lightX, lightY, -lightX, -lightY);
+    gradient.addColorStop(0, theme.dieBevelLightColor);
+    gradient.addColorStop(0.4, theme.dieColor);
+    gradient.addColorStop(1, theme.dieColor);
+
+    return gradient;
+}
+
+/**
+ * Draws a lit and shaded inner edge so a square reads as a cube seen from above.
+ *
+ * The bevel follows the die's rounded outline and is clipped to it, so it can never
+ * cut across a corner or bleed outside the silhouette. The lit and shaded halves are
+ * selected by clipping to a half-plane whose angle is counter-rotated by the die's
+ * rotation, which keeps the light fixed in the scene instead of spinning with the die.
+ */
+function drawBevel(context, theme, visuals, width, height, radius, rotation) {
+    const thickness = Math.max(1, Math.min(width, height) * visuals.bevelThickness);
+    const inset = thickness / 2;
+    const innerWidth = Math.max(1, width - thickness);
+    const innerHeight = Math.max(1, height - thickness);
+    const innerRadius = Math.max(0, radius - inset);
+    const reach = Math.max(width, height);
+    const lightAngle = visuals.lightAngle + rotation;
+
     context.save();
-    context.translate(centerX, centerY);
+
+    // Clipping to the body keeps the bevel inside the die at every rotation.
+    context.beginPath();
+    roundedRect(context, -width / 2, -height / 2, width, height, radius);
+    context.clip();
+
+    context.lineWidth = thickness;
+
+    // The shaded edge covers the whole ring, then the lit half is drawn over it.
+    context.beginPath();
+    roundedRect(context, -innerWidth / 2, -innerHeight / 2, innerWidth, innerHeight, innerRadius);
+    context.strokeStyle = theme.dieBevelDarkColor;
+    context.stroke();
+
+    context.save();
+    context.rotate(lightAngle);
+    context.beginPath();
+    context.rect(-reach, -reach, reach * 2, reach);
+    context.clip();
+    context.rotate(-lightAngle);
+
+    context.beginPath();
+    roundedRect(context, -innerWidth / 2, -innerHeight / 2, innerWidth, innerHeight, innerRadius);
+    context.strokeStyle = theme.dieBevelLightColor;
+    context.stroke();
+    context.restore();
+
+    context.restore();
+}
+
+/**
+ * Draws a short directional trail behind a fast-moving die. This is a cheap stand-in
+ * for motion blur: a few fading copies offset along the travel direction. The strength
+ * and reach of the trail are decided in C#.
+ */
+function drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, width, height, radius) {
+    const steps = Math.max(1, visuals.smearSteps);
+    const reach = die.smearReach * scale;
+    const dirX = die.smearDirectionX;
+    const dirY = die.smearDirectionY;
+
+    context.save();
+    context.fillStyle = theme.dieMotionColor;
+
+    for (let i = steps; i >= 1; i--) {
+        const fraction = i / steps;
+        context.globalAlpha = (1 - fraction) * die.smearStrength * 0.5;
+
+        context.save();
+        // Trail behind the die along its actual direction of travel. Canvas Y grows
+        // downward, so the vertical component is inverted to match the physics world.
+        context.translate(centerX - dirX * reach * fraction,
+                          centerY + dirY * reach * fraction);
+        context.rotate(-die.rotation);
+        context.beginPath();
+        roundedRect(context, -width / 2, -height / 2, width, height, radius);
+        context.fill();
+        context.restore();
+    }
+
+    context.restore();
+}
+
+/**
+ * Draws the die's face at the die center, rotated with the body so the numeral tumbles
+ * like a real face. Which face to draw is decided in C# and arrives already resolved,
+ * including any transient churn while the die is moving quickly.
+ */
+function drawValue(context, theme, die, size) {
+    context.save();
     context.fillStyle = theme.dieTextColor;
     context.font = `600 ${Math.max(8, size * 0.5)}px system-ui, sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.fillText(String(die.value), 0, 0);
+
+    // Keep the numeral upright relative to its own face, not the viewport.
+    context.fillText(String(die.shownValue), 0, 0);
     context.restore();
 }
 

@@ -34,6 +34,12 @@
         </select>
     </div>
     <div class="col-auto align-self-end">
+        <div class="form-check">
+            <input id="motion" class="form-check-input" type="checkbox" @bind="_useMotionEffects" />
+            <label class="form-check-label" for="motion">Motion effects</label>
+        </div>
+    </div>
+    <div class="col-auto align-self-end">
         <button class="btn btn-primary" @onclick="RollAsync">Roll</button>
     </div>
     <div class="col-auto align-self-end">
@@ -83,17 +89,26 @@
     private DiceAnimationLoop? _loop;
     private int _diceCount = 6;
     private string _themeName = "Default";
+    private bool _useMotionEffects = true;
     private string _state = "Idle";
     private string? _error;
 
     private bool IsRolling => _loop?.IsRunning ?? false;
 
-    private DiceTheme Theme => _themeName switch
+    private DiceTheme Theme
     {
-        "DarkFantasy" => DiceTheme.DarkFantasy,
-        "Parchment" => DiceTheme.Parchment,
-        _ => DiceTheme.Default,
-    };
+        get
+        {
+            var theme = _themeName switch
+            {
+                "DarkFantasy" => DiceTheme.DarkFantasy,
+                "Parchment" => DiceTheme.Parchment,
+                _ => DiceTheme.Default,
+            };
+
+            return theme with { UseMotionEffects = _useMotionEffects };
+        }
+    }
 
     private string AriaLabel =>
         _results.Count == 0

@@ -140,7 +140,11 @@ public sealed class AetherDiceSimulation : IDiceSimulation
                 die.Body.Position.Y,
                 die.Body.Rotation,
                 _settings.DieSize,
-                _settings.DieSize);
+                _settings.DieSize,
+                CalculateEnergy(die.Body),
+                die.Die.Sides,
+                die.Body.LinearVelocity.X,
+                die.Body.LinearVelocity.Y);
         }
 
         return new DiceSceneState(states, _elapsedSeconds, IsSettled);
@@ -284,6 +288,26 @@ public sealed class AetherDiceSimulation : IDiceSimulation
         _dice.TrueForAll(d =>
             d.Body.LinearVelocity.Length() <= _settings.LinearSleepThreshold &&
             Math.Abs(d.Body.AngularVelocity) <= _settings.AngularSleepThreshold);
+
+    /// <summary>
+    /// Normalizes a body's linear and angular speed into a single 0-to-1 presentation hint.
+    /// The faster of the two contributions wins, so a die that is spinning in place still
+    /// reads as being in motion.
+    /// </summary>
+    private float CalculateEnergy(Body body)
+    {
+        var linear = _settings.MaxLaunchSpeed > 0f
+            ? body.LinearVelocity.Length() / _settings.MaxLaunchSpeed
+            : 0f;
+
+        var angular = _settings.MaxLaunchSpin > 0f
+            ? Math.Abs(body.AngularVelocity) / _settings.MaxLaunchSpin
+            : 0f;
+
+        var energy = Math.Max(linear, angular);
+
+        return float.IsFinite(energy) ? Math.Clamp(energy, 0f, 1f) : 0f;
+    }
 
     private float NextFloat(float min, float max) => min + ((float)_random.NextDouble() * (max - min));
 
