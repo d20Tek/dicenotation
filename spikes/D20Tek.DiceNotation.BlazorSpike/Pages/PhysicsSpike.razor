@@ -1,15 +1,16 @@
 @page "/physics-spike"
 @using System.Diagnostics
-@using D20Tek.DiceNotation.PhysicsSpike
+@using d20Tek.DiceNotation.Blazor.Models
+@using d20Tek.DiceNotation.Blazor.Services
 
 <PageTitle>Aether.Physics2D WASM spike</PageTitle>
 
 <h1>Aether.Physics2D WASM spike</h1>
 
 <p>
-    Runs the same headless dice tray simulation used by the console spike, but inside the
-    Blazor WebAssembly runtime. This verifies that Aether.Physics2D loads and executes
-    correctly in the browser before building the real component.
+    Runs the packaged <code>AetherDiceSimulation</code> headlessly inside the Blazor
+    WebAssembly runtime. This verifies that Aether.Physics2D loads and executes correctly
+    in the browser, and reports how long a full settle takes in wall-clock time.
 </p>
 
 <button class="btn btn-primary" @onclick="RunSpikeAsync" disabled="@_isRunning">
@@ -76,7 +77,7 @@
 
         try
         {
-            var settings = new SpikeSettings();
+            var settings = new DiceSimulationSettings();
 
             foreach (var count in DiceCounts)
             {
@@ -97,21 +98,20 @@
         }
     }
 
-    private SpikeRunResult RunSingle(SpikeSettings settings, int count)
+    private SpikeRunResult RunSingle(DiceSimulationSettings settings, int count)
     {
-        using var simulation = new DiceTraySimulation(settings, _animationRandom);
+        using var simulation = new AetherDiceSimulation(settings, _animationRandom);
 
-        var values = new int[count];
-        for (var i = 0; i < count; i++)
-        {
-            values[i] = _resultRandom.Next(1, 7);
-        }
+        // Results are determined before the animation starts and never change afterwards.
+        var dice = Enumerable.Range(0, count)
+            .Select(i => new VisualDie($"die-{i}", "d6", _resultRandom.Next(1, 7)))
+            .ToArray();
 
         var stopwatch = Stopwatch.StartNew();
-        simulation.StartRoll(values);
-        while (!simulation.IsSettled && !simulation.IsTimedOut)
+        simulation.StartRoll(dice, DiceTraySize.Default);
+        while (!simulation.IsSettled)
         {
-            simulation.Step();
+            simulation.Step(settings.FixedStep);
         }
 
         stopwatch.Stop();
@@ -121,7 +121,7 @@
             count,
             snapshot.IsSettled,
             simulation.AllDiceInsideTray(),
-            snapshot.Dice.Select(d => d.Value).SequenceEqual(values),
+            snapshot.Dice.Select(d => d.Value).SequenceEqual(dice.Select(d => d.Value)),
             snapshot.ElapsedSeconds,
             stopwatch.Elapsed.TotalMilliseconds);
     }

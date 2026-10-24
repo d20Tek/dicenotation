@@ -9,16 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aether.Physics2D" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Verify the exact same simulation code from the console spike in the WASM runtime. -->
-    <Compile Include="..\D20Tek.DiceNotation.PhysicsSpike\SpikeSettings.cs" Link="Simulation\SpikeSettings.cs" />
-    <Compile Include="..\D20Tek.DiceNotation.PhysicsSpike\SceneSnapshot.cs" Link="Simulation\SceneSnapshot.cs" />
-    <Compile Include="..\D20Tek.DiceNotation.PhysicsSpike\DiceTraySimulation.cs" Link="Simulation\DiceTraySimulation.cs" />
+    <ProjectReference Include="..\..\src\d20Tek.DiceNotation.Blazor\d20Tek.DiceNotation.Blazor.csproj" />
   </ItemGroup>
 
 </Project>
