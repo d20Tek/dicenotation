@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aether.Physics2D" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\d20Tek.DiceNotation\d20Tek.DiceNotation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="d20Tek.DiceNotation.Blazor.UnitTests" />
+  </ItemGroup>
+
+</Project>

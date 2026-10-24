@@ -117,7 +117,7 @@ public class LexerTests
         var tokens = TokenizeNotation(lexer);
 
         // assert
-        CollectionAssert.AreEqual(expected, tokens.Select(x => x.Lexeme).ToArray());
+        Assert.AreSequenceEqual(expected, [.. tokens.Select(x => x.Lexeme)]);
     }
 
 
@@ -158,6 +158,79 @@ public class LexerTests
         Assert.AreEqual(new Token(TokenKind.Number, "20", 20, new(2, 1, 3)), tokens[2]);
         Assert.AreEqual(new Token(TokenKind.Plus, "+", null, new(4, 1, 5)), tokens[3]);
         Assert.AreEqual(TokenKind.EndOfInput, tokens[4].Kind);
+    }
+
+    [TestMethod]
+    [DataRow("+", nameof(TokenKind.Plus))]
+    [DataRow("-", nameof(TokenKind.Minus))]
+    [DataRow("*", nameof(TokenKind.Star))]
+    [DataRow("x", nameof(TokenKind.Times))]
+    [DataRow("X", nameof(TokenKind.Times))]
+    [DataRow("/", nameof(TokenKind.Divide))]
+    [DataRow("(", nameof(TokenKind.GroupStart))]
+    [DataRow(")", nameof(TokenKind.GroupEnd))]
+    [DataRow("d", nameof(TokenKind.Dice))]
+    [DataRow("D", nameof(TokenKind.Dice))]
+    [DataRow("f", nameof(TokenKind.FudgeDice))]
+    [DataRow("F", nameof(TokenKind.FudgeDice))]
+    [DataRow("%", nameof(TokenKind.Percent))]
+    [DataRow("!", nameof(TokenKind.Exploding))]
+    [DataRow("k", nameof(TokenKind.Keep))]
+    [DataRow("K", nameof(TokenKind.Keep))]
+    [DataRow("p", nameof(TokenKind.Drop))]
+    [DataRow("P", nameof(TokenKind.Drop))]
+    [DataRow("l", nameof(TokenKind.KeepLowest))]
+    [DataRow("L", nameof(TokenKind.KeepLowest))]
+    public void GetNextToken_WithSingleCharacterToken_MapsToExpectedKind(string notation, string expectedKind)
+    {
+        // arrange
+        var expected = Enum.Parse<TokenKind>(expectedKind);
+        var lexer = new Lexer(notation);
+
+        // act
+        var tokens = TokenizeNotation(lexer);
+
+        // assert
+        Assert.HasCount(2, tokens);
+        Assert.AreEqual(new Token(expected, notation, null, new(0, 1, 1)), tokens[0]);
+        Assert.AreEqual(TokenKind.EndOfInput, tokens[1].Kind);
+    }
+
+    [TestMethod]
+    [DataRow("0", 0)]
+    [DataRow("7", 7)]
+    [DataRow("42", 42)]
+    public void GetNextToken_WithDigit_MapsToNumberWithParsedValue(string notation, int expected)
+    {
+        // arrange
+        var lexer = new Lexer(notation);
+
+        // act
+        var tokens = TokenizeNotation(lexer);
+
+        // assert
+        Assert.AreEqual(new Token(TokenKind.Number, notation, expected, new(0, 1, 1)), tokens[0]);
+    }
+
+    [TestMethod]
+    [DataRow("g")]
+    [DataRow("G")]
+    [DataRow("z")]
+    [DataRow("@")]
+    [DataRow("#")]
+    [DataRow("&")]
+    [DataRow(".")]
+    [DataRow(",")]
+    [DataRow("[")]
+    [DataRow("]")]
+    public void GetNextToken_WithUnexpectedCharacter_ThrowsParseException(string notation)
+    {
+        // arrange
+        var lexer = new Lexer(notation);
+
+        // act - assert
+        var exception = Assert.ThrowsExactly<ParseException>([ExcludeFromCodeCoverage]() => TokenizeNotation(lexer));
+        Assert.AreEqual(new Position(0, 1, 1).ToString(), exception.Position);
     }
 
     private static List<Token> TokenizeNotation(Lexer lexer)
