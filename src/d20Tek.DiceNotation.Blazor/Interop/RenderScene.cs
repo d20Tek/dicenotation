@@ -26,6 +26,10 @@ public sealed record RenderScene(
     /// <param name="scene">The scene snapshot produced by the simulation.</param>
     /// <param name="traySize">The logical dimensions of the tray.</param>
     /// <param name="theme">The theme to draw with, or <see langword="null"/> for the default.</param>
+    /// <param name="visualSettings">
+    /// The presentation tuning used to resolve each die's drawing instructions, or
+    /// <see langword="null"/> for the defaults.
+    /// </param>
     /// <returns>A payload ready to send through a single interop call.</returns>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="scene"/> or <paramref name="traySize"/> is <see langword="null"/>.

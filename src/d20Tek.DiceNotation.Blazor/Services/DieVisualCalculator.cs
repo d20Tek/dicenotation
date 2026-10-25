@@ -99,13 +99,16 @@ public sealed class DieVisualCalculator
     /// <param name="die">The die state.</param>
     /// <param name="energy">The die's clamped energy.</param>
     /// <param name="elapsedSeconds">The elapsed time of the roll.</param>
-    /// <returns>A face value between 1 and the die's side count.</returns>
+    /// <returns>
+    /// A face value within the die's own range, which starts at its minimum face rather
+    /// than always at one so that fudge dice churn through minus one to plus one.
+    /// </returns>
     internal static int ChurnFace(DieState die, float energy, float elapsedSeconds)
     {
         var faces = Math.Max(1, die.Sides);
         if (faces == 1)
         {
-            return 1;
+            return die.MinValue;
         }
 
         var spin = MathF.Abs(die.Rotation) * (2f + (energy * 8f));
@@ -114,7 +117,7 @@ public sealed class DieVisualCalculator
             return die.Value;
         }
 
-        return ((int)MathF.Floor(spin) % faces) + 1;
+        return ((int)MathF.Floor(spin) % faces) + die.MinValue;
     }
 
     private static float Clamp01(float value) =>

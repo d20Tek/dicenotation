@@ -152,7 +152,8 @@ public sealed class AetherDiceSimulation : IDiceSimulation
                 CalculateEnergy(die.Body),
                 die.Die.Sides,
                 die.Body.LinearVelocity.X,
-                die.Body.LinearVelocity.Y);
+                die.Body.LinearVelocity.Y,
+                die.Die.MinValue);
         }
 
         return new DiceSceneState(states, _elapsedSeconds, IsSettled);

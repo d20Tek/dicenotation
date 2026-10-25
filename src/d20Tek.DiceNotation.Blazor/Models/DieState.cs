@@ -22,6 +22,10 @@ namespace d20Tek.DiceNotation.Blazor.Models;
 /// this to tumble a die forward over its direction of travel.
 /// </param>
 /// <param name="VelocityY">The vertical velocity of the die, in logical units per second.</param>
+/// <param name="MinValue">
+/// The lowest face value on the die. Standard dice start at one, but fudge dice run from
+/// minus one to plus one, so the face range cannot be assumed from <paramref name="Sides"/>.
+/// </param>
 public sealed record DieState(
     string Id,
     int Value,
@@ -33,4 +37,5 @@ public sealed record DieState(
     float Energy = 0f,
     int Sides = 6,
     float VelocityX = 0f,
-    float VelocityY = 0f);
+    float VelocityY = 0f,
+    int MinValue = 1);
