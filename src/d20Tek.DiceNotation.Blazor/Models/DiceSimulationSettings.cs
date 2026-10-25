@@ -23,10 +23,10 @@ public sealed record DiceSimulationSettings
     public float Restitution { get; init; } = 0.35f;
 
     /// <summary>Gets the linear damping applied to each die.</summary>
-    public float LinearDamping { get; init; } = 1.4f;
+    public float LinearDamping { get; init; } = 2.6f;
 
     /// <summary>Gets the angular damping applied to each die.</summary>
-    public float AngularDamping { get; init; } = 1.8f;
+    public float AngularDamping { get; init; } = 3.2f;
 
     /// <summary>Gets the maximum initial linear speed applied when launching a die.</summary>
     public float MaxLaunchSpeed { get; init; } = 14f;
@@ -50,20 +50,25 @@ public sealed record DiceSimulationSettings
     /// </summary>
     public float MaxFrameSeconds { get; init; } = 0.1f;
 
-    /// <summary>Gets the linear velocity at or below which a die is considered at rest.</summary>
-    public float LinearSleepThreshold { get; init; } = 0.05f;
+    /// <summary>
+    /// Gets the linear velocity at or below which a die is considered at rest. This is set
+    /// to the speed at which movement stops being perceptible rather than to a near-zero
+    /// value, because damping decays exponentially and the final crawl toward true zero
+    /// takes seconds of frames that look identical.
+    /// </summary>
+    public float LinearSleepThreshold { get; init; } = 0.4f;
 
     /// <summary>Gets the angular velocity at or below which a die is considered at rest.</summary>
-    public float AngularSleepThreshold { get; init; } = 0.1f;
+    public float AngularSleepThreshold { get; init; } = 0.6f;
 
     /// <summary>Gets how long every die must stay at rest before the scene is settled.</summary>
-    public float SettleHoldSeconds { get; init; } = 0.35f;
+    public float SettleHoldSeconds { get; init; } = 0.2f;
 
     /// <summary>
     /// Gets the maximum duration of a roll, in seconds. When this elapses the simulation
     /// stops rather than leaving the component in a permanent rolling state.
     /// </summary>
-    public float MaxDurationSeconds { get; init; } = 8f;
+    public float MaxDurationSeconds { get; init; } = 5f;
 
     /// <summary>Gets the maximum number of dice allowed in a single roll.</summary>
     public int MaxDiceCount { get; init; } = 50;

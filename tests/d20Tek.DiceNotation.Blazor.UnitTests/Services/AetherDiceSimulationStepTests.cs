@@ -32,6 +32,29 @@ public class AetherDiceSimulationStepTests
     }
 
     [TestMethod]
+    public void Step_WhenSceneSettles_ReportsZeroEnergyForEveryDie()
+    {
+        // Arrange
+        // The rest thresholds permit a small residual velocity, so settling must bring the
+        // bodies to a hard stop rather than freezing them mid-drift.
+        using var simulation = CreateSimulation();
+        simulation.StartRoll(VisualDiceFactory.Create(4), DiceTraySize.Default);
+
+        // Act
+        RunToCompletion(simulation);
+        var snapshot = simulation.GetSnapshot();
+
+        // Assert
+        Assert.IsTrue(simulation.IsSettled);
+        foreach (var die in snapshot.Dice)
+        {
+            Assert.AreEqual(0f, die.Energy);
+            Assert.AreEqual(0f, die.VelocityX);
+            Assert.AreEqual(0f, die.VelocityY);
+        }
+    }
+
+    [TestMethod]
     public void Step_WithFixedStepElapsed_PerformsSingleStep()
     {
         // Arrange

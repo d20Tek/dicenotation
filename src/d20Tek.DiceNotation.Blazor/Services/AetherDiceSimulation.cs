@@ -116,6 +116,14 @@ public sealed class AetherDiceSimulation : IDiceSimulation
             _accumulator = 0f;
         }
 
+        // The rest thresholds allow a small residual velocity, so the bodies are brought
+        // to a hard stop once the scene settles. Without this the final rendered frame
+        // would catch the dice mid-drift.
+        if (IsSettled)
+        {
+            FreezeDice();
+        }
+
         return steps;
     }
 
@@ -288,6 +296,15 @@ public sealed class AetherDiceSimulation : IDiceSimulation
         _dice.TrueForAll(d =>
             d.Body.LinearVelocity.Length() <= _settings.LinearSleepThreshold &&
             Math.Abs(d.Body.AngularVelocity) <= _settings.AngularSleepThreshold);
+
+    private void FreezeDice()
+    {
+        foreach (var die in _dice)
+        {
+            die.Body.LinearVelocity = Vector2.Zero;
+            die.Body.AngularVelocity = 0f;
+        }
+    }
 
     /// <summary>
     /// Normalizes a body's linear and angular speed into a single 0-to-1 presentation hint.
