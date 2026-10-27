@@ -12,6 +12,7 @@ These are the release notes for our various updates. You can see how the library
 - Added full documentation for the Blazor package: `docs/introduction-blazor.md`, `docs/getting-started-blazor.md`, and `docs/api-reference-blazor.md`, including supported targets and known limitations.
 - Published the Blazor component library as the `d20tek-dicenotation-blazor` NuGet package (version 1.0.0) targeting .NET 9 and .NET 10, with symbol packages and a package README.
 - Added the `BlazorDice` sample application, which demonstrates the main scenarios on its home page: keep-highest rolls, single-die rolls with modifiers, mixed die types, coin flips, percentile dice, theme switching, reduced motion, replay, and invalid-notation error handling.
+- Fixed an ambiguity in the `VisualDiceRoller` rendering where a 6 and a 9 looked identical on tumbling dice. Dice with nine or more sides now draw a disambiguating dot after those numerals, matching the convention used on physical dice.
 
 ### Release (5.1.8):
 - Updated package references to newest versions.

@@ -409,17 +409,46 @@ function drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, 
  * Draws the die's face at the die center, rotated with the body so the numeral tumbles
  * like a real face. Which face to draw is decided in C# and arrives already resolved,
  * including any transient churn while the die is moving quickly.
+ *
+ * Dice that can show both a 6 and a 9 get a disambiguating dot after the numeral, the
+ * same convention physical dice use, because a tumbling die gives no upright reference.
  */
 function drawValue(context, theme, die, size) {
+    const text = String(die.shownValue);
+    const fontSize = Math.max(8, size * 0.5);
+
     context.save();
     context.fillStyle = theme.dieTextColor;
-    context.font = `600 ${Math.max(8, size * 0.5)}px system-ui, sans-serif`;
+    context.font = `600 ${fontSize}px system-ui, sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
 
     // Keep the numeral upright relative to its own face, not the viewport.
-    context.fillText(String(die.shownValue), 0, 0);
+    context.fillText(text, 0, 0);
+
+    if (needsOrientationDot(die)) {
+        const halfWidth = context.measureText(text).width / 2;
+        const dotRadius = Math.max(1, fontSize * 0.09);
+
+        context.beginPath();
+        context.arc(
+            halfWidth + dotRadius * 1.1,
+            fontSize * 0.32,
+            dotRadius,
+            0,
+            Math.PI * 2);
+        context.fill();
+    }
+
     context.restore();
+}
+
+/**
+ * Determines whether a face needs the dot that tells a 6 apart from a 9. Only dice that
+ * can roll both values are ambiguous, so smaller dice are left unmarked.
+ */
+function needsOrientationDot(die) {
+    return die.sides >= 9 && (die.shownValue === 6 || die.shownValue === 9);
 }
 
 /**
