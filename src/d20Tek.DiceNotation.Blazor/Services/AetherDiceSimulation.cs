@@ -77,7 +77,7 @@ internal sealed class AetherDiceSimulation : IDiceSimulation
         CreateWalls();
         for (var i = 0; i < dice.Count; i++)
         {
-            _dice.Add(new SimulatedDie(dice[i], CreateBody(i, dice.Count)));
+            _dice.Add(new SimulatedDie(dice[i], CreateBody(dice[i], i, dice.Count)));
         }
     }
 
@@ -247,11 +247,32 @@ internal sealed class AetherDiceSimulation : IDiceSimulation
         ApplyMaterial(wall);
     }
 
-    private Body CreateBody(int index, int count)
+    /// <summary>
+    /// Builds the collision outline for a die, scaled from the shared unit outline to the
+    /// configured die size.
+    /// </summary>
+    /// <param name="sides">The number of faces on the die.</param>
+    /// <returns>The vertices describing the die's convex body.</returns>
+    private Vertices BuildVertices(int sides)
     {
-        var body = _world!.CreateRectangle(
-            _settings.DieSize,
-            _settings.DieSize,
+        var outline = DieGeometry.GetOutline(sides);
+        var vertices = new Vertices(outline.Count);
+
+        foreach (var point in outline)
+        {
+            // DieGeometry works in System.Numerics, while Aether has its own vector type.
+            vertices.Add(new Vector2(point.X * _settings.DieSize, point.Y * _settings.DieSize));
+        }
+
+        return vertices;
+    }
+
+    private Body CreateBody(VisualDie die, int index, int count)
+    {
+        // The body is built from the same outline the renderer traces, so a die can never
+        // collide as one shape while appearing as another.
+        var body = _world!.CreatePolygon(
+            BuildVertices(die.Sides),
             _settings.DieDensity,
             GetStartPosition(index, count),
             NextFloat(-MathF.PI, MathF.PI),

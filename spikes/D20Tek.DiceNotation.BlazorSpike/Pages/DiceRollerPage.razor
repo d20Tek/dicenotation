@@ -20,12 +20,18 @@
     <label class="form-check-label ms-3">
         <input type="checkbox" class="form-check-input" @bind="_reducedMotion" /> Reduced motion
     </label>
+    <select class="form-select ms-3" style="max-width: 12rem;" aria-label="Theme" @bind="_themeName">
+        @foreach (var theme in Themes)
+        {
+            <option value="@theme.Name">@theme.Name</option>
+        }
+    </select>
 </div>
 
 <div style="max-width: 40rem;">
     <VisualDiceRoller @ref="_roller"
                       Result="_result"
-                      Options="@(DiceRollerOptions.Default with { ReducedMotion = _reducedMotion })"
+                      Options="@(DiceRollerOptions.Default with { Theme = SelectedTheme, ReducedMotion = _reducedMotion })"
                       OnRollCompleted="OnCompleted"
                       OnRollFailed="OnFailed" />
 </div>
@@ -43,6 +49,13 @@ else if (_summary is not null)
 }
 
 @code {
+    private static readonly DiceTheme[] Themes =
+    [
+        DiceTheme.Default,
+        DiceTheme.DarkFantasy,
+        DiceTheme.Parchment,
+    ];
+
     private VisualDiceRoller? _roller;
     private DiceResult? _result;
     private DiceRollSummary? _summary;
@@ -50,6 +63,10 @@ else if (_summary is not null)
     private string? _error;
     private bool _reducedMotion;
     private bool _isRolling;
+    private string _themeName = DiceTheme.Default.Name;
+
+    private DiceTheme SelectedTheme =>
+        Themes.FirstOrDefault(t => t.Name == _themeName) ?? DiceTheme.Default;
 
     private void RollAsync()
     {

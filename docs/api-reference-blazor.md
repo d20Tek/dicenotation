@@ -27,6 +27,7 @@ application already calculated.
   - [DiceRollerServiceCollectionExtensions](#dicerollerservicecollectionextensions)
 - [Namespace: d20Tek.DiceNotation.Blazor.DependencyInjection](#namespace-d20tekdicenotationblazordependencyinjection)
   - [DiceRollerOptionsBuilder](#dicerolleroptionsbuilder)
+- [Die shapes](#die-shapes)
 - [Accessibility and reduced motion](#accessibility-and-reduced-motion)
 
 ---
@@ -296,9 +297,42 @@ assignment style without exposing settable state to the components that later re
 
 ---
 
+## Die shapes
+
+Each die is drawn with a silhouette matching its type rather than as a generic square, so a
+handful of mixed dice can be told apart at a glance:
+
+| Die | Silhouette |
+| --- | --- |
+| d2 | Round coin |
+| d4 | Triangle |
+| d6 | Square |
+| d8 | Diamond |
+| d10 and d100 | Kite |
+| d12 | Pentagon |
+| d20 | Hexagon |
+
+A die type without a conventional shape falls back to a regular polygon, so an unusual die still
+renders and simulates sensibly.
+
+A d2 is a coin rather than a many-sided die. It is built as an octagon with its corners rounded as
+far as each edge allows, which reads as a circle on screen while remaining a convex polygon that
+the physics engine can simulate.
+
+Shapes are resolved in C# and sent to the renderer as plain vertex data, which keeps the shape
+rules in one testable place and leaves the JavaScript layer to trace what it is given. The physics
+bodies are built from the same outlines, so a die never collides as one shape while being drawn as
+another.
+
+Outlines are normalized to approximately equal area rather than equal width. A hexagon inscribed in
+the same square as a triangle looks considerably larger, so without this correction a d20 would
+dwarf a d4 sitting beside it in the same tray.
+
+---
+
 ## Accessibility and reduced motion
 
-The canvas is given a `role` of `img` and an accessible label. When `AriaLabel` is not supplied, the
+The canvas is given a `role` of `img` and an accessible label.
 label is generated from the settled result, so the outcome is available to assistive technology
 without reading the canvas.
 

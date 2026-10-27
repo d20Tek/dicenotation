@@ -76,7 +76,9 @@ internal sealed record RenderScene(
                 visual.SmearStrength,
                 visual.SmearReach,
                 visual.SmearDirectionX,
-                visual.SmearDirectionY);
+                visual.SmearDirectionY,
+                BuildVertices(die.Sides, die.Width),
+                DieGeometry.GetCornerRadiusFactor(die.Sides) * die.Width);
         }
 
         return new RenderScene(
@@ -85,6 +87,28 @@ internal sealed record RenderScene(
             resolvedTheme,
             scene.IsSettled,
             RenderVisuals.FromSettings(visualSettings ?? DiceVisualSettings.Default));
+    }
+
+    /// <summary>
+    /// Projects a die's shape into the flattened coordinate array the renderer traces.
+    /// The outline is shared and expressed in unit terms, so it is scaled here rather
+    /// than being rebuilt for every die on every frame.
+    /// </summary>
+    /// <param name="sides">The number of faces on the die.</param>
+    /// <param name="size">The logical size of the die.</param>
+    /// <returns>Alternating X and Y values describing the outline.</returns>
+    private static float[] BuildVertices(int sides, float size)
+    {
+        var outline = DieGeometry.GetOutline(sides);
+        var values = new float[outline.Count * 2];
+
+        for (var i = 0; i < outline.Count; i++)
+        {
+            values[i * 2] = outline[i].X * size;
+            values[(i * 2) + 1] = outline[i].Y * size;
+        }
+
+        return values;
     }
 }
 
@@ -151,6 +175,15 @@ internal sealed record RenderTray(
 /// <param name="SmearReach">How far the motion trail extends behind the die.</param>
 /// <param name="SmearDirectionX">The normalized horizontal direction the die is travelling.</param>
 /// <param name="SmearDirectionY">The normalized vertical direction the die is travelling.</param>
+/// <param name="Vertices">
+/// The die's outline in its own local space, flattened to alternating X and Y values and
+/// already scaled to logical units. The shape is resolved in C# from the die's face
+/// count, so the renderer only traces what it is given and holds no shape knowledge.
+/// </param>
+/// <param name="CornerRadius">
+/// The corner rounding to apply when tracing the outline, in logical units. Shapes with
+/// sharp corners use a smaller radius so rounding does not erode the silhouette.
+/// </param>
 internal sealed record RenderDie(
     [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("value")] int Value,
@@ -168,4 +201,6 @@ internal sealed record RenderDie(
     [property: JsonPropertyName("smearStrength")] float SmearStrength = 0f,
     [property: JsonPropertyName("smearReach")] float SmearReach = 0f,
     [property: JsonPropertyName("smearDirectionX")] float SmearDirectionX = 0f,
-    [property: JsonPropertyName("smearDirectionY")] float SmearDirectionY = 0f);
+    [property: JsonPropertyName("smearDirectionY")] float SmearDirectionY = 0f,
+    [property: JsonPropertyName("vertices")] IReadOnlyList<float>? Vertices = null,
+    [property: JsonPropertyName("cornerRadius")] float CornerRadius = 0f);

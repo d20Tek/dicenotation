@@ -8,6 +8,7 @@ These are the release notes for our various updates. You can see how the library
 - Added the `DiceTheme` presets `Default`, `DarkFantasy`, and `Parchment`, along with `DiceVisualSettings` and `DiceSimulationSettings` for tuning appearance and physics.
 - Added `DiceRollSummary` and `VisualDie` result models, which preserve the authoritative total from the notation library along with each die's role, sides, and minimum face value.
 - Added a reduced-motion option and an accessible canvas label so the settled outcome is available to assistive technology.
+- Added shape-aware dice rendering: each die is now drawn and simulated with a silhouette matching its type (d2 round coin, d4 triangle, d6 square, d8 diamond, d10 and d100 kite, d12 pentagon, d20 hexagon) instead of every die appearing as a square. Shapes are resolved in C# and sent to the renderer as vertex data, and the physics bodies are built from the same outlines so collision always matches what is drawn.
 - Added full documentation for the Blazor package in `docs/api-reference-blazor.md`.
 
 ### Release (5.1.8):

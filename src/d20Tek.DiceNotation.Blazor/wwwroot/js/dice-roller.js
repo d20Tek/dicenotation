@@ -249,13 +249,18 @@ function drawDie(context, theme, visuals, die, scale, originX, originY) {
     const centerX = originX + die.x * scale;
     const centerY = originY - die.y * scale;
 
-    // Lift, shadow, and smear all arrive already resolved from C#.
-    const width = die.width * scale * die.lift;
-    const height = die.height * scale * die.lift;
-    const radius = Math.max(0, theme.dieCornerRadius * scale);
+    // Lift, shadow, smear, and the outline itself all arrive already resolved from C#.
+    const lift = die.lift;
+    const width = die.width * scale * lift;
+    const height = die.height * scale * lift;
+    const radius = die.cornerRadius * lift;
+
+    // The die's shape is decided in C#. The fallback keeps older payloads drawable.
+    const vertices = die.vertices ?? squareVertices(die.width / 2);
+    const drawScale = scale * lift;
 
     if (die.smearStrength > 0) {
-        drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, width, height, radius);
+        drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, vertices, drawScale, radius);
     }
 
     context.save();
@@ -267,7 +272,7 @@ function drawDie(context, theme, visuals, die, scale, originX, originY) {
     context.shadowOffsetY = Math.max(1, die.shadowOffset * scale);
 
     context.beginPath();
-    roundedRect(context, -width / 2, -height / 2, width, height, radius);
+    tracePolygon(context, vertices, drawScale, radius);
     context.fillStyle = buildDieFill(context, theme, visuals, width, height, -die.rotation);
     context.fill();
 
@@ -275,18 +280,26 @@ function drawDie(context, theme, visuals, die, scale, originX, originY) {
     context.shadowBlur = 0;
     context.shadowOffsetY = 0;
 
-    drawBevel(context, theme, visuals, width, height, radius, -die.rotation);
+    drawBevel(context, theme, visuals, vertices, drawScale, radius, width, height, -die.rotation);
 
     context.lineWidth = Math.max(1, scale * 0.03);
     context.strokeStyle = theme.dieBorderColor;
     context.beginPath();
-    roundedRect(context, -width / 2, -height / 2, width, height, radius);
+    tracePolygon(context, vertices, drawScale, radius);
     context.stroke();
 
     // The value is drawn inside the rotated transform so it tumbles with the body.
     drawValue(context, theme, die, Math.min(width, height));
 
     context.restore();
+}
+
+/**
+ * Builds the outline used when a payload carries no explicit geometry. This only exists
+ * so an older payload still draws something sensible.
+ */
+function squareVertices(half) {
+    return [-half, -half, half, -half, half, half, -half, half];
 }
 
 /**
@@ -316,19 +329,15 @@ function buildDieFill(context, theme, visuals, width, height, rotation) {
 }
 
 /**
- * Draws a lit and shaded inner edge so a square reads as a cube seen from above.
+ * Draws a lit and shaded inner edge so a flat shape reads as a solid seen from above.
  *
- * The bevel follows the die's rounded outline and is clipped to it, so it can never
- * cut across a corner or bleed outside the silhouette. The lit and shaded halves are
+ * The bevel follows the die's own outline and is clipped to it, so it can never cut
+ * across a corner or bleed outside the silhouette. The lit and shaded halves are
  * selected by clipping to a half-plane whose angle is counter-rotated by the die's
  * rotation, which keeps the light fixed in the scene instead of spinning with the die.
  */
-function drawBevel(context, theme, visuals, width, height, radius, rotation) {
+function drawBevel(context, theme, visuals, vertices, scale, radius, width, height, rotation) {
     const thickness = Math.max(1, Math.min(width, height) * visuals.bevelThickness);
-    const inset = thickness / 2;
-    const innerWidth = Math.max(1, width - thickness);
-    const innerHeight = Math.max(1, height - thickness);
-    const innerRadius = Math.max(0, radius - inset);
     const reach = Math.max(width, height);
     const lightAngle = visuals.lightAngle + rotation;
 
@@ -336,14 +345,14 @@ function drawBevel(context, theme, visuals, width, height, radius, rotation) {
 
     // Clipping to the body keeps the bevel inside the die at every rotation.
     context.beginPath();
-    roundedRect(context, -width / 2, -height / 2, width, height, radius);
+    tracePolygon(context, vertices, scale, radius);
     context.clip();
 
     context.lineWidth = thickness;
 
     // The shaded edge covers the whole ring, then the lit half is drawn over it.
     context.beginPath();
-    roundedRect(context, -innerWidth / 2, -innerHeight / 2, innerWidth, innerHeight, innerRadius);
+    traceInsetPolygon(context, vertices, scale, radius, thickness / 2);
     context.strokeStyle = theme.dieBevelDarkColor;
     context.stroke();
 
@@ -355,7 +364,7 @@ function drawBevel(context, theme, visuals, width, height, radius, rotation) {
     context.rotate(-lightAngle);
 
     context.beginPath();
-    roundedRect(context, -innerWidth / 2, -innerHeight / 2, innerWidth, innerHeight, innerRadius);
+    traceInsetPolygon(context, vertices, scale, radius, thickness / 2);
     context.strokeStyle = theme.dieBevelLightColor;
     context.stroke();
     context.restore();
@@ -365,10 +374,10 @@ function drawBevel(context, theme, visuals, width, height, radius, rotation) {
 
 /**
  * Draws a short directional trail behind a fast-moving die. This is a cheap stand-in
- * for motion blur: a few fading copies offset along the travel direction. The strength
- * and reach of the trail are decided in C#.
+ * for motion blur: a few fading copies of the die's own outline offset along the travel
+ * direction. The strength and reach of the trail are decided in C#.
  */
-function drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, width, height, radius) {
+function drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, vertices, drawScale, radius) {
     const steps = Math.max(1, visuals.smearSteps);
     const reach = die.smearReach * scale;
     const dirX = die.smearDirectionX;
@@ -388,7 +397,7 @@ function drawMotionSmear(context, theme, visuals, die, scale, centerX, centerY, 
                           centerY + dirY * reach * fraction);
         context.rotate(-die.rotation);
         context.beginPath();
-        roundedRect(context, -width / 2, -height / 2, width, height, radius);
+        tracePolygon(context, vertices, drawScale, radius);
         context.fill();
         context.restore();
     }
@@ -411,6 +420,103 @@ function drawValue(context, theme, die, size) {
     // Keep the numeral upright relative to its own face, not the viewport.
     context.fillText(String(die.shownValue), 0, 0);
     context.restore();
+}
+
+/**
+ * Traces a die's outline with rounded corners.
+ *
+ * The shape itself is decided in C# and arrives as alternating X and Y values already
+ * scaled to logical units, so this only has to walk the points. The corner radius is
+ * clamped per corner against the two adjoining edges, which keeps a narrow corner, such
+ * as a d4's, from rounding so far that it erodes the silhouette.
+ *
+ * @param {CanvasRenderingContext2D} context the target context.
+ * @param {number[]} vertices alternating X and Y values in local space.
+ * @param {number} scale logical units to device pixels.
+ * @param {number} radius the desired corner radius in logical units.
+ */
+function tracePolygon(context, vertices, scale, radius) {
+    const count = vertices.length / 2;
+    const cornerRadius = Math.max(0, radius * scale);
+
+    const pointAt = (index) => {
+        const i = ((index % count) + count) % count;
+        // Canvas Y grows downward, so the vertical axis is inverted here to match the
+        // physics world, exactly as die positions are.
+        return { x: vertices[i * 2] * scale, y: -vertices[(i * 2) + 1] * scale };
+    };
+
+    if (cornerRadius <= 0) {
+        const start = pointAt(0);
+        context.moveTo(start.x, start.y);
+        for (let i = 1; i < count; i++) {
+            const point = pointAt(i);
+            context.lineTo(point.x, point.y);
+        }
+        context.closePath();
+        return;
+    }
+
+    for (let i = 0; i < count; i++) {
+        const previous = pointAt(i - 1);
+        const current = pointAt(i);
+        const next = pointAt(i + 1);
+
+        const toPrevious = normalize(previous.x - current.x, previous.y - current.y);
+        const toNext = normalize(next.x - current.x, next.y - current.y);
+
+        // Never consume more than half of either adjoining edge, otherwise neighboring
+        // corners would overlap and the outline would fold in on itself.
+        const limit = Math.min(
+            cornerRadius,
+            distance(previous, current) / 2,
+            distance(current, next) / 2);
+
+        const startX = current.x + toPrevious.x * limit;
+        const startY = current.y + toPrevious.y * limit;
+        const endX = current.x + toNext.x * limit;
+        const endY = current.y + toNext.y * limit;
+
+        if (i === 0) {
+            context.moveTo(startX, startY);
+        } else {
+            context.lineTo(startX, startY);
+        }
+
+        context.quadraticCurveTo(current.x, current.y, endX, endY);
+    }
+
+    context.closePath();
+}
+
+/**
+ * Traces a die's outline inset toward its center, which is how the bevel ring is built.
+ * Scaling about the centroid is a close enough inset for convex shapes and avoids the
+ * cost and edge cases of a true polygon offset.
+ */
+function traceInsetPolygon(context, vertices, scale, radius, inset) {
+    const count = vertices.length / 2;
+    let reach = 0;
+    for (let i = 0; i < count; i++) {
+        reach = Math.max(reach, Math.hypot(vertices[i * 2], vertices[(i * 2) + 1]));
+    }
+
+    const factor = reach > 0 ? Math.max(0.1, (reach - inset / scale) / reach) : 1;
+    const scaled = new Array(vertices.length);
+    for (let i = 0; i < vertices.length; i++) {
+        scaled[i] = vertices[i] * factor;
+    }
+
+    tracePolygon(context, scaled, scale, radius * factor);
+}
+
+function normalize(x, y) {
+    const length = Math.hypot(x, y);
+    return length > 0 ? { x: x / length, y: y / length } : { x: 0, y: 0 };
+}
+
+function distance(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function roundedRect(context, x, y, width, height, radius) {
