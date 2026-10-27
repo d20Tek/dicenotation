@@ -28,6 +28,19 @@
     </select>
 </div>
 
+<div class="mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <span class="text-muted">Examples:</span>
+    @foreach (var sample in Samples)
+    {
+        <button class="btn btn-outline-secondary btn-sm"
+                @onclick="@(() => UseSample(sample.Notation))"
+                disabled="@_isRolling"
+                title="@sample.Description">
+            @sample.Notation
+        </button>
+    }
+</div>
+
 <div style="max-width: 40rem;">
     <VisualDiceRoller @ref="_roller"
                       Result="_result"
@@ -67,6 +80,22 @@ else if (_summary is not null)
 
     private DiceTheme SelectedTheme =>
         Themes.FirstOrDefault(t => t.Name == _themeName) ?? DiceTheme.Default;
+
+    private static readonly (string Notation, string Description)[] Samples =
+    [
+        ("4d6k3+2", "Ability score roll keeping the highest three dice"),
+        ("1d20+5", "Single attack roll with a modifier"),
+        ("2d6+1d8+1d4", "Mixed die types in one roll"),
+        ("1d2", "Coin flip"),
+        ("3d100", "Percentile dice"),
+        ("2d6++", "Invalid notation, shows the error path"),
+    ];
+
+    private void UseSample(string notation)
+    {
+        _notation = notation;
+        RollAsync();
+    }
 
     private void RollAsync()
     {

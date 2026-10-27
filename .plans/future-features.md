@@ -84,3 +84,11 @@ frequency statistics.
   against performance regressions over time.
 - **Mutation testing**: Run a mutation testing pass (for example, with Stryker.NET) to validate the
   strength of the existing unit test suite.
+
+## Visual Representations
+- [Done] **Blazor dice roller component**: A visual dice roller for Blazor that animates the results of
+  `IDice` rolls as physics-driven dice on an HTML canvas. The rolled values are determined by the
+  dice library and the animation simply presents them, so the visuals never change an outcome.
+- **3D dice roller component**: A visual dice roller that animates the results of
+  `IDice` rolls as physics-driven dice in a 3D scene. The rolled values are determined by the
+  dice library and the animation simply presents them, so the visuals never change an outcome.

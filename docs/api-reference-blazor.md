@@ -6,6 +6,9 @@ library types, see the main [API Reference](api-reference.md), and for dependenc
 core library, see the [Dependency Injection reference](api-reference-di-factory.md). The
 descriptions are derived from the package's XML documentation comments.
 
+For a conceptual overview see the [Blazor introduction](introduction-blazor.md), and for a
+step-by-step walkthrough see the [Blazor getting started guide](getting-started-blazor.md).
+
 The package never rolls dice. The application rolls through `IDice`, then hands the finished
 `DiceResult` to the component, so the faces that come to rest always match the result the
 application already calculated.
@@ -29,6 +32,8 @@ application already calculated.
   - [DiceRollerOptionsBuilder](#dicerolleroptionsbuilder)
 - [Die shapes](#die-shapes)
 - [Accessibility and reduced motion](#accessibility-and-reduced-motion)
+- [Supported targets](#supported-targets)
+- [Known limitations](#known-limitations)
 
 ---
 
@@ -332,9 +337,8 @@ dwarf a d4 sitting beside it in the same tray.
 
 ## Accessibility and reduced motion
 
-The canvas is given a `role` of `img` and an accessible label.
-label is generated from the settled result, so the outcome is available to assistive technology
-without reading the canvas.
+The canvas is given a `role` of `img` and an accessible label. The label is generated from the
+settled result, so the outcome is available to assistive technology without reading the canvas.
 
 Set `ReducedMotion` to disable face churn, implied height, and motion smear. This is an explicit
 option rather than an automatic media-query check, because an application usually already knows its
@@ -343,3 +347,38 @@ own accessibility preferences and can apply them consistently across its UI.
 A rendering or interop failure never changes a die value. Failures are surfaced through
 `OnRollFailed`, and the already-determined results remain valid, so an application should keep
 displaying them.
+
+---
+
+## Supported targets
+
+| Target | Support |
+| --- | --- |
+| .NET 9 and .NET 10 | Supported |
+| Blazor WebAssembly | Supported |
+| Blazor Server | Supported, though every frame crosses the SignalR circuit |
+
+The component draws through the browser's own frame scheduler and batches each frame into a single
+interop call. On Blazor Server, frame data still travels over the circuit, so a high-latency
+connection produces a less smooth animation than WebAssembly does. Reducing the die count or
+enabling `ReducedMotion` helps in that case.
+
+---
+
+## Known limitations
+
+- The simulation is two-dimensional. Dice slide and spin in a flat tray rather than tumbling in
+  three dimensions, and a die face shows its value as drawn text rather than as pips on a solid.
+- Die values are fixed metadata rather than an outcome of the physics. A die comes to rest wherever
+  the simulation puts it, and the assigned value is drawn on it throughout. This is deliberate, as
+  it keeps a result auditable, but it means the settled orientation carries no meaning.
+- Shapes are convex polygons of at most eight vertices, which is what the physics engine supports.
+  A d2 is therefore an octagon with fully rounded corners rather than a true circle, and a die type
+  without a conventional shape falls back to a regular polygon.
+- A very large number of dice in one roll increases both simulation and drawing cost. Keep rolls to
+  a reasonable die count for smooth animation on low-powered devices.
+- The component renders only the canvas. An application supplies its own result text, totals, and
+  roll history markup.
+- A backgrounded browser tab pauses frame callbacks. Elapsed time is clamped and catch-up steps are
+  capped, so returning to the tab resumes cleanly rather than fast-forwarding the whole animation.
+

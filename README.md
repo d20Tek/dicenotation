@@ -16,6 +16,15 @@ PM > Install-Package d20tek-dicenotation -Version 5.1.8
 
 To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for d20Tek.dicenotation and install it from there.
 
+### Visual Dice Roller for Blazor
+If you are building a Blazor application and want to animate your rolls, there is a companion package that renders physics-driven dice on an HTML canvas:
+
+```
+PM > Install-Package d20tek-dicenotation-blazor
+```
+
+The dice library still decides every outcome and the component simply presents it, so an animation never changes a result. See the [Blazor introduction](docs/introduction-blazor.md), [Blazor getting started](docs/getting-started-blazor.md), and [Blazor API reference](docs/api-reference-blazor.md) for details.
+
 Read more about this release in our [Release Notes](ReleaseNotes.md).
 
 # Usage
@@ -56,8 +65,7 @@ Finally, the library defines a IDieRoller interface that you can use to build yo
 For more detailed examples on how to use this DiceNotation library, please review the following samples:
 
 * [Sample - DiceCli](samples/DiceCli)
-* [Sample - DiceRoller Windows 10](docs/SampleWin10.md)
-* [Sample - DiceRoller ASP.NET MVC](docs/SampleWebMvc.md)
+* [Sample - Visual Dice Roller for Blazor](samples/BlazorDice)
 
 # Feedback
 If you use this library and have any feedback, bugs, or suggestions, please file them in the Bugs section of this repository.
