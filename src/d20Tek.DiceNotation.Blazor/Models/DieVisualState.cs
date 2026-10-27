@@ -15,7 +15,7 @@ namespace d20Tek.DiceNotation.Blazor.Models;
 /// <param name="SmearReach">How far the motion trail extends behind the die, in logical units.</param>
 /// <param name="SmearDirectionX">The normalized horizontal direction the die is travelling.</param>
 /// <param name="SmearDirectionY">The normalized vertical direction the die is travelling.</param>
-public readonly record struct DieVisualState(
+internal readonly record struct DieVisualState(
     int ShownValue,
     float Lift,
     float ShadowBlur,

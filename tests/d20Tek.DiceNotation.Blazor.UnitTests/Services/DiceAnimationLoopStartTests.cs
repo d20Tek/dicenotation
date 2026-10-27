@@ -225,17 +225,20 @@ public class DiceAnimationLoopStartTests
     }
 
     [TestMethod]
-    public async Task StopAsync_AfterDispose_ThrowsObjectDisposedException()
+    public async Task StopAsync_AfterDispose_DoesNothing()
     {
         // Arrange
-        var (_, _, loop) = await CreateAsync();
+        var (runtime, _, loop) = await CreateAsync();
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
         await loop.DisposeAsync();
+        var stopCount = runtime.Module.CountOf("stopLoop");
 
-        // Act and Assert
-        await Assert.ThrowsExactlyAsync<ObjectDisposedException>(Act);
+        // Act
+        await loop.StopAsync(CancellationToken.None);
 
-        [ExcludeFromCodeCoverage]
-        async Task Act() => await loop.StopAsync(CancellationToken.None);
+        // Assert
+        Assert.IsFalse(loop.IsRunning);
+        Assert.AreEqual(stopCount, runtime.Module.CountOf("stopLoop"));
     }
 
     public TestContext TestContext { get; set; }

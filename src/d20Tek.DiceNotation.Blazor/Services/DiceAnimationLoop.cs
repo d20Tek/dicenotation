@@ -21,7 +21,7 @@ namespace d20Tek.DiceNotation.Blazor.Services;
 /// failure stops the animation without changing any die value.
 /// </para>
 /// </remarks>
-public sealed class DiceAnimationLoop : IAsyncDisposable
+internal sealed class DiceAnimationLoop : IAsyncDisposable
 {
     private readonly IDiceSimulation _simulation;
     private readonly CanvasRenderer _renderer;
@@ -90,6 +90,13 @@ public sealed class DiceAnimationLoop : IAsyncDisposable
     /// <summary>Gets the slowest frame of the current animation, in milliseconds.</summary>
     public double WorstFrameMilliseconds { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the current animation stopped because it reached the
+    /// configured maximum duration rather than coming to rest naturally. A timed-out roll
+    /// still reports the same die results, because results are fixed before the roll starts.
+    /// </summary>
+    public bool IsTimedOut => _simulation.ElapsedSeconds >= _settings.MaxDurationSeconds;
+
     /// <summary>Gets the mean frame time of the current animation, in milliseconds.</summary>
     public double AverageFrameMilliseconds =>
         FrameCount == 0 ? 0 : _frameTotalMilliseconds / FrameCount;
@@ -105,6 +112,10 @@ public sealed class DiceAnimationLoop : IAsyncDisposable
     /// <returns>A task that completes once the scheduler is running.</returns>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="dice"/> or <paramref name="traySize"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the dice collection is empty, exceeds the configured maximum, or contains
+    /// duplicate identifiers. The animation is not started, and no stale rolling state remains.
     /// </exception>
     public async ValueTask StartAsync(
         IReadOnlyList<VisualDie> dice,
@@ -126,14 +137,47 @@ public sealed class DiceAnimationLoop : IAsyncDisposable
         LastFrameMilliseconds = 0;
         WorstFrameMilliseconds = 0;
         _frameTotalMilliseconds = 0;
+
+        // Rejected dice must surface to the caller, but they must never leave the loop
+        // in a rolling state that no frame will ever finish.
         _simulation.StartRoll(dice, traySize);
 
-        // Draw the launch frame immediately so the tray is never briefly empty.
-        await RenderCurrentAsync(cancellationToken);
+        try
+        {
+            // Draw the launch frame immediately so the tray is never briefly empty.
+            await RenderCurrentAsync(cancellationToken);
 
-        _selfReference ??= DotNetObjectReference.Create(this);
-        _isRunning = true;
-        await _renderer.StartLoopAsync(_selfReference, _settings.MaxFrameSeconds, cancellationToken);
+            _selfReference ??= DotNetObjectReference.Create(this);
+            _isRunning = true;
+            await _renderer.StartLoopAsync(_selfReference, _settings.MaxFrameSeconds, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // A roll that cannot be drawn or scheduled is a visual failure only. The
+            // already-determined results stay valid, so the loop reports and stands down.
+            await FailAsync(ex);
+        }
+    }
+
+    /// <summary>
+    /// Recomputes the canvas backing buffer and redraws the current scene. This is safe to
+    /// call while an animation is running and when no animation has ever started.
+    /// </summary>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>A task that completes when the canvas has been resized and redrawn.</returns>
+    public async ValueTask ResizeAsync(CancellationToken cancellationToken = default)
+    {
+        if (_disposed) return;
+
+        try
+        {
+            await _renderer.ResizeAsync(cancellationToken);
+            await RenderCurrentAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await FailAsync(ex);
+        }
     }
 
     /// <summary>
@@ -144,9 +188,9 @@ public sealed class DiceAnimationLoop : IAsyncDisposable
     /// <returns>A task that completes once the scheduler has stopped.</returns>
     public async ValueTask StopAsync(CancellationToken cancellationToken = default)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-
-        if (!_isRunning) return;
+        // Stopping a disposed loop is already the desired end state, so it is a no-op
+        // rather than an error. This keeps teardown races from throwing.
+        if (_disposed || !_isRunning) return;
 
         _isRunning = false;
         await _renderer.StopLoopAsync(cancellationToken);
@@ -191,8 +235,19 @@ public sealed class DiceAnimationLoop : IAsyncDisposable
         _isRunning = false;
 
         // The renderer stops the scheduler as part of its own disposal, so a queued
-        // frame cannot run against the released object reference.
-        await _renderer.DisposeAsync();
+        // frame cannot run against the released object reference. Disposal commonly
+        // races with circuit teardown or navigation, so an unreachable browser must
+        // not produce an unhandled exception during component disposal.
+        try
+        {
+            await _renderer.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSException or
+                                         JSDisconnectedException or
+                                         ObjectDisposedException or
+                                         OperationCanceledException)
+        {
+        }
 
         _selfReference?.Dispose();
         _selfReference = null;

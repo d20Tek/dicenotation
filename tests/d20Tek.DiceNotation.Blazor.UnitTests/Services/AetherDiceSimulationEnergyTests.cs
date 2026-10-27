@@ -25,6 +25,7 @@ public class AetherDiceSimulationEnergyTests
     }
 
     [TestMethod]
+    [ExcludeFromCodeCoverage]
     public void GetSnapshot_ForEveryDie_ReportsEnergyWithinNormalizedRange()
     {
         // Arrange
@@ -94,6 +95,33 @@ public class AetherDiceSimulationEnergyTests
 
         // Assert
         Assert.IsTrue(snapshot.Dice.All(d => d.Energy == 0f));
+    }
+
+    [TestMethod]
+    public void GetSnapshot_WhenEnergyOverflowsToInfinity_ReportsZeroEnergy()
+    {
+        // Arrange
+        // A denormal spin maximum is finite and positive, so it passes validation, but
+        // dividing the spin produced by a collision by it overflows to infinity. That must
+        // read as at rest rather than leaking a non-finite value into the renderer.
+        var settings = new DiceSimulationSettings { MaxLaunchSpin = float.Epsilon };
+        using var simulation = CreateSimulation(settings);
+        simulation.StartRoll(VisualDiceFactory.Create(6), DiceTraySize.Default);
+
+        // Act
+        for (var i = 0; i < 30 && !simulation.IsSettled; i++)
+        {
+            simulation.Step(settings.FixedStep);
+        }
+
+        var snapshot = simulation.GetSnapshot();
+
+        // Assert
+        Assert.IsTrue(snapshot.Dice.All(d => float.IsFinite(d.Energy)));
+        Assert.Contains(
+            [ExcludeFromCodeCoverage](d) => d.Energy == 0f && (d.VelocityX != 0f || d.VelocityY != 0f),
+            snapshot.Dice,
+            "Expected an overflowing energy value to be reported as zero for a moving die.");
     }
 
     [TestMethod]

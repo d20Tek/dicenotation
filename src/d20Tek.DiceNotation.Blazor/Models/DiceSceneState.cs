@@ -6,7 +6,7 @@ namespace d20Tek.DiceNotation.Blazor.Models;
 /// <param name="Dice">The state of every die in the scene.</param>
 /// <param name="ElapsedSeconds">The total simulated time of the current roll, in seconds.</param>
 /// <param name="IsSettled">A value indicating whether every die has come to rest.</param>
-public sealed record DiceSceneState(
+internal sealed record DiceSceneState(
     IReadOnlyList<DieState> Dice,
     float ElapsedSeconds,
     bool IsSettled)

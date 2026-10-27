@@ -135,6 +135,38 @@ public class DiceAnimationLoopFrameTests
     }
 
     [TestMethod]
+    public async Task OnFrameAsync_WhenReEnteredWhileCompleting_RaisesCompletedOnlyOnce()
+    {
+        // Arrange
+        // A browser frame can land while the completing frame is still awaiting interop,
+        // so the completion guard must hold even before the loop is marked stopped.
+        var simulation = new FakeDiceSimulation { SettleAfterSteps = 1 };
+        var (_, _, loop) = await CreateStartedAsync(simulation);
+        await using var _unused = loop;
+        var completions = 0;
+        loop.AnimationCompleted += _ =>
+        {
+            completions++;
+            return Task.CompletedTask;
+        };
+
+        // The render snapshot happens while the loop is still running and already settled,
+        // which is the only window where a second frame reaches the completion guard.
+        simulation.SnapshotCallback = () =>
+        {
+            simulation.IsSettled = true;
+            loop.OnFrameAsync(0.016).GetAwaiter().GetResult();
+        };
+
+        // Act
+        await loop.OnFrameAsync(0.016);
+
+        // Assert
+        Assert.AreEqual(1, completions);
+        Assert.IsFalse(loop.IsRunning);
+    }
+
+    [TestMethod]
     public async Task OnFrameAsync_WhenSettledWithNoSubscriber_StillStopsScheduler()
     {
         // Arrange

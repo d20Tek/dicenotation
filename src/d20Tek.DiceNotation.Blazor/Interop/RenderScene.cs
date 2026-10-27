@@ -13,7 +13,7 @@ namespace d20Tek.DiceNotation.Blazor.Interop;
 /// <param name="Theme">The resolved style data used to draw the scene.</param>
 /// <param name="IsSettled">A value indicating whether the scene has come to rest.</param>
 /// <param name="Visuals">The resolved renderer tuning values used to draw the scene.</param>
-public sealed record RenderScene(
+internal sealed record RenderScene(
     [property: JsonPropertyName("tray")] RenderTray Tray,
     [property: JsonPropertyName("dice")] IReadOnlyList<RenderDie> Dice,
     [property: JsonPropertyName("theme")] DiceTheme Theme,
@@ -95,7 +95,7 @@ public sealed record RenderScene(
 /// <param name="LightAngle">The direction light arrives from, in canvas radians.</param>
 /// <param name="BevelThickness">The fraction of the die's smaller dimension used as bevel thickness.</param>
 /// <param name="SmearSteps">The number of fading copies drawn in a motion smear.</param>
-public sealed record RenderVisuals(
+internal sealed record RenderVisuals(
     [property: JsonPropertyName("lightAngle")] float LightAngle,
     [property: JsonPropertyName("bevelThickness")] float BevelThickness,
     [property: JsonPropertyName("smearSteps")] int SmearSteps)
@@ -124,7 +124,7 @@ public sealed record RenderVisuals(
 /// </summary>
 /// <param name="Width">The width of the tray, in logical units.</param>
 /// <param name="Height">The height of the tray, in logical units.</param>
-public sealed record RenderTray(
+internal sealed record RenderTray(
     [property: JsonPropertyName("width")] float Width,
     [property: JsonPropertyName("height")] float Height);
 
@@ -151,7 +151,7 @@ public sealed record RenderTray(
 /// <param name="SmearReach">How far the motion trail extends behind the die.</param>
 /// <param name="SmearDirectionX">The normalized horizontal direction the die is travelling.</param>
 /// <param name="SmearDirectionY">The normalized vertical direction the die is travelling.</param>
-public sealed record RenderDie(
+internal sealed record RenderDie(
     [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("value")] int Value,
     [property: JsonPropertyName("x")] float X,

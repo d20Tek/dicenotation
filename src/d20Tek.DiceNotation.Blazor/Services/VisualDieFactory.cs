@@ -9,7 +9,7 @@ using d20Tek.DiceNotation.Results;
 /// visual dice the simulation animates. The mapping only reads the result, so the values
 /// the renderer displays are always the values the library produced.
 /// </summary>
-public static class VisualDieFactory
+internal static class VisualDieFactory
 {
     private const string DiceTermPrefix = "DiceTerm";
     private const string FudgeTermPrefix = "FudgeDiceTerm";

@@ -29,8 +29,22 @@ internal sealed class FakeDiceSimulation : IDiceSimulation
     /// <summary>Gets or sets an exception thrown by <see cref="Step"/>.</summary>
     public Exception? StepException { get; set; }
 
+    /// <summary>Gets or sets an exception thrown by <see cref="StartRoll"/>.</summary>
+    public Exception? StartRollException { get; set; }
+
+    /// <summary>
+    /// Gets or sets a callback invoked at the start of <see cref="GetSnapshot"/>, which lets
+    /// a test re-enter the animation loop from inside a frame.
+    /// </summary>
+    public Action? SnapshotCallback { get; set; }
+
     public void StartRoll(IReadOnlyList<VisualDie> dice, DiceTraySize traySize)
     {
+        if (StartRollException is not null)
+        {
+            throw StartRollException;
+        }
+
         StartRollCount++;
         LastDice = dice;
         LastTraySize = traySize;
@@ -59,6 +73,11 @@ internal sealed class FakeDiceSimulation : IDiceSimulation
     public DiceSceneState GetSnapshot()
     {
         SnapshotCount++;
+
+        var callback = SnapshotCallback;
+        SnapshotCallback = null;
+        callback?.Invoke();
+
         var dice = LastDice
             .Select(d => new DieState(d.Id, d.Value, 0f, 0f, 0f, 0.6f, 0.6f))
             .ToArray();

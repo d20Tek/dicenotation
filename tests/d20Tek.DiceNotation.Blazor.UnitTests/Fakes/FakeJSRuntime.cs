@@ -59,6 +59,9 @@ internal sealed class FakeJSObjectReference : IJSObjectReference
     /// <summary>Gets the exceptions thrown only for specific module functions.</summary>
     public Dictionary<string, Exception> InvokeExceptions { get; } = [];
 
+    /// <summary>Gets or sets an exception thrown when the module reference is released.</summary>
+    public Exception? DisposeException { get; set; }
+
     /// <summary>Gets the identifiers of every module call, in order.</summary>
     public IEnumerable<string> Identifiers => Calls.Select(c => c.Identifier);
 
@@ -115,6 +118,12 @@ internal sealed class FakeJSObjectReference : IJSObjectReference
     public ValueTask DisposeAsync()
     {
         IsDisposed = true;
+
+        if (DisposeException is not null)
+        {
+            throw DisposeException;
+        }
+
         return ValueTask.CompletedTask;
     }
 }

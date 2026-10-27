@@ -12,7 +12,7 @@ namespace d20Tek.DiceNotation.Blazor.Services;
 /// This type holds mutable physics state, so each component instance should own its own
 /// simulation rather than sharing one.
 /// </remarks>
-public sealed class AetherDiceSimulation : IDiceSimulation
+internal sealed class AetherDiceSimulation : IDiceSimulation
 {
     private readonly DiceSimulationSettings _settings;
     private readonly Random _random;

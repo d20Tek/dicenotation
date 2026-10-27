@@ -12,7 +12,7 @@ namespace d20Tek.DiceNotation.Blazor.Services;
 /// die result: churned faces are transient and always resolve to the real value as a die
 /// slows down.
 /// </remarks>
-public sealed class DieVisualCalculator
+internal sealed class DieVisualCalculator
 {
     private readonly DiceVisualSettings _settings;
 

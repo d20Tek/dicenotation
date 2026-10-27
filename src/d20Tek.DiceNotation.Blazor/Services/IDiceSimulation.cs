@@ -6,7 +6,7 @@ namespace d20Tek.DiceNotation.Blazor.Services;
 /// Defines a physics simulation that animates dice in a tray. The simulation owns only
 /// positions, rotations, and settling. It never produces or alters a die result.
 /// </summary>
-public interface IDiceSimulation : IDisposable
+internal interface IDiceSimulation : IDisposable
 {
     /// <summary>
     /// Gets a value indicating whether every die has come to rest, or the roll reached

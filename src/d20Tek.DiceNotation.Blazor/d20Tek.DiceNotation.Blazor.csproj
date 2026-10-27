@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="d20Tek.DiceNotation.Blazor.UnitTests" />
+    <InternalsVisibleTo Include="D20Tek.DiceNotation.BlazorSpike" />
   </ItemGroup>
 
 </Project>

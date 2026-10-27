@@ -26,7 +26,7 @@ namespace d20Tek.DiceNotation.Blazor.Models;
 /// The lowest face value on the die. Standard dice start at one, but fudge dice run from
 /// minus one to plus one, so the face range cannot be assumed from <paramref name="Sides"/>.
 /// </param>
-public sealed record DieState(
+internal sealed record DieState(
     string Id,
     int Value,
     float X,

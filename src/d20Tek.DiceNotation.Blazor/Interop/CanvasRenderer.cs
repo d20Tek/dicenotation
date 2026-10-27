@@ -12,7 +12,7 @@ namespace d20Tek.DiceNotation.Blazor.Interop;
 /// Rendering failures must never change a die result. Callers should treat a failed
 /// render as a visual problem only and continue to present the already-determined results.
 /// </remarks>
-public sealed class CanvasRenderer : IAsyncDisposable
+internal sealed class CanvasRenderer : IAsyncDisposable
 {
     private const string ModulePath = "./_content/d20Tek.DiceNotation.Blazor/js/dice-roller.js";
 
