@@ -15,7 +15,7 @@ public class DiceAnimationLoopFrameTests
 
         simulation ??= new FakeDiceSimulation();
         var loop = new DiceAnimationLoop(simulation, renderer);
-        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, null, CancellationToken.None);
 
         return (runtime, simulation, loop);
     }
@@ -198,7 +198,7 @@ public class DiceAnimationLoopFrameTests
         await loop.OnFrameAsync(0.016);
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(3), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(3), DiceTraySize.Default, null, null, CancellationToken.None);
         await loop.OnFrameAsync(0.016);
 
         // Assert
@@ -337,7 +337,7 @@ public class DiceAnimationLoopFrameTests
         await loop.OnFrameAsync(0.016);
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(0, loop.FrameCount);

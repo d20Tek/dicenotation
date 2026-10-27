@@ -27,9 +27,9 @@ public class DiceAnimationLoopLifecycleTests
         loop.AnimationCompleted += [ExcludeFromCodeCoverage](_) => { completions++; return Task.CompletedTask; };
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, CancellationToken.None);
-        await loop.StartAsync(VisualDiceFactory.Create(3), DiceTraySize.Default, null, CancellationToken.None);
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(3), DiceTraySize.Default, null, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(3, simulation.StartRollCount);
@@ -54,7 +54,7 @@ public class DiceAnimationLoopLifecycleTests
 
         [ExcludeFromCodeCoverage]
         async Task Act() => await loop.StartAsync(
-            VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+            VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
     }
 
     [TestMethod]
@@ -68,7 +68,7 @@ public class DiceAnimationLoopLifecycleTests
         runtime.Module.InvokeExceptions["startLoop"] = new JSException("no scheduler");
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.IsNotNull(failure);
@@ -82,7 +82,7 @@ public class DiceAnimationLoopLifecycleTests
         // Arrange
         var (runtime, _, loop) = await CreateAsync();
         await using var _ = loop;
-        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, null, CancellationToken.None);
         var renders = runtime.Module.CountOf("render");
 
         // Act
@@ -129,7 +129,7 @@ public class DiceAnimationLoopLifecycleTests
         // Arrange
         var (runtime, _, loop) = await CreateAsync();
         await using var _ = loop;
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
         Exception? failure = null;
         loop.AnimationFailed += ex => { failure = ex; return Task.CompletedTask; };
         runtime.Module.InvokeExceptions["resize"] = new JSDisconnectedException("gone");
@@ -151,7 +151,7 @@ public class DiceAnimationLoopLifecycleTests
         await using var _ = loop;
         DiceSceneState? completed = null;
         loop.AnimationCompleted += scene => { completed = scene; return Task.CompletedTask; };
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Act
         simulation.ElapsedSeconds = 1f;
@@ -189,7 +189,7 @@ public class DiceAnimationLoopLifecycleTests
         // Disposal races with circuit teardown and navigation, so every interop exception
         // that signals an unreachable browser must be absorbed during disposal.
         var (runtime, simulation, loop) = await CreateAsync();
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
         runtime.Module.InvokeException = CreateInteropException(exceptionKind);
 
         // Act
@@ -211,7 +211,7 @@ public class DiceAnimationLoopLifecycleTests
         // The module release happens after the canvas teardown calls, so it is a separate
         // failure point from the module function calls themselves.
         var (runtime, simulation, loop) = await CreateAsync();
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
         runtime.Module.DisposeException = CreateInteropException(exceptionKind);
 
         // Act
@@ -229,7 +229,7 @@ public class DiceAnimationLoopLifecycleTests
         // The renderer absorbs the disconnection exceptions itself, so a plain JSException
         // is the one case that reaches the loop's own disposal guard.
         var (runtime, simulation, loop) = await CreateAsync();
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
         runtime.Module.InvokeExceptions["stopLoop"] = new JSException("module call failed");
 
         // Act
@@ -255,7 +255,7 @@ public class DiceAnimationLoopLifecycleTests
     {
         // Arrange
         var (_, simulation, loop) = await CreateAsync();
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Act
         await loop.DisposeAsync();
@@ -280,8 +280,8 @@ public class DiceAnimationLoopLifecycleTests
         await using var second = new DiceAnimationLoop(new FakeDiceSimulation(), secondRenderer);
 
         // Act
-        await first.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
-        await second.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, CancellationToken.None);
+        await first.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
+        await second.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         var handles = runtime.Module.Calls

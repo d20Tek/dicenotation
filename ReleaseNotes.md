@@ -1,7 +1,16 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current Release (5.1.8):
+### Current Release (5.1.9):
+- Added the `d20Tek.DiceNotation.Blazor` package with the `VisualDiceRoller` component, which animates a completed `DiceResult` in a two-dimensional tray drawn on an HTML canvas. The component never rolls dice, so the faces that come to rest always match the result the application already calculated.
+- Added `AddDiceNotationBlazor()`, which registers the component's services along with the core dice notation services, so a consuming application only makes one call.
+- Added `DiceRollerOptions` and the `DiceRollerOptionsBuilder` fluent registration API for configuring the tray size, theme, presentation values, physics settings, and reduced-motion preference.
+- Added the `DiceTheme` presets `Default`, `DarkFantasy`, and `Parchment`, along with `DiceVisualSettings` and `DiceSimulationSettings` for tuning appearance and physics.
+- Added `DiceRollSummary` and `VisualDie` result models, which preserve the authoritative total from the notation library along with each die's role, sides, and minimum face value.
+- Added a reduced-motion option and an accessible canvas label so the settled outcome is available to assistive technology.
+- Added full documentation for the Blazor package in `docs/api-reference-blazor.md`.
+
+### Release (5.1.8):
 - Updated package references to newest versions.
 - Fixed DiceCli commands due to breaking changes in Spectre.Console.Cli Command and AsyncCommand base classes.
 - Added RollMany() overloads to IDice for rolling a dice expression multiple times and returning a list of DiceResults.

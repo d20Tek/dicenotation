@@ -59,12 +59,17 @@ internal sealed class CanvasRenderer : IAsyncDisposable
     /// <param name="scene">The scene snapshot to draw.</param>
     /// <param name="traySize">The logical dimensions of the tray.</param>
     /// <param name="theme">The theme to draw with, or <see langword="null"/> for the default.</param>
+    /// <param name="visualSettings">
+    /// The presentation values used to resolve each die's drawing instructions, or
+    /// <see langword="null"/> for the defaults.
+    /// </param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>A task that completes when the scene has been sent to the renderer.</returns>
     public async ValueTask RenderAsync(
         DiceSceneState scene,
         DiceTraySize traySize,
         DiceTheme? theme = null,
+        DiceVisualSettings? visualSettings = null,
         CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -73,7 +78,7 @@ internal sealed class CanvasRenderer : IAsyncDisposable
 
         if (!IsInitialized) return;
 
-        var payload = RenderScene.FromSnapshot(scene, traySize, theme);
+        var payload = RenderScene.FromSnapshot(scene, traySize, theme, visualSettings);
         await _module!.InvokeVoidAsync("render", cancellationToken, _handle, payload);
     }
 

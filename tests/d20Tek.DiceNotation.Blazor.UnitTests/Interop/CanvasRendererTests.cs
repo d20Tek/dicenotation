@@ -75,7 +75,7 @@ public class CanvasRendererTests
         await renderer.InitializeAsync(default, CancellationToken.None);
 
         // Act
-        await renderer.RenderAsync(CreateScene(), DiceTraySize.Default, null, CancellationToken.None);
+        await renderer.RenderAsync(CreateScene(), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         var renderCalls = runtime.Module.Calls.Where(c => c.Identifier == "render").ToList();
@@ -96,7 +96,7 @@ public class CanvasRendererTests
             true);
 
         // Act
-        await renderer.RenderAsync(scene, DiceTraySize.Default, null, CancellationToken.None);
+        await renderer.RenderAsync(scene, DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.ContainsSingle(c => c.Identifier == "render", runtime.Module.Calls);
@@ -110,7 +110,7 @@ public class CanvasRendererTests
         await using var renderer = new CanvasRenderer(runtime);
 
         // Act
-        await renderer.RenderAsync(CreateScene(), DiceTraySize.Default, null, CancellationToken.None);
+        await renderer.RenderAsync(CreateScene(), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.IsEmpty(runtime.Module.Calls);
@@ -127,7 +127,7 @@ public class CanvasRendererTests
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(Act);
 
         [ExcludeFromCodeCoverage]
-        async Task Act() => await renderer.RenderAsync(null!, DiceTraySize.Default, null, CancellationToken.None);
+        async Task Act() => await renderer.RenderAsync(null!, DiceTraySize.Default, null, null, CancellationToken.None);
     }
 
     [TestMethod]
@@ -141,7 +141,7 @@ public class CanvasRendererTests
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(Act);
 
         [ExcludeFromCodeCoverage]
-        async Task Act() => await renderer.RenderAsync(CreateScene(), null!, null, CancellationToken.None);
+        async Task Act() => await renderer.RenderAsync(CreateScene(), null!, null, null, CancellationToken.None);
     }
 
     [TestMethod]
@@ -295,7 +295,7 @@ public class CanvasRendererTests
         await Assert.ThrowsExactlyAsync<ObjectDisposedException>(Act);
 
         [ExcludeFromCodeCoverage]
-        async Task Act() => await renderer.RenderAsync(CreateScene(), DiceTraySize.Default, null, CancellationToken.None);
+        async Task Act() => await renderer.RenderAsync(CreateScene(), DiceTraySize.Default, null, null, CancellationToken.None);
     }
 
     [TestMethod]

@@ -30,6 +30,7 @@ internal sealed class DiceAnimationLoop : IAsyncDisposable
     private DotNetObjectReference<DiceAnimationLoop>? _selfReference;
     private DiceTraySize _traySize = DiceTraySize.Default;
     private DiceTheme? _theme;
+    private DiceVisualSettings? _visualSettings;
     private bool _isRunning;
     private bool _completionRaised;
     private double _frameTotalMilliseconds;
@@ -108,6 +109,9 @@ internal sealed class DiceAnimationLoop : IAsyncDisposable
     /// <param name="dice">The dice to animate, each carrying its precomputed result.</param>
     /// <param name="traySize">The logical dimensions of the tray.</param>
     /// <param name="theme">The theme to draw with, or <see langword="null"/> for the default.</param>
+    /// <param name="visualSettings">
+    /// The presentation values used while drawing, or <see langword="null"/> for the defaults.
+    /// </param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>A task that completes once the scheduler is running.</returns>
     /// <exception cref="ArgumentNullException">
@@ -121,6 +125,7 @@ internal sealed class DiceAnimationLoop : IAsyncDisposable
         IReadOnlyList<VisualDie> dice,
         DiceTraySize traySize,
         DiceTheme? theme = null,
+        DiceVisualSettings? visualSettings = null,
         CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -132,6 +137,7 @@ internal sealed class DiceAnimationLoop : IAsyncDisposable
 
         _traySize = traySize;
         _theme = theme;
+        _visualSettings = visualSettings;
         _completionRaised = false;
         FrameCount = 0;
         LastFrameMilliseconds = 0;
@@ -269,7 +275,7 @@ internal sealed class DiceAnimationLoop : IAsyncDisposable
     private async ValueTask RenderCurrentAsync(CancellationToken cancellationToken)
     {
         var snapshot = _simulation.GetSnapshot();
-        await _renderer.RenderAsync(snapshot, _traySize, _theme, cancellationToken);
+        await _renderer.RenderAsync(snapshot, _traySize, _theme, _visualSettings, cancellationToken);
     }
 
     private async Task CompleteAsync()

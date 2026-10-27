@@ -79,7 +79,7 @@ public class DiceAnimationLoopStartTests
         var dice = VisualDiceFactory.Create(3);
 
         // Act
-        await loop.StartAsync(dice, DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(dice, DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(1, simulation.StartRollCount);
@@ -95,7 +95,7 @@ public class DiceAnimationLoopStartTests
         await using var _ = loop;
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         var identifiers = runtime.Module.Identifiers.ToList();
@@ -113,7 +113,7 @@ public class DiceAnimationLoopStartTests
         await using var loop = new DiceAnimationLoop(new FakeDiceSimulation(), renderer, settings);
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(0.25f, runtime.Module.ArgsOf("startLoop")![2]);
@@ -127,7 +127,7 @@ public class DiceAnimationLoopStartTests
         await using var _ = loop;
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, DiceTheme.Parchment, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, DiceTheme.Parchment, null, CancellationToken.None);
 
         // Assert
         var payload = (RenderScene)runtime.Module.ArgsOf("render")![1]!;
@@ -145,7 +145,7 @@ public class DiceAnimationLoopStartTests
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(Act);
 
         [ExcludeFromCodeCoverage]
-        async Task Act() => await loop.StartAsync(null!, DiceTraySize.Default, null, CancellationToken.None);
+        async Task Act() => await loop.StartAsync(null!, DiceTraySize.Default, null, null, CancellationToken.None);
     }
 
     [TestMethod]
@@ -159,7 +159,7 @@ public class DiceAnimationLoopStartTests
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(Act);
 
         [ExcludeFromCodeCoverage]
-        async Task Act() => await loop.StartAsync(VisualDiceFactory.Create(1), null!, null, CancellationToken.None);
+        async Task Act() => await loop.StartAsync(VisualDiceFactory.Create(1), null!, null, null, CancellationToken.None);
     }
 
     [TestMethod]
@@ -168,10 +168,10 @@ public class DiceAnimationLoopStartTests
         // Arrange
         var (runtime, simulation, loop) = await CreateAsync();
         await using var _ = loop;
-        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(2), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Act
-        await loop.StartAsync(VisualDiceFactory.Create(5), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(5), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(2, simulation.StartRollCount);
@@ -191,7 +191,7 @@ public class DiceAnimationLoopStartTests
         await Assert.ThrowsExactlyAsync<ObjectDisposedException>(Act);
 
         [ExcludeFromCodeCoverage]
-        async Task Act() => await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        async Task Act() => await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
     }
 
     [TestMethod]
@@ -200,7 +200,7 @@ public class DiceAnimationLoopStartTests
         // Arrange
         var (runtime, _, loop) = await CreateAsync();
         await using var _ = loop;
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
 
         // Act
         await loop.StopAsync(CancellationToken.None);
@@ -229,7 +229,7 @@ public class DiceAnimationLoopStartTests
     {
         // Arrange
         var (runtime, _, loop) = await CreateAsync();
-        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, CancellationToken.None);
+        await loop.StartAsync(VisualDiceFactory.Create(1), DiceTraySize.Default, null, null, CancellationToken.None);
         await loop.DisposeAsync();
         var stopCount = runtime.Module.CountOf("stopLoop");
 

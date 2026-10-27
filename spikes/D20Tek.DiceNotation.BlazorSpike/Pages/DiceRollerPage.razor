@@ -1,0 +1,90 @@
+@page "/dice-roller"
+@using d20Tek.DiceNotation
+@using d20Tek.DiceNotation.Results
+@inject IDice Dice
+
+<PageTitle>Dice Roller</PageTitle>
+
+<h1>Visual Dice Roller</h1>
+
+<p>
+    This page uses the public component exactly as a consuming application would. The
+    application parses the notation and rolls the dice, then hands the finished result to
+    the component to animate.
+</p>
+
+<div class="mb-3 d-flex gap-2 align-items-center">
+    <input class="form-control" style="max-width: 12rem;" @bind="_notation" aria-label="Dice notation" />
+    <button class="btn btn-primary" @onclick="RollAsync" disabled="@_isRolling">Roll</button>
+    <button class="btn btn-secondary" @onclick="ReplayAsync" disabled="@(_isRolling || _result is null)">Replay</button>
+    <label class="form-check-label ms-3">
+        <input type="checkbox" class="form-check-input" @bind="_reducedMotion" /> Reduced motion
+    </label>
+</div>
+
+<div style="max-width: 40rem;">
+    <VisualDiceRoller @ref="_roller"
+                      Result="_result"
+                      Options="@(DiceRollerOptions.Default with { ReducedMotion = _reducedMotion })"
+                      OnRollCompleted="OnCompleted"
+                      OnRollFailed="OnFailed" />
+</div>
+
+@if (_error is not null)
+{
+    <p class="text-danger mt-3">@_error</p>
+}
+else if (_summary is not null)
+{
+    <p class="mt-3">
+        <strong>@_summary.Expression</strong> = @_summary.Total
+        (@string.Join(", ", _summary.Dice.Select(d => d.Value)))
+    </p>
+}
+
+@code {
+    private VisualDiceRoller? _roller;
+    private DiceResult? _result;
+    private DiceRollSummary? _summary;
+    private string _notation = "4d6k3+2";
+    private string? _error;
+    private bool _reducedMotion;
+    private bool _isRolling;
+
+    private void RollAsync()
+    {
+        _error = null;
+        _summary = null;
+        _isRolling = true;
+
+        var result = Dice.Roll(_notation);
+        if (result.HasError)
+        {
+            _error = result.Error;
+            _isRolling = false;
+            return;
+        }
+
+        _result = result;
+    }
+
+    private async Task ReplayAsync()
+    {
+        if (_roller is null) return;
+
+        _isRolling = true;
+        await _roller.ReplayAsync();
+    }
+
+    private void OnCompleted(DiceRollSummary summary)
+    {
+        _summary = summary;
+        _isRolling = false;
+    }
+
+    private void OnFailed(Exception exception)
+    {
+        _error = $"The animation failed: {exception.Message}";
+        _isRolling = false;
+    }
+}
