@@ -28,6 +28,7 @@ public class RenderSceneGeometryTests
     }
 
     [TestMethod]
+    [ExcludeFromCodeCoverage]
     public void FromSnapshot_WithDie_ScalesVerticesByDieSize()
     {
         // Arrange

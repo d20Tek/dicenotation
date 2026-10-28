@@ -93,8 +93,8 @@ public sealed partial class VisualDiceRoller : ComponentBase, IAsyncDisposable
     public bool IsRolling => _loop?.IsRunning ?? false;
 
     // Options supplied on the component win, then the application-wide defaults supplied
-    // during registration, then the library defaults.
-    private DiceRollerOptions ResolvedOptions => Options ?? DefaultOptions ?? DiceRollerOptions.Default;
+    // during registration, which fall back to the library defaults when nothing is configured.
+    private DiceRollerOptions ResolvedOptions => Options ?? DefaultOptions;
 
     private string AspectRatio
     {

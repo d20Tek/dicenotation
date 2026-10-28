@@ -33,9 +33,11 @@
               </Exclude>
             </Sources>
 
+            <!-- Exclude test framework and test-only dependencies -->
             <ModulePaths>
               <Exclude>
                 <ModulePath>.*mstest.*</ModulePath>
+                <ModulePath>.*bunit.*\.dll$</ModulePath>
               </Exclude>
             </ModulePaths>
 

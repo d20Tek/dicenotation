@@ -61,6 +61,7 @@ public class DieGeometryTests
     [DataRow(12)]
     [DataRow(20)]
     [DataRow(100)]
+    [ExcludeFromCodeCoverage]
     public void GetOutline_WithStandardDieType_ReturnsConvexPolygon(int sides)
     {
         // Arrange
@@ -143,6 +144,7 @@ public class DieGeometryTests
     }
 
     [TestMethod]
+    [DataRow(2, 0.5f)]
     [DataRow(4, 0.08f)]
     [DataRow(10, 0.1f)]
     [DataRow(100, 0.1f)]
@@ -158,6 +160,55 @@ public class DieGeometryTests
         Assert.AreEqual(expected, result, 0.0001f);
     }
 
+    [TestMethod]
+    public void GetCornerRadiusFactor_ForCoin_ExceedsWhatAnyCornerCanConsume()
+    {
+        // Arrange
+        // The coin outline is an octagon normalized to unit area, so no corner can absorb
+        // a radius of half the die's logical size. The renderer's per-corner clamp then
+        // rounds every corner as far as it will go and the octagon reads as a circle.
+        var outline = DieGeometry.GetOutline(2);
+        var longestEdge = outline
+            .Select((point, i) => (point - outline[(i + 1) % outline.Count]).Length())
+            .Max();
+
+        // Act
+        var result = DieGeometry.GetCornerRadiusFactor(2);
+
+        // Assert
+        Assert.IsGreaterThan(longestEdge / 2f, result);
+    }
+
+    [TestMethod]
+    public void GetCornerRadiusFactor_ForSharpCornerShape_IsSmallerThanForSquareCorners()
+    {
+        // Arrange
+        // Rounding a narrow triangle corner as heavily as a square corner would visibly
+        // erode the silhouette.
+        var triangle = DieGeometry.GetCornerRadiusFactor(4);
+
+        // Act
+        var square = DieGeometry.GetCornerRadiusFactor(6);
+
+        // Assert
+        Assert.IsLessThan(square, triangle);
+    }
+
+    [TestMethod]
+    [DataRow(3)]
+    [DataRow(7)]
+    [DataRow(30)]
+    public void GetCornerRadiusFactor_WithUnconventionalDieType_ReturnsTheDefaultRadius(int sides)
+    {
+        // Arrange
+        // Act
+        var result = DieGeometry.GetCornerRadiusFactor(sides);
+
+        // Assert
+        Assert.AreEqual(0.14f, result, 0.0001f);
+    }
+
+    [ExcludeFromCodeCoverage]
     private static bool IsConvex(IReadOnlyList<Vector2> points)
     {
         var sign = 0;
