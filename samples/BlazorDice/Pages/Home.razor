@@ -1,0 +1,126 @@
+@page "/"
+
+<PageTitle>Dice Roller</PageTitle>
+
+<h1>Visual Dice Roller</h1>
+
+<p>
+    This page uses the public component exactly as a consuming application would. The
+    application parses the notation and rolls the dice, then hands the finished result to
+    the component to animate.
+</p>
+
+<div class="mb-3 d-flex gap-2 align-items-center">
+    <input class="form-control" style="max-width: 12rem;" @bind="_notation" aria-label="Dice notation" />
+    <button class="btn btn-primary" @onclick="RollAsync" disabled="@_isRolling">Roll</button>
+    <button class="btn btn-secondary" @onclick="ReplayAsync" disabled="@(_isRolling || _result is null)">Replay</button>
+    <label class="form-check-label ms-3">
+        <input type="checkbox" class="form-check-input" @bind="_reducedMotion" /> Reduced motion
+    </label>
+    <select class="form-select ms-3" style="max-width: 12rem;" aria-label="Theme" @bind="_themeName">
+        @foreach (var theme in Themes)
+        {
+            <option value="@theme.Name">@theme.Name</option>
+        }
+    </select>
+</div>
+
+<div class="mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <span class="text-muted">Examples:</span>
+    @foreach (var sample in Samples)
+    {
+        <button class="btn btn-outline-secondary btn-sm"
+                @onclick="@(() => UseSample(sample.Notation))"
+                disabled="@_isRolling"
+                title="@sample.Description">
+            @sample.Notation
+        </button>
+    }
+</div>
+
+<ul class="nav nav-tabs mt-4" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(_activeTab == OutputTab.Dice ? "active" : null)"
+                type="button"
+                role="tab"
+                aria-selected="@(_activeTab == OutputTab.Dice)"
+                @onclick="@(() => SelectTab(OutputTab.Dice))">
+            Dice
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(_activeTab == OutputTab.History ? "active" : null)"
+                type="button"
+                role="tab"
+                aria-selected="@(_activeTab == OutputTab.History)"
+                @onclick="@(() => SelectTab(OutputTab.History))">
+            Roll history
+            @if (_history.Count > 0)
+            {
+                <span class="badge text-bg-secondary ms-1">@_history.Count</span>
+            }
+        </button>
+    </li>
+</ul>
+
+<div class="border border-top-0 rounded-bottom p-3">
+    @* The roller stays mounted while hidden. Its canvas sizes itself from the element's
+       bounding box, so unmounting and remounting it would discard the settled scene. *@
+    <div class="@(_activeTab == OutputTab.Dice ? null : "d-none")" role="tabpanel">
+        <div style="max-width: 40rem;">
+            <VisualDiceRoller @ref="_roller"
+                              Result="_result"
+                              Options="@(DiceRollerOptions.Default with { Theme = SelectedTheme, ReducedMotion = _reducedMotion })"
+                              OnRollCompleted="OnCompleted"
+                              OnRollFailed="OnFailed" />
+        </div>
+
+        @if (_error is not null)
+        {
+            <p class="text-danger mt-3 mb-0">@_error</p>
+        }
+        else if (_summary is not null)
+        {
+            <p class="mt-3 mb-0">
+                <strong>@_summary.Expression</strong> = @_summary.Total
+                (@string.Join(", ", _summary.Dice.Select(d => d.Value)))
+            </p>
+        }
+    </div>
+
+    <div class="@(_activeTab == OutputTab.History ? null : "d-none")" role="tabpanel">
+        @if (_history.Count == 0)
+        {
+            <p class="text-muted mb-0">No rolls yet. Roll some dice to build up a history.</p>
+        }
+        else
+        {
+            <div class="d-flex justify-content-end mb-2">
+                <button class="btn btn-outline-secondary btn-sm" @onclick="ClearHistory">Clear</button>
+            </div>
+            <table class="table table-sm table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Expression</th>
+                        <th scope="col">Dice</th>
+                        <th scope="col" class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in _history)
+                    {
+                        <tr>
+                            <td class="text-muted">@entry.Number</td>
+                            <td class="text-muted">@entry.RolledAt.ToString("HH:mm:ss")</td>
+                            <td><code>@entry.Expression</code></td>
+                            <td>@entry.Dice</td>
+                            <td class="text-end"><strong>@entry.Total</strong></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

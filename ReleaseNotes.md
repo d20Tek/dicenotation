@@ -1,7 +1,20 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current Release (5.1.8):
+### Current Release (5.1.9):
+- Added the `d20Tek.DiceNotation.Blazor` package with the `VisualDiceRoller` component, which animates a completed `DiceResult` in a two-dimensional tray drawn on an HTML canvas. The component never rolls dice, so the faces that come to rest always match the result the application already calculated.
+- Added `AddDiceNotationBlazor()`, which registers the component's services along with the core dice notation services, so a consuming application only makes one call.
+- Added `DiceRollerOptions` and the `DiceRollerOptionsBuilder` fluent registration API for configuring the tray size, theme, presentation values, physics settings, and reduced-motion preference.
+- Added the `DiceTheme` presets `Default`, `DarkFantasy`, and `Parchment`, along with `DiceVisualSettings` and `DiceSimulationSettings` for tuning appearance and physics.
+- Added `DiceRollSummary` and `VisualDie` result models, which preserve the authoritative total from the notation library along with each die's role, sides, and minimum face value.
+- Added a reduced-motion option and an accessible canvas label so the settled outcome is available to assistive technology.
+- Added shape-aware dice rendering: each die is now drawn and simulated with a silhouette matching its type (d2 round coin, d4 triangle, d6 square, d8 diamond, d10 and d100 kite, d12 pentagon, d20 hexagon) instead of every die appearing as a square. Shapes are resolved in C# and sent to the renderer as vertex data, and the physics bodies are built from the same outlines so collision always matches what is drawn.
+- Added full documentation for the Blazor package: `docs/introduction-blazor.md`, `docs/getting-started-blazor.md`, and `docs/api-reference-blazor.md`, including supported targets and known limitations.
+- Published the Blazor component library as the `d20tek-dicenotation-blazor` NuGet package (version 1.0.0) targeting .NET 9 and .NET 10, with symbol packages and a package README.
+- Added the `BlazorDice` sample application, which demonstrates the main scenarios on its home page: keep-highest rolls, single-die rolls with modifiers, mixed die types, coin flips, percentile dice, theme switching, reduced motion, replay, and invalid-notation error handling.
+- Fixed an ambiguity in the `VisualDiceRoller` rendering where a 6 and a 9 looked identical on tumbling dice. Dice with nine or more sides now draw a disambiguating dot after those numerals, matching the convention used on physical dice.
+
+### Release (5.1.8):
 - Updated package references to newest versions.
 - Fixed DiceCli commands due to breaking changes in Spectre.Console.Cli Command and AsyncCommand base classes.
 - Added RollMany() overloads to IDice for rolling a dice expression multiple times and returning a list of DiceResults.

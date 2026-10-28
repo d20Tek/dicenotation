@@ -1,0 +1,139 @@
+@page "/physics-spike"
+@using System.Diagnostics
+@using d20Tek.DiceNotation.Blazor.Models
+@using d20Tek.DiceNotation.Blazor.Services
+
+<PageTitle>Aether.Physics2D WASM spike</PageTitle>
+
+<h1>Aether.Physics2D WASM spike</h1>
+
+<p>
+    Runs the packaged <code>AetherDiceSimulation</code> headlessly inside the Blazor
+    WebAssembly runtime. This verifies that Aether.Physics2D loads and executes correctly
+    in the browser, and reports how long a full settle takes in wall-clock time.
+</p>
+
+<button class="btn btn-primary" @onclick="RunSpikeAsync" disabled="@_isRunning">
+    @(_isRunning ? "Running..." : "Run spike")
+</button>
+
+@if (_error is not null)
+{
+    <p class="text-danger mt-3" role="alert">@_error</p>
+}
+
+@if (_results.Count > 0)
+{
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Dice</th>
+                <th scope="col">Settled</th>
+                <th scope="col">In tray</th>
+                <th scope="col">Values intact</th>
+                <th scope="col">Simulated time</th>
+                <th scope="col">Wall-clock time</th>
+                <th scope="col">Outcome</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in _results)
+            {
+                <tr>
+                    <td>@result.DiceCount</td>
+                    <td>@result.IsSettled</td>
+                    <td>@result.InsideTray</td>
+                    <td>@result.ValuesIntact</td>
+                    <td>@result.SimulatedSeconds.ToString("F2")s</td>
+                    <td>@result.ElapsedMilliseconds.ToString("F1")ms</td>
+                    <td>@(result.Passed ? "PASS" : "FAIL")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p role="status">
+        @(_results.TrueForAll(r => r.Passed)
+            ? "Spike exit criteria met in WebAssembly."
+            : "Spike exit criteria NOT met in WebAssembly.")
+    </p>
+}
+
+@code {
+    private static readonly int[] DiceCounts = [1, 2, 4, 6, 10, 20];
+
+    private readonly List<SpikeRunResult> _results = [];
+    private readonly Random _animationRandom = new();
+    private readonly Random _resultRandom = new();
+    private bool _isRunning;
+    private string? _error;
+
+    private async Task RunSpikeAsync()
+    {
+        _isRunning = true;
+        _error = null;
+        _results.Clear();
+        StateHasChanged();
+
+        try
+        {
+            var settings = new DiceSimulationSettings();
+
+            foreach (var count in DiceCounts)
+            {
+                _results.Add(RunSingle(settings, count));
+
+                // Yield so the UI can update between runs.
+                StateHasChanged();
+                await Task.Yield();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = $"{ex.GetType().Name}: {ex.Message}";
+        }
+        finally
+        {
+            _isRunning = false;
+        }
+    }
+
+    private SpikeRunResult RunSingle(DiceSimulationSettings settings, int count)
+    {
+        using var simulation = new AetherDiceSimulation(settings, _animationRandom);
+
+        // Results are determined before the animation starts and never change afterwards.
+        var dice = Enumerable.Range(0, count)
+            .Select(i => new VisualDie($"die-{i}", "d6", _resultRandom.Next(1, 7)))
+            .ToArray();
+
+        var stopwatch = Stopwatch.StartNew();
+        simulation.StartRoll(dice, DiceTraySize.Default);
+        while (!simulation.IsSettled)
+        {
+            simulation.Step(settings.FixedStep);
+        }
+
+        stopwatch.Stop();
+
+        var snapshot = simulation.GetSnapshot();
+        return new SpikeRunResult(
+            count,
+            snapshot.IsSettled,
+            simulation.AllDiceInsideTray(),
+            snapshot.Dice.Select(d => d.Value).SequenceEqual(dice.Select(d => d.Value)),
+            snapshot.ElapsedSeconds,
+            stopwatch.Elapsed.TotalMilliseconds);
+    }
+
+    private sealed record SpikeRunResult(
+        int DiceCount,
+        bool IsSettled,
+        bool InsideTray,
+        bool ValuesIntact,
+        float SimulatedSeconds,
+        double ElapsedMilliseconds)
+    {
+        public bool Passed => IsSettled && InsideTray && ValuesIntact;
+    }
+}

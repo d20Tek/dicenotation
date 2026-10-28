@@ -84,3 +84,22 @@ frequency statistics.
   against performance regressions over time.
 - **Mutation testing**: Run a mutation testing pass (for example, with Stryker.NET) to validate the
   strength of the existing unit test suite.
+
+## Visual Representations
+- [Done] **Blazor dice roller component**: A visual dice roller for Blazor that animates the results of
+  `IDice` rolls as physics-driven dice on an HTML canvas. The rolled values are determined by the
+  dice library and the animation simply presents them, so the visuals never change an outcome.
+- **3D dice roller component**: A visual dice roller that animates the results of
+  `IDice` rolls as physics-driven dice in a 3D scene. The rolled values are determined by the
+  dice library and the animation simply presents them, so the visuals never change an outcome.
+- **Dice input component**: A UI component that allows users to enter dice notation and see the parsed result, including
+  any errors or warnings. It could be raw text input, a structured form with types of dice, or a calculator-like interface.
+  Or the ability to configure all three options into a single component.
+- **Dice result component**: A UI component that displays the results of a dice roll, including the individual die rolls, 
+  the total, and any relevant metadata (e.g., critical hits, rerolls, etc.). It could be a single result display or a 
+  history of results, with options for formatting and styling.
+- **Dice roller panel**: A UI component that combines the dice input, result components, and visual dice roller into a single
+  panel, allowing users to roll dice and see the results in one place. It could include options for configuring the roller, 
+  such as selecting the die roller implementation or enabling/disabling certain features (e.g., rerolls, keep/drop rules, etc.).
+  This panel could be used in a variety of applications, such as tabletop RPGs, board games, or online gaming platforms that
+  want to standardize the way dice are rolled and displayed.

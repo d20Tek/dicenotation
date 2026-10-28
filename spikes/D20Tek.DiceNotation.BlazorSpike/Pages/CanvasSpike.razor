@@ -1,0 +1,189 @@
+@page "/canvas-spike"
+@using d20Tek.DiceNotation.Blazor.Interop
+@using d20Tek.DiceNotation.Blazor.Models
+@using d20Tek.DiceNotation.Blazor.Services
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Static canvas rendering</PageTitle>
+
+<h1>Static canvas rendering</h1>
+
+<p>
+    Milestone 3 verification. A settled snapshot is produced by the simulation and drawn
+    once through a single batched interop call. No animation loop runs on this page.
+</p>
+
+<div class="row g-3 mb-3">
+    <div class="col-auto">
+        <label class="form-label" for="dice-count">Dice</label>
+        <select id="dice-count" class="form-select" @bind="_diceCount" @bind:after="RenderAsync">
+            @foreach (var count in new[] { 1, 2, 4, 6, 10, 20 })
+            {
+                <option value="@count">@count</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label" for="theme">Theme</label>
+        <select id="theme" class="form-select" @bind="_themeName" @bind:after="RenderAsync">
+            <option value="Default">Default</option>
+            <option value="DarkFantasy">DarkFantasy</option>
+            <option value="Parchment">Parchment</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label" for="width">Canvas width</label>
+        <select id="width" class="form-select" @bind="_canvasWidth" @bind:after="ResizeAsync">
+            <option value="320">320px</option>
+            <option value="480">480px</option>
+            <option value="720">720px</option>
+            <option value="100%">Full width</option>
+        </select>
+    </div>
+    <div class="col-auto align-self-end">
+        <button class="btn btn-primary" @onclick="RerollAsync">New layout</button>
+    </div>
+</div>
+
+<div style="width: @(_canvasWidth.EndsWith('%') ? _canvasWidth : _canvasWidth + "px"); max-width: 100%;">
+    <canvas @ref="_canvas"
+            class="d20tek-dice-roller__canvas"
+            style="width: 100%; aspect-ratio: @Tray.Width / @Tray.Height; background: transparent;"
+            role="img"
+            aria-label="@AriaLabel"></canvas>
+</div>
+
+@if (_scene is not null)
+{
+    <p class="mt-3">
+        Drawn values:
+        <strong>@string.Join(", ", _scene.Dice.Select(d => d.Value))</strong>
+        (total @_scene.Dice.Sum(d => d.Value))
+    </p>
+}
+
+@if (_error is not null)
+{
+    <p class="text-danger" role="alert">@_error</p>
+}
+
+@code {
+    private static readonly DiceTraySize Tray = DiceTraySize.Default;
+
+    private readonly Random _animationRandom = new();
+    private readonly Random _resultRandom = new();
+    private ElementReference _canvas;
+    private CanvasRenderer? _renderer;
+    private DiceSceneState? _scene;
+    private int _diceCount = 6;
+    private string _themeName = "Default";
+    private string _canvasWidth = "480";
+    private string? _error;
+
+    private DiceTheme Theme => _themeName switch
+    {
+        "DarkFantasy" => DiceTheme.DarkFantasy,
+        "Parchment" => DiceTheme.Parchment,
+        _ => DiceTheme.Default,
+    };
+
+    private string AriaLabel =>
+        _scene is null
+            ? "Dice tray"
+            : $"Dice tray showing {_scene.Dice.Count} dice with values " +
+              $"{string.Join(", ", _scene.Dice.Select(d => d.Value))}.";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            _renderer = new CanvasRenderer(JSRuntime);
+            await _renderer.InitializeAsync(_canvas);
+            await RerollAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = $"{ex.GetType().Name}: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task RerollAsync()
+    {
+        _scene = BuildSettledScene(_diceCount);
+        await RenderAsync();
+    }
+
+    private async Task RenderAsync()
+    {
+        if (_renderer is null)
+        {
+            return;
+        }
+
+        _scene ??= BuildSettledScene(_diceCount);
+
+        // Rebuild the scene when the dice count changes.
+        if (_scene.Dice.Count != _diceCount)
+        {
+            _scene = BuildSettledScene(_diceCount);
+        }
+
+        try
+        {
+            await _renderer.RenderAsync(_scene, Tray, Theme);
+        }
+        catch (Exception ex)
+        {
+            // A rendering failure must never change or invalidate the results.
+            _error = $"{ex.GetType().Name}: {ex.Message}";
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task ResizeAsync()
+    {
+        if (_renderer is null)
+        {
+            return;
+        }
+
+        // Let the element apply its new CSS size before measuring the backing buffer.
+        await Task.Yield();
+        await _renderer.ResizeAsync();
+        await RenderAsync();
+    }
+
+    private DiceSceneState BuildSettledScene(int count)
+    {
+        using var simulation = new AetherDiceSimulation(null, _animationRandom);
+        var settings = new DiceSimulationSettings();
+
+        var dice = Enumerable.Range(0, count)
+            .Select(i => new VisualDie($"die-{i}", "d6", _resultRandom.Next(1, 7)))
+            .ToArray();
+
+        simulation.StartRoll(dice, Tray);
+        while (!simulation.IsSettled)
+        {
+            simulation.Step(settings.FixedStep);
+        }
+
+        return simulation.GetSnapshot();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_renderer is not null)
+        {
+            await _renderer.DisposeAsync();
+        }
+    }
+}

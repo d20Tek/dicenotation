@@ -1,0 +1,23 @@
+.d20tek-dice-roller {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.d20tek-dice-roller__canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 0.5rem;
+    touch-action: none;
+}
+
+.d20tek-dice-roller__results {
+    font-family: system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .d20tek-dice-roller__canvas {
+        transition: none;
+    }
+}

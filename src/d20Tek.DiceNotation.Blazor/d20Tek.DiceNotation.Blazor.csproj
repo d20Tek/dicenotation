@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Version>1.0.0</Version>
+    <PackageId>d20tek-dicenotation-blazor</PackageId>
+    <StaticWebAssetBasePath>_content/d20Tek.DiceNotation.Blazor</StaticWebAssetBasePath>
+    <Title>d20Tek DiceNotation Visual Dice Roller for Blazor</Title>
+    <Product>DiceNotation Visual Dice Roller</Product>
+    <Description>Blazor component that animates d20Tek.DiceNotation roll results as physics-driven dice on an HTML canvas. The rolled values are determined by the dice library and the animation simply presents them, so the visuals never change an outcome.</Description>
+    <PackageTags>Dice DiceNotation d20 DiceRolls DiceRoller Blazor WebAssembly Canvas Animation</PackageTags>
+    <PackageReleaseNotes>
+      Current release:
+      * Initial release of the VisualDiceRoller Blazor component.
+      * AddDiceNotationBlazor registers the dice library and the component services together.
+      * DiceRollerOptions configures tray size, theme, visual settings, simulation settings, and reduced motion.
+      * Built-in DiceTheme presets: Default, DarkFantasy, and Parchment.
+      * Shape-aware rendering and physics for d2, d4, d6, d8, d10, d12, d20, and d100.
+    </PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>package-icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aether.Physics2D" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Update="Microsoft.AspNetCore.Components.Web" VersionOverride="9.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\d20Tek.DiceNotation\d20Tek.DiceNotation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="d20Tek.DiceNotation.Blazor.UnitTests" />
+    <InternalsVisibleTo Include="D20Tek.DiceNotation.BlazorSpike" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PackageReadme.md">
+      <Pack>True</Pack>
+      <PackagePath>\README.md</PackagePath>
+    </None>
+    <None Include="..\..\package-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

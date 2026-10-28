@@ -1,0 +1,206 @@
+@page "/animation-spike"
+@using d20Tek.DiceNotation.Blazor.Interop
+@using d20Tek.DiceNotation.Blazor.Models
+@using d20Tek.DiceNotation.Blazor.Services
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Live animation</PageTitle>
+
+<h1>Live animation</h1>
+
+<p>
+    Milestone 4 verification. A single <code>requestAnimationFrame</code> scheduler in
+    JavaScript drives the physics in C#, and each displayed frame sends exactly one
+    batched snapshot to the canvas.
+</p>
+
+<div class="row g-3 mb-3">
+    <div class="col-auto">
+        <label class="form-label" for="dice-count">Dice</label>
+        <select id="dice-count" class="form-select" @bind="_diceCount">
+            @foreach (var count in new[] { 1, 2, 4, 6, 10, 20, 50 })
+            {
+                <option value="@count">@count</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <label class="form-label" for="theme">Theme</label>
+        <select id="theme" class="form-select" @bind="_themeName">
+            <option value="Default">Default</option>
+            <option value="DarkFantasy">DarkFantasy</option>
+            <option value="Parchment">Parchment</option>
+        </select>
+    </div>
+    <div class="col-auto align-self-end">
+        <div class="form-check">
+            <input id="motion" class="form-check-input" type="checkbox" @bind="_useMotionEffects" />
+            <label class="form-check-label" for="motion">Motion effects</label>
+        </div>
+    </div>
+    <div class="col-auto align-self-end">
+        <button class="btn btn-primary" @onclick="RollAsync">Roll</button>
+    </div>
+    <div class="col-auto align-self-end">
+        <button class="btn btn-secondary" @onclick="StopAsync" disabled="@(!IsRolling)">Stop</button>
+    </div>
+</div>
+
+<div style="max-width: 720px;">
+    <canvas @ref="_canvas"
+            class="d20tek-dice-roller__canvas"
+            style="width: 100%; aspect-ratio: @Tray.Width / @Tray.Height;"
+            role="img"
+            aria-label="@AriaLabel"></canvas>
+</div>
+
+<p class="mt-3" role="status">
+    State: <strong>@_state</strong>
+    @if (_loop is not null && _loop.FrameCount > 0)
+    {
+        <span>
+            &nbsp;| frames: @_loop.FrameCount
+            &nbsp;| average frame: @_loop.AverageFrameMilliseconds.ToString("F2")ms
+            &nbsp;| worst frame: @_loop.WorstFrameMilliseconds.ToString("F2")ms
+        </span>
+    }
+</p>
+
+@if (_results.Count > 0)
+{
+    <p>
+        Results: <strong>@string.Join(", ", _results)</strong> (total @_results.Sum())
+    </p>
+}
+
+@if (_error is not null)
+{
+    <p class="text-danger" role="alert">@_error</p>
+}
+
+@code {
+    private static readonly DiceTraySize Tray = DiceTraySize.Default;
+
+    private readonly Random _animationRandom = new();
+    private readonly Random _resultRandom = new();
+    private readonly List<int> _results = [];
+    private ElementReference _canvas;
+    private DiceAnimationLoop? _loop;
+    private int _diceCount = 6;
+    private string _themeName = "Default";
+    private bool _useMotionEffects = true;
+    private string _state = "Idle";
+    private string? _error;
+
+    private bool IsRolling => _loop?.IsRunning ?? false;
+
+    private DiceTheme Theme
+    {
+        get
+        {
+            var theme = _themeName switch
+            {
+                "DarkFantasy" => DiceTheme.DarkFantasy,
+                "Parchment" => DiceTheme.Parchment,
+                _ => DiceTheme.Default,
+            };
+
+            return theme with { UseMotionEffects = _useMotionEffects };
+        }
+    }
+
+    private string AriaLabel =>
+        _results.Count == 0
+            ? "Dice tray"
+            : $"Dice tray showing {_results.Count} dice with values {string.Join(", ", _results)}.";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var renderer = new CanvasRenderer(JSRuntime);
+            await renderer.InitializeAsync(_canvas);
+
+            var simulation = new AetherDiceSimulation(null, _animationRandom);
+            _loop = new DiceAnimationLoop(simulation, renderer);
+            _loop.AnimationCompleted += OnCompletedAsync;
+            _loop.AnimationFailed += OnFailedAsync;
+
+            await RollAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = $"{ex.GetType().Name}: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task RollAsync()
+    {
+        if (_loop is null)
+        {
+            return;
+        }
+
+        // Results are fixed before the animation begins and never change while dice move.
+        var dice = Enumerable.Range(0, _diceCount)
+            .Select(i => new VisualDie($"die-{i}", "d6", _resultRandom.Next(1, 7)))
+            .ToArray();
+
+        _results.Clear();
+        _results.AddRange(dice.Select(d => d.Value));
+
+        _error = null;
+        _state = "Rolling";
+
+        await _loop.StartAsync(dice, Tray, Theme);
+        StateHasChanged();
+    }
+
+    private async Task StopAsync()
+    {
+        if (_loop is null)
+        {
+            return;
+        }
+
+        await _loop.StopAsync();
+        _state = "Stopped";
+        StateHasChanged();
+    }
+
+    private Task OnCompletedAsync(DiceSceneState scene)
+    {
+        _state = scene.IsSettled ? $"Settled after {scene.ElapsedSeconds:F2}s" : "Finished";
+
+        // Rerender the component only when the animation ends, never per frame.
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task OnFailedAsync(Exception exception)
+    {
+        _state = "Animation failed";
+
+        // The results were already determined, so they remain valid and displayed.
+        _error = $"{exception.GetType().Name}: {exception.Message}";
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_loop is not null)
+        {
+            _loop.AnimationCompleted -= OnCompletedAsync;
+            _loop.AnimationFailed -= OnFailedAsync;
+            await _loop.DisposeAsync();
+        }
+    }
+}

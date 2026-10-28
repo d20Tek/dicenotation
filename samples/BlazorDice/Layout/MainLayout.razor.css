@@ -1,0 +1,12 @@
+.page-content {
+    display: block;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 3rem 2rem;
+}
+
+@media (max-width: 640px) {
+    .page-content {
+        padding: 1rem 1rem 2rem 1rem;
+    }
+}
