@@ -13,7 +13,10 @@ Two NuGet packages plus samples, benchmarks, and spikes, all in `dicenotation.sl
   component that animates an already-computed `DiceResult` as physics-driven dice on a canvas.
   Targets `net9.0;net10.0`; the net9.0 build pins `Microsoft.AspNetCore.Components.Web` with a
   `VersionOverride` in the csproj.
-- `tests/`: one MSTest project per package (both `net10.0`).
+- `tests/`: one MSTest project per package (both `net10.0`), plus `d20Tek.DiceNotation.AotSmoke`, a console
+  app that the `aot-smoke` workflow publishes with Native AOT (with warnings as errors) and runs on pull
+  requests. When you add public API that could depend on reflection, add a check to its `Program.cs`. Publishing
+  it locally needs the Visual Studio C++ workload.
 - `samples/DiceCli` (Spectre.Console CLI) and `samples/BlazorDice` (Blazor WebAssembly demo).
 - `benchmarks/d20Tek.DiceNotation.Benchmarks`: BenchmarkDotNet suite with a tracked
   `benchmarks/BenchmarkHistory.csv` (see that project's README for `Update-BenchmarkHistory.ps1`).
