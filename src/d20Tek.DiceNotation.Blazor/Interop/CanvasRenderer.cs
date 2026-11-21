@@ -1,6 +1,7 @@
 using d20Tek.DiceNotation.Blazor.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.Diagnostics.CodeAnalysis;
 
 namespace d20Tek.DiceNotation.Blazor.Interop;
 
@@ -65,6 +66,15 @@ internal sealed class CanvasRenderer : IAsyncDisposable
     /// </param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>A task that completes when the scene has been sent to the renderer.</returns>
+    /// <remarks>
+    /// JavaScript interop serializes the scene with reflection, so every type in the payload
+    /// is listed here to keep its properties when the consuming application is trimmed.
+    /// </remarks>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderScene))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderTray))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderDie))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderVisuals))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(DiceTheme))]
     public async ValueTask RenderAsync(
         DiceSceneState scene,
         DiceTraySize traySize,

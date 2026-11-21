@@ -6,6 +6,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <Version>1.0.0</Version>
     <PackageId>d20tek-dicenotation-blazor</PackageId>
     <StaticWebAssetBasePath>_content/d20Tek.DiceNotation.Blazor</StaticWebAssetBasePath>
