@@ -1,0 +1,12 @@
+{
+  "codeCoverage": {
+    "Configuration": {
+      "IncludeTestAssembly": true,
+      "CodeCoverage": {
+        "Sources": {
+          "Exclude": [ ".*[.]g[.]cs$" ]
+        }
+      }
+    }
+  }
+}

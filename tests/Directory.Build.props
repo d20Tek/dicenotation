@@ -1,0 +1,12 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Shared test platform settings; code coverage includes the test assemblies themselves. -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)testconfig.json"
+          Link="$(AssemblyName).testconfig.json"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
