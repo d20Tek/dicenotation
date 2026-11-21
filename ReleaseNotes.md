@@ -6,7 +6,7 @@ These are the release notes for our various updates. You can see how the library
 - Ensure DiceNotation and DiceNotation.Blazor packages are both AOT trimmable and compatible with .NET 10 AOT.
 - Added a test project to validate that the DiceNotation.Blazor package is fully trimmable and compatible with .NET 10 AOT.
 
-### Current Release (5.1.9):
+### Release (5.1.9):
 - Added the `d20Tek.DiceNotation.Blazor` package with the `VisualDiceRoller` component, which animates a completed `DiceResult` in a two-dimensional tray drawn on an HTML canvas. The component never rolls dice, so the faces that come to rest always match the result the application already calculated.
 - Added `AddDiceNotationBlazor()`, which registers the component's services along with the core dice notation services, so a consuming application only makes one call.
 - Added `DiceRollerOptions` and the `DiceRollerOptionsBuilder` fluent registration API for configuring the tray size, theme, presentation values, physics settings, and reduced-motion preference.

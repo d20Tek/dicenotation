@@ -14,6 +14,7 @@ For a task-focused walkthrough of seeded and replayable rolling, see the
   - [IReplayableDieRoller](#ireplayabledieroller)
   - [DieRollerAlgorithm](#dierolleralgorithm)
   - [ReplayToken](#replaytoken)
+  - [ISeededDieRollerProvider](#iseededdierollerprovider)
   - [DieRollerFactory](#dierollerfactory)
 - [Namespace: d20Tek.DiceNotation.DependencyInjection](#namespace-d20tekdicenotationdependencyinjection)
   - [DiceServiceCollectionExtensions](#diceservicecollectionextensions)
@@ -66,6 +67,20 @@ are not replayable, because their generators are not seedable.
 | `DieRollerAlgorithm Algorithm { get; init; }` | Gets the random generation algorithm used to produce the sequence. |
 | `int Seed { get; init; }` | Gets the seed value that initializes the generator. |
 
+### ISeededDieRollerProvider
+
+Creates seeded, replayable die rollers for one `DieRollerAlgorithm`, so that die rollers defined outside
+this library can take part in seeded rolling and replay through `DieRollerFactory`. Register providers
+with `DiceNotationOptionsBuilder.AddSeededDieRollerProvider`, or pass them to the `DieRollerFactory`
+overloads that take providers.
+
+**Members**
+
+| Member | Description |
+| --- | --- |
+| `DieRollerAlgorithm Algorithm { get; }` | Gets the algorithm whose die rollers this provider creates. |
+| `IReplayableDieRoller Create(int seed, IAllowRollTrackerEntry? tracker = null)` | Creates a die roller for `Algorithm` that produces a reproducible sequence of rolls. |
+
 ### DieRollerFactory
 
 Provides factory methods for creating replayable die rollers, including reconstructing a roller from a
@@ -93,6 +108,19 @@ sequence of rolls as the original seeded roller.
 - Returns a replayable die roller equivalent to the one that produced the token.
 - Throws `ArgumentNullException` when `token` is `null`.
 - Throws `ArgumentOutOfRangeException` when the token's algorithm is not supported for replay.
+
+`static IReplayableDieRoller CreateSeeded(int seed, DieRollerAlgorithm algorithm, IAllowRollTrackerEntry? tracker, IEnumerable<ISeededDieRollerProvider> providers)`
+
+`static IReplayableDieRoller CreateFromReplayToken(ReplayToken token, IAllowRollTrackerEntry? tracker, IEnumerable<ISeededDieRollerProvider> providers)`
+
+These overloads work like the ones above, but use the supplied providers for algorithms that are not
+built into this library. Built-in algorithms are always created by the library itself. When several
+providers handle the same algorithm, the last one is used.
+
+- `providers` - The providers to search when the algorithm is not built in.
+- Throws `ArgumentNullException` when `providers` (or `token`) is `null`.
+- Throws `ArgumentOutOfRangeException` when the algorithm is neither built in nor handled by any of
+  the providers.
 
 ---
 
@@ -157,7 +185,15 @@ replayable sequence of rolls.
 `DiceNotationOptionsBuilder UseReplayDieRoller(ReplayToken token)`
 
 Configures the default die roller to reproduce a previously captured roll sequence from a
-`ReplayToken`. Throws `ArgumentNullException` when `token` is `null`.
+`ReplayToken`. Algorithms that are not built into this library are created by the registered
+`ISeededDieRollerProvider` services. Throws `ArgumentNullException` when `token` is `null`.
+
+`DiceNotationOptionsBuilder AddSeededDieRollerProvider(ISeededDieRollerProvider provider)`
+
+Registers a provider, as an `ISeededDieRollerProvider` singleton, that creates seeded die rollers for an
+algorithm that is not built into this library, so that `UseReplayDieRoller` can replay its tokens.
+Providers registered directly with the service collection are also used. Throws
+`ArgumentNullException` when `provider` is `null`.
 
 `DiceNotationOptionsBuilder UseConstantDieRoller(int rollValue = 1)`
 

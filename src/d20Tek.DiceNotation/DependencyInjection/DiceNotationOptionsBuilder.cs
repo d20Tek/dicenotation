@@ -16,6 +16,7 @@ public sealed class DiceNotationOptionsBuilder
     private Func<IServiceProvider, IDieRoller> _dieRollerFactory =
         sp => new RandomDieRoller(sp.GetService<IAllowRollTrackerEntry>());
     private Action<IServiceCollection, ServiceLifetime>? _trackerRegistrar;
+    private readonly List<ISeededDieRollerProvider> _seededDieRollerProviders = [];
 
     /// <summary>
     /// Sets the default number of die sides used when a notation omits an explicit side count.
@@ -84,7 +85,8 @@ public sealed class DiceNotationOptionsBuilder
 
     /// <summary>
     /// Configures the default die roller to reproduce a previously captured roll sequence from a
-    /// <see cref="ReplayToken"/>.
+    /// <see cref="ReplayToken"/>. Algorithms that are not built into this library are created by the
+    /// registered <see cref="ISeededDieRollerProvider"/> services.
     /// </summary>
     /// <param name="token">The replay token describing the algorithm and seed to reproduce.</param>
     /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
@@ -92,7 +94,26 @@ public sealed class DiceNotationOptionsBuilder
     public DiceNotationOptionsBuilder UseReplayDieRoller(ReplayToken token)
     {
         ArgumentNullException.ThrowIfNull(token);
-        return UseDieRoller(sp => DieRollerFactory.CreateFromReplayToken(token, sp.GetService<IAllowRollTrackerEntry>()));
+
+        return UseDieRoller(sp => DieRollerFactory.CreateFromReplayToken(
+            token,
+            sp.GetService<IAllowRollTrackerEntry>(),
+            sp.GetServices<ISeededDieRollerProvider>()));
+    }
+
+    /// <summary>
+    /// Registers a provider that creates seeded die rollers for an algorithm that is not built into this
+    /// library, so that <see cref="UseReplayDieRoller(ReplayToken)"/> can replay its tokens.
+    /// </summary>
+    /// <param name="provider">The provider to register as an <see cref="ISeededDieRollerProvider"/> singleton.</param>
+    /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is <see langword="null"/>.</exception>
+    public DiceNotationOptionsBuilder AddSeededDieRollerProvider(ISeededDieRollerProvider provider)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+
+        _seededDieRollerProviders.Add(provider);
+        return this;
     }
 
     /// <summary>
@@ -161,4 +182,7 @@ public sealed class DiceNotationOptionsBuilder
 
     internal void RegisterTracker(IServiceCollection services, ServiceLifetime lifetime) =>
         _trackerRegistrar?.Invoke(services, lifetime);
+
+    internal void RegisterSeededDieRollerProviders(IServiceCollection services) =>
+        _seededDieRollerProviders.ForEach(provider => services.AddSingleton(provider));
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace d20Tek.DiceNotation.UnitTests.DependencyInjection;
 
 [TestClass]
-public class DiceNotationOptionsBuilderTests
+public partial class DiceNotationOptionsBuilderTests
 {
     [TestMethod]
     public void UseDieRoller_WithNullFactory_ThrowsArgumentNullException()

@@ -1,4 +1,5 @@
 using d20Tek.DiceNotation.DieRoller;
+using d20Tek.DiceNotation.UnitTests.Fakes;
 
 namespace d20Tek.DiceNotation.UnitTests.DieRoller;
 
@@ -81,6 +82,130 @@ public class DieRollerFactoryTests
 
         // Assert
         Assert.AreSequenceEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithProviderForAlgorithm_CreatesRollerThroughProvider()
+    {
+        // Arrange
+        var provider = new FakeSeededDieRollerProvider();
+
+        // Act
+        var die = DieRollerFactory.CreateSeeded(_seed, FakeSeededDieRollerProvider.ExternalAlgorithm, null, [provider]);
+
+        // Assert
+        Assert.IsNotNull(die);
+        Assert.AreEqual(1, provider.CreateCount);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithProviderAndTracker_PassesTrackerToProvider()
+    {
+        // Arrange
+        var provider = new FakeSeededDieRollerProvider();
+        var tracker = new DieRollTracker();
+
+        // Act
+        DieRollerFactory.CreateSeeded(_seed, FakeSeededDieRollerProvider.ExternalAlgorithm, tracker, [provider]);
+
+        // Assert
+        Assert.AreSame(tracker, provider.LastTracker);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithTwoProvidersForAlgorithm_UsesLastProvider()
+    {
+        // Arrange
+        var first = new FakeSeededDieRollerProvider();
+        var last = new FakeSeededDieRollerProvider();
+
+        // Act
+        DieRollerFactory.CreateSeeded(_seed, FakeSeededDieRollerProvider.ExternalAlgorithm, null, [first, last]);
+
+        // Assert
+        Assert.AreEqual(0, first.CreateCount);
+        Assert.AreEqual(1, last.CreateCount);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithBuiltInAlgorithm_IgnoresProviders()
+    {
+        // Arrange
+        var provider = new FakeSeededDieRollerProvider(DieRollerAlgorithm.Random);
+
+        // Act
+        var die = DieRollerFactory.CreateSeeded(_seed, DieRollerAlgorithm.Random, null, [provider]);
+
+        // Assert
+        Assert.IsInstanceOfType<RandomDieRoller>(die);
+        Assert.AreEqual(0, provider.CreateCount);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithNoMatchingProvider_ThrowsWithProviderHint()
+    {
+        // Arrange
+        var provider = new FakeSeededDieRollerProvider();
+
+        // Act / Assert
+        var ex = Assert.ThrowsExactly<ArgumentOutOfRangeException>(Act);
+        Assert.Contains(nameof(ISeededDieRollerProvider), ex.Message);
+        Assert.AreEqual(0, provider.CreateCount);
+
+        [ExcludeFromCodeCoverage]
+        void Act() => DieRollerFactory.CreateSeeded(_seed, (DieRollerAlgorithm)999, null, [provider]);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithNullProviders_ThrowsArgumentNullException()
+    {
+        // Arrange
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentNullException>(Act);
+
+        [ExcludeFromCodeCoverage]
+        static void Act() => DieRollerFactory.CreateSeeded(_seed, DieRollerAlgorithm.Random, null, null!);
+    }
+
+    [TestMethod]
+    public void CreateFromReplayToken_WithProviderToken_ReproducesOriginalSequence()
+    {
+        // Arrange
+        var provider = new FakeSeededDieRollerProvider();
+        var original = provider.Create(_seed);
+        var expected = RollSequence(original);
+        var token = new ReplayToken(FakeSeededDieRollerProvider.ExternalAlgorithm, _seed);
+
+        // Act
+        var replayed = DieRollerFactory.CreateFromReplayToken(token, null, [provider]);
+        var actual = RollSequence(replayed);
+
+        // Assert
+        Assert.AreSequenceEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public void CreateFromReplayToken_WithNullTokenAndProviders_ThrowsArgumentNullException()
+    {
+        // Arrange
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentNullException>(Act);
+
+        [ExcludeFromCodeCoverage]
+        static void Act() => DieRollerFactory.CreateFromReplayToken(null!, null, []);
+    }
+
+    [TestMethod]
+    public void CreateFromReplayToken_WithNullProviders_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var token = new ReplayToken(DieRollerAlgorithm.Random, _seed);
+
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentNullException>(Act);
+
+        [ExcludeFromCodeCoverage]
+        void Act() => DieRollerFactory.CreateFromReplayToken(token, null, null!);
     }
 
     private static List<int> RollSequence(IDieRoller die) =>
