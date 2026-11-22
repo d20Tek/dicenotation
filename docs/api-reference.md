@@ -328,6 +328,11 @@ A die roller that uses a cryptographically secure random number generator. Inher
 A die roller that uses a Math.NET Numerics random source to generate values. Inherits
 `RandomDieRollerBase` and implements `IReplayableDieRoller`.
 
+> **Package:** `MathNetDieRoller` ships in the separate `d20tek-dicenotation-mathnet` package, so the
+> core library does not depend on MathNet.Numerics. Install it with
+> `dotnet add package d20tek-dicenotation-mathnet`. Its builder extensions and replay provider are
+> documented in the [Dependency Injection and Replayable Rolling reference](api-reference-di-factory.md#package-d20tek-dicenotation-mathnet).
+
 **Constructors**
 
 | Member | Description |

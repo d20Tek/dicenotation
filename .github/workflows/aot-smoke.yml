@@ -1,0 +1,21 @@
+name: aot-smoke
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  aot-smoke:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+    - name: Publish with Native AOT
+      run: dotnet publish tests/d20Tek.DiceNotation.AotSmoke -c Release -r linux-x64 -o aot
+    - name: Run AOT smoke checks
+      run: ./aot/d20Tek.DiceNotation.AotSmoke

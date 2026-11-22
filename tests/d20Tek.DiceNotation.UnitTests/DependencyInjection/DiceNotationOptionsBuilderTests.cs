@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace d20Tek.DiceNotation.UnitTests.DependencyInjection;
 
 [TestClass]
-public class DiceNotationOptionsBuilderTests
+public partial class DiceNotationOptionsBuilderTests
 {
     [TestMethod]
     public void UseDieRoller_WithNullFactory_ThrowsArgumentNullException()
@@ -205,7 +205,7 @@ public class DiceNotationOptionsBuilderTests
         var token = new ReplayToken(DieRollerAlgorithm.MathNetMersenneTwister, 77);
 
         // Act
-        services.AddDiceNotation(opt => opt.UseReplayDieRoller(token));
+        services.AddDiceNotation(opt => opt.AddMathNetSeededDieRollerProvider().UseReplayDieRoller(token));
         using var provider = services.BuildServiceProvider();
         var roller = provider.GetRequiredService<IDieRoller>();
 

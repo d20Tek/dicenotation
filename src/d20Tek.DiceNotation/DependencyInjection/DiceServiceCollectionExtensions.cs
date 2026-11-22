@@ -34,6 +34,7 @@ public static class DiceServiceCollectionExtensions
         configure?.Invoke(builder);
 
         builder.RegisterTracker(services, lifetime);
+        builder.RegisterSeededDieRollerProviders(services);
 
         services.Add(new ServiceDescriptor(typeof(IDieRoller), builder.BuildDieRoller, lifetime));
         services.Add(new ServiceDescriptor(typeof(IDiceConfiguration), builder.BuildConfiguration, lifetime));

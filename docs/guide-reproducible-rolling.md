@@ -35,7 +35,7 @@ Reproducible rolling is a capability of the seedable die rollers:
 | Die roller | Replayable | Notes |
 | --- | --- | --- |
 | `RandomDieRoller` | Yes | Uses `System.Random`. Replayable when constructed from a seed. |
-| `MathNetDieRoller` | Yes | Uses the Math.NET Numerics Mersenne Twister source. Replayable when constructed from a seed. |
+| `MathNetDieRoller` | Yes | Uses the Math.NET Numerics Mersenne Twister source. Replayable when constructed from a seed. Ships in the `d20tek-dicenotation-mathnet` package. |
 | `CryptoDieRoller` | No | Uses a cryptographically secure generator that is not seedable, so it cannot be reproduced. |
 | `ConstantDieRoller` | Not applicable | Always returns a fixed value and is intended for testing. |
 
@@ -69,7 +69,8 @@ DiceResult secondResult = dice.Roll("4d6", second);
 Console.WriteLine(firstResult.Value == secondResult.Value); // True
 ```
 
-You can use the Math.NET roller in exactly the same way when you prefer its generator:
+You can use the Math.NET roller in exactly the same way when you prefer its generator. It ships in the
+separate `d20tek-dicenotation-mathnet` package (`dotnet add package d20tek-dicenotation-mathnet`):
 
 ```csharp
 var roller = new MathNetDieRoller(seed: 12345);
@@ -122,6 +123,22 @@ DiceResult reproduced = dice.Roll("2d20+5", replay);
 Console.WriteLine(original.Value == reproduced.Value); // True
 ```
 
+### Replaying Math.NET Tokens
+
+The core library only creates `DieRollerAlgorithm.Random` rollers itself. To replay a
+`MathNetMersenneTwister` token, pass the provider from the `d20tek-dicenotation-mathnet` package to the
+factory overload that takes providers. Without it, the factory throws `ArgumentOutOfRangeException`.
+
+```csharp
+IReplayableDieRoller replay = DieRollerFactory.CreateFromReplayToken(
+	token!,
+	tracker: null,
+	providers: [new MathNetSeededDieRollerProvider()]);
+```
+
+The same overloads accept any `ISeededDieRollerProvider`, so die rollers from other packages can take
+part in replay the same way.
+
 ## Using Reproducible Rolling with Dependency Injection
 
 If you register services with `AddDiceNotation`, you can configure the resolved `IDieRoller` to be
@@ -138,12 +155,18 @@ var services = new ServiceCollection();
 // Register a seeded RandomDieRoller.
 services.AddDiceNotation(options => options.UseSeededDieRoller(12345));
 
-// Or register a seeded MathNetDieRoller.
+// Or register a seeded MathNetDieRoller (d20tek-dicenotation-mathnet package).
 services.AddDiceNotation(options => options.UseSeededMathNetDieRoller(12345));
 
 // Or replay a previously captured token.
 var token = new ReplayToken(DieRollerAlgorithm.Random, 12345);
 services.AddDiceNotation(options => options.UseReplayDieRoller(token));
+
+// Replaying a Math.NET token also needs the package's provider.
+var mathNetToken = new ReplayToken(DieRollerAlgorithm.MathNetMersenneTwister, 12345);
+services.AddDiceNotation(options => options
+	.AddMathNetSeededDieRollerProvider()
+	.UseReplayDieRoller(mathNetToken));
 ```
 
 Once registered, resolve `IDice` as usual and every roll draws from the seeded or replayed sequence.
@@ -156,7 +179,9 @@ underlying generator.
 - Use `DieRollerAlgorithm.Random` for the standard `System.Random` generator. This is the default
   and is a good fit for most gameplay and testing.
 - Use `DieRollerAlgorithm.MathNetMersenneTwister` when you want the statistical properties of the
-  Math.NET Mersenne Twister generator, for example in simulations or probability analysis.
+  Math.NET Mersenne Twister generator, for example in simulations or probability analysis. This
+  needs the `d20tek-dicenotation-mathnet` package, and replay needs its
+  `MathNetSeededDieRollerProvider`.
 
 Whichever algorithm you pick, record it in the token so that the sequence is reconstructed with the
 same generator.
@@ -169,7 +194,8 @@ same generator.
 - Capture `IReplayableDieRoller.ReplayToken` and persist its `Algorithm` and `Seed` to reproduce a
   sequence later.
 - Rebuild a roller with `DieRollerFactory.CreateFromReplayToken`, or configure one through
-  `AddDiceNotation`, to replay the captured sequence.
+  `AddDiceNotation`, to replay the captured sequence. Math.NET tokens also need the
+  `MathNetSeededDieRollerProvider` from the `d20tek-dicenotation-mathnet` package.
 
 ## Next Steps
 

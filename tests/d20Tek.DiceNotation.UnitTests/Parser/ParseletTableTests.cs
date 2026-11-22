@@ -9,8 +9,8 @@ public class ParseletTableTests
     [TestMethod]
     [DataRow((int)TokenKind.Number, "20", 20, typeof(NumberPrefix), DisplayName = "Number prefix")]
     [DataRow((int)TokenKind.GroupStart, "(", null, typeof(GroupPrefix), DisplayName = "Group start prefix")]
-    [DataRow((int)TokenKind.Plus, "+", null, typeof(UnaryPrefix), DisplayName = "Unary prefix")]
-    [DataRow((int)TokenKind.Minus, "-", null, typeof(UnaryPrefix), DisplayName = "Unary prefix")]
+    [DataRow((int)TokenKind.Plus, "+", null, typeof(UnaryPrefix), DisplayName = "Unary plus prefix")]
+    [DataRow((int)TokenKind.Minus, "-", null, typeof(UnaryPrefix), DisplayName = "Unary minus prefix")]
     [DataRow((int)TokenKind.Dice, "d", null, typeof(DicePrefix), DisplayName = "Dice prefix")]
     [DataRow((int)TokenKind.FudgeDice, "f", null, typeof(FudgeDicePrefix), DisplayName = "Fudge dice prefix")]
     public void GetPrefix_WithValidPrefixTokenKind_ReturnsParselet(int tokenKind, string lexeme, int? value, Type prefixType)

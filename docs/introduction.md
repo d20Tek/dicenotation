@@ -55,7 +55,8 @@ Console.WriteLine($"You rolled: {result.Value}");
 
 **It is flexible where it matters.** Randomness is pluggable through the `IDieRoller` interface. Use
 the default `RandomDieRoller` for everyday needs, the `CryptoDieRoller` when you want
-cryptographically strong randomness, the `MathNetDieRoller` for advanced statistical sources, or the
+cryptographically strong randomness, the `MathNetDieRoller` (from the optional
+`d20tek-dicenotation-mathnet` package) for advanced statistical sources, or the
 `ConstantDieRoller` to make your unit tests fully deterministic. If none of those fit, implement
 `IDieRoller` yourself.
 

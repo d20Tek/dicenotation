@@ -1,7 +1,17 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current Release (5.1.9):
+### Current Release (5.2.1):
+- Converted test projects to be MSTest.Sdk based, which allows for running tests in Visual Studio Test Explorer without needing to install the MSTest.TestAdapter package.
+- Ensure the DiceNotation package is trimmable and compatible with .NET 10 Native AOT, and the DiceNotation.Blazor package is trimmable, so its JS interop types keep their properties when a Blazor WebAssembly app is trimmed.
+- Added an AOT smoke test project, run on pull requests, that publishes the DiceNotation and DiceNotation.MathNet packages with Native AOT and checks their public API at runtime. Added unit tests that verify every DiceNotation.Blazor JS interop type is preserved for trimming.
+- **Breaking change:** Moved `MathNetDieRoller` and the MathNet.Numerics dependency out of the core library into the new `d20tek-dicenotation-mathnet` package, so applications that don't use it no longer download MathNet.Numerics (about 440 KB compressed in a Blazor WebAssembly app). To keep using it:
+  - Add the `d20tek-dicenotation-mathnet` package. `UseMathNetDieRoller()` and `UseSeededMathNetDieRoller()` are now extension methods in that package, so existing calls compile unchanged once it is added.
+  - Rebuild your application. Binaries compiled against an earlier version that use `MathNetDieRoller` or those builder methods fail at runtime until they are rebuilt with the new package.
+  - To replay `MathNetMersenneTwister` tokens, call `AddMathNetSeededDieRollerProvider()` when configuring `AddDiceNotation`, or pass `new MathNetSeededDieRollerProvider()` to the `DieRollerFactory` overloads that take providers.
+- Added `ISeededDieRollerProvider`, `DiceNotationOptionsBuilder.AddSeededDieRollerProvider()`, and `DieRollerFactory` overloads that take providers, so die rollers from other packages can take part in seeded rolling and replay.
+
+### Release (5.1.9):
 - Added the `d20Tek.DiceNotation.Blazor` package with the `VisualDiceRoller` component, which animates a completed `DiceResult` in a two-dimensional tray drawn on an HTML canvas. The component never rolls dice, so the faces that come to rest always match the result the application already calculated.
 - Added `AddDiceNotationBlazor()`, which registers the component's services along with the core dice notation services, so a consuming application only makes one call.
 - Added `DiceRollerOptions` and the `DiceRollerOptionsBuilder` fluent registration API for configuring the tray size, theme, presentation values, physics settings, and reduced-motion preference.
