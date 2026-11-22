@@ -4,16 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository overview
 
-Two NuGet packages plus samples, benchmarks, and spikes, all in `dicenotation.sln`:
+Three NuGet packages plus samples, benchmarks, and spikes, all in `dicenotation.sln`:
 
 - `src/d20Tek.DiceNotation` (package `d20tek-dicenotation`): parses, evaluates, and rolls dice notation
   (`4d6k3+d8+5`). Targets `net9.0;net10.0`. Marked `IsTrimmable` / `IsAotCompatible` with the trim and
   AOT analyzers on, so new code must stay reflection-free (no `dynamic`, source-generated JSON only).
+- `src/d20Tek.DiceNotation.MathNet` (package `d20tek-dicenotation-mathnet`): `MathNetDieRoller`, its
+  replay provider, and builder extensions, kept out of core so core has no MathNet.Numerics dependency.
+  Its DI extensions live in the `Microsoft.Extensions.DependencyInjection` namespace, like `AddDiceNotation`.
+  Its tests are in `d20Tek.DiceNotation.UnitTests`, not a separate project.
 - `src/d20Tek.DiceNotation.Blazor` (package `d20tek-dicenotation-blazor`): the `VisualDiceRoller`
   component that animates an already-computed `DiceResult` as physics-driven dice on a canvas.
   Targets `net9.0;net10.0`; the net9.0 build pins `Microsoft.AspNetCore.Components.Web` with a
   `VersionOverride` in the csproj.
-- `tests/`: one MSTest project per package (both `net10.0`), plus `d20Tek.DiceNotation.AotSmoke`, a console
+- `tests/`: two MSTest projects (both `net10.0`), one for the core and MathNet packages and one for Blazor,
+  plus `d20Tek.DiceNotation.AotSmoke`, a console
   app that the `aot-smoke` workflow publishes with Native AOT (with warnings as errors) and runs on pull
   requests. When you add public API that could depend on reflection, add a check to its `Program.cs`. Publishing
   it locally needs the Visual Studio C++ workload.
@@ -90,9 +95,11 @@ Adding notation means touching the lexer/`TokenKind`, a parselet and its `Parsel
 `Results/`: `DiceResult` holds the value, per-die `TermResult`s (with `DieRollRole` for
 kept/dropped/exploded breakdowns), the roller name, and any error.
 
-`DieRoller/`: `IDieRoller` implementations (`RandomDieRoller`, `CryptoDieRoller`, `MathNetDieRoller`,
-`ConstantDieRoller`) share `RandomDieRollerBase`. `IReplayableDieRoller` / `ReplayToken` support seeded,
-reproducible rolls (Crypto is not replayable by design). `DieRollTracker` / `AggregateRollTracker` record
+`DieRoller/`: `IDieRoller` implementations (`RandomDieRoller`, `CryptoDieRoller`, `ConstantDieRoller`,
+and `MathNetDieRoller` in the MathNet package) share `RandomDieRollerBase`. `IReplayableDieRoller` /
+`ReplayToken` support seeded, reproducible rolls (Crypto is not replayable by design). `DieRollerFactory`
+builds `Random` rollers itself and every other algorithm through an `ISeededDieRollerProvider` (passed in,
+or registered with `AddSeededDieRollerProvider` for DI replay), which is how the MathNet package plugs in. `DieRollTracker` / `AggregateRollTracker` record
 frequency statistics and serialize through the source-generated `DieTrackingJsonContext`.
 `DieRollerFactory` builds rollers by name.
 

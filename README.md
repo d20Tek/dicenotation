@@ -27,6 +27,15 @@ Package Manager Console:
 PM > Install-Package d20tek-dicenotation
 ```
 
+### Math.NET Die Roller
+
+`MathNetDieRoller`, which uses Math.NET Numerics random sources, is in its own package so that the
+core library doesn't depend on MathNet.Numerics:
+
+```
+dotnet add package d20tek-dicenotation-mathnet
+```
+
 ### Visual Dice Roller for Blazor
 
 If you are building a Blazor application and want to animate your rolls, the companion package
@@ -106,7 +115,9 @@ configure one through dependency injection:
 
 - `RandomDieRoller` uses `System.Random`. It accepts a seed for reproducible rolls.
 - `CryptoDieRoller` uses the cryptographic random number generator.
-- `MathNetDieRoller` uses MathNet.Numerics random sources. It also accepts a seed.
+- `MathNetDieRoller` uses MathNet.Numerics random sources. It also accepts a seed. It ships in the
+  separate `d20tek-dicenotation-mathnet` package, so apps that don't use it don't take on the
+  MathNet.Numerics dependency.
 - `ConstantDieRoller` always returns the same value, which is useful in unit tests.
 
 Seeded rollers implement `IReplayableDieRoller` and expose a `ReplayToken` that

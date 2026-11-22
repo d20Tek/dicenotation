@@ -131,7 +131,7 @@ implementations for different needs.
 | --- | --- |
 | `RandomDieRoller` | You want general-purpose randomness backed by `System.Random`. |
 | `CryptoDieRoller` | You need cryptographically strong random numbers. |
-| `MathNetDieRoller` | You want an advanced random source from Math.NET Numerics. |
+| `MathNetDieRoller` | You want an advanced random source from Math.NET Numerics. Install the `d20tek-dicenotation-mathnet` package to use it. |
 | `ConstantDieRoller` | You need deterministic, repeatable values (ideal for unit tests). |
 
 ```csharp

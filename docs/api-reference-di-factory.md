@@ -19,6 +19,9 @@ For a task-focused walkthrough of seeded and replayable rolling, see the
 - [Namespace: d20Tek.DiceNotation.DependencyInjection](#namespace-d20tekdicenotationdependencyinjection)
   - [DiceServiceCollectionExtensions](#diceservicecollectionextensions)
   - [DiceNotationOptionsBuilder](#dicenotationoptionsbuilder)
+- [Package: d20tek-dicenotation-mathnet](#package-d20tek-dicenotation-mathnet)
+  - [MathNetSeededDieRollerProvider](#mathnetseededdierollerprovider)
+  - [MathNetOptionsBuilderExtensions](#mathnetoptionsbuilderextensions)
 
 ---
 
@@ -27,6 +30,8 @@ For a task-focused walkthrough of seeded and replayable rolling, see the
 These types provide reproducible (seeded) rolling as a capability across the seedable die rollers.
 The `RandomDieRoller` and `MathNetDieRoller` implementations (documented in the main
 [API Reference](api-reference.md)) implement `IReplayableDieRoller` when constructed with a seed.
+`MathNetDieRoller` is in the separate `d20tek-dicenotation-mathnet` package; see
+[Package: d20tek-dicenotation-mathnet](#package-d20tek-dicenotation-mathnet).
 
 ### IReplayableDieRoller
 
@@ -50,7 +55,7 @@ same generator.
 | Member | Description |
 | --- | --- |
 | `Random` | The standard `System.Random` pseudo-random generator. |
-| `MathNetMersenneTwister` | The Math.NET Numerics Mersenne Twister random source. |
+| `MathNetMersenneTwister` | The Math.NET Numerics Mersenne Twister random source. Seeded rolling and replay need the `d20tek-dicenotation-mathnet` package and its `MathNetSeededDieRollerProvider`. |
 
 ### ReplayToken
 
@@ -168,18 +173,9 @@ Configures the default die roller to use the standard `RandomDieRoller`.
 
 Configures the default die roller to use the cryptographically secure `CryptoDieRoller`.
 
-`DiceNotationOptionsBuilder UseMathNetDieRoller()`
-
-Configures the default die roller to use the Math.NET based `MathNetDieRoller`.
-
 `DiceNotationOptionsBuilder UseSeededDieRoller(int seed)`
 
 Configures the default die roller to use a seeded `RandomDieRoller` that produces a reproducible,
-replayable sequence of rolls.
-
-`DiceNotationOptionsBuilder UseSeededMathNetDieRoller(int seed)`
-
-Configures the default die roller to use a seeded `MathNetDieRoller` that produces a reproducible,
 replayable sequence of rolls.
 
 `DiceNotationOptionsBuilder UseReplayDieRoller(ReplayToken token)`
@@ -218,3 +214,42 @@ Registers an `AggregateRollTracker` as the roll tracker, exposed through `IAggre
 
 Registers a custom roll tracker implementation, exposed through the specified tracker service type as
 well as `IAllowRollTrackerEntry`.
+
+---
+
+## Package: d20tek-dicenotation-mathnet
+
+The Math.NET based die roller lives in its own package, so applications that don't use it don't take
+on the MathNet.Numerics dependency. Install it with `dotnet add package d20tek-dicenotation-mathnet`.
+`MathNetDieRoller` itself is documented in the main [API Reference](api-reference.md#mathnetdieroller).
+
+### MathNetSeededDieRollerProvider
+
+Namespace `d20Tek.DiceNotation.DieRoller`. Implements `ISeededDieRollerProvider` for
+`DieRollerAlgorithm.MathNetMersenneTwister`, so `DieRollerFactory` and `UseReplayDieRoller` can
+reproduce Math.NET roll sequences.
+
+| Member | Description |
+| --- | --- |
+| `DieRollerAlgorithm Algorithm { get; }` | Returns `DieRollerAlgorithm.MathNetMersenneTwister`. |
+| `IReplayableDieRoller Create(int seed, IAllowRollTrackerEntry? tracker = null)` | Creates a seeded `MathNetDieRoller`. |
+
+### MathNetOptionsBuilderExtensions
+
+Namespace `Microsoft.Extensions.DependencyInjection`, the same as `AddDiceNotation`, so code that
+configures the builder needs no extra `using`. Each method throws `ArgumentNullException` when
+`builder` is `null` and returns the same builder for chaining.
+
+`static DiceNotationOptionsBuilder UseMathNetDieRoller(this DiceNotationOptionsBuilder builder)`
+
+Configures the default die roller to use the Math.NET based `MathNetDieRoller`.
+
+`static DiceNotationOptionsBuilder UseSeededMathNetDieRoller(this DiceNotationOptionsBuilder builder, int seed)`
+
+Configures the default die roller to use a seeded `MathNetDieRoller` that produces a reproducible,
+replayable sequence of rolls.
+
+`static DiceNotationOptionsBuilder AddMathNetSeededDieRollerProvider(this DiceNotationOptionsBuilder builder)`
+
+Registers a `MathNetSeededDieRollerProvider`, so that `UseReplayDieRoller` can replay
+`DieRollerAlgorithm.MathNetMersenneTwister` tokens.

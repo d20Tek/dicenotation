@@ -5,7 +5,11 @@ These are the release notes for our various updates. You can see how the library
 - Converted test projects to be MSTest.Sdk based, which allows for running tests in Visual Studio Test Explorer without needing to install the MSTest.TestAdapter package.
 - Ensure DiceNotation and DiceNotation.Blazor packages are both AOT trimmable and compatible with .NET 10 AOT.
 - Added a test project to validate that the DiceNotation.Blazor package is fully trimmable and compatible with .NET 10 AOT.
-- Move MathNetDieRoller to a separate package `d20Tek.DiceNotation.MathNet` to avoid bringing in the MathNet.Numerics dependency for consumers that don't need it. The MathNetDieRoller is now registered with `UseMathNetDieRoller()` on the `DiceNotationOptionsBuilder` fluent API.
+- **Breaking change:** Moved `MathNetDieRoller` and the MathNet.Numerics dependency out of the core library into the new `d20tek-dicenotation-mathnet` package, so applications that don't use it no longer download MathNet.Numerics (about 440 KB compressed in a Blazor WebAssembly app). To keep using it:
+  - Add the `d20tek-dicenotation-mathnet` package. `UseMathNetDieRoller()` and `UseSeededMathNetDieRoller()` are now extension methods in that package, so existing calls compile unchanged once it is added.
+  - Rebuild your application. Binaries compiled against an earlier version that use `MathNetDieRoller` or those builder methods fail at runtime until they are rebuilt with the new package.
+  - To replay `MathNetMersenneTwister` tokens, call `AddMathNetSeededDieRollerProvider()` when configuring `AddDiceNotation`, or pass `new MathNetSeededDieRollerProvider()` to the `DieRollerFactory` overloads that take providers.
+- Added `ISeededDieRollerProvider`, `DiceNotationOptionsBuilder.AddSeededDieRollerProvider()`, and `DieRollerFactory` overloads that take providers, so die rollers from other packages can take part in seeded rolling and replay.
 
 ### Release (5.1.9):
 - Added the `d20Tek.DiceNotation.Blazor` package with the `VisualDiceRoller` component, which animates a completed `DiceResult` in a two-dimensional tray drawn on an HTML canvas. The component never rolls dice, so the faces that come to rest always match the result the application already calculated.
