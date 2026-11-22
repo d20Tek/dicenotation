@@ -125,9 +125,10 @@ internal static class Program
     private static bool ReplayTokensReproduceRolls() =>
         Enum.GetValues<DieRollerAlgorithm>().All(algorithm =>
         {
-            var original = DieRollerFactory.CreateSeeded(Seed, algorithm);
+            ISeededDieRollerProvider[] providers = [new MathNetSeededDieRollerProvider()];
+            var original = DieRollerFactory.CreateSeeded(Seed, algorithm, null, providers);
             var token = original.ReplayToken ?? throw new InvalidOperationException($"No token for {algorithm}.");
-            var replay = DieRollerFactory.CreateFromReplayToken(token);
+            var replay = DieRollerFactory.CreateFromReplayToken(token, null, providers);
 
             return RollSequence(original).SequenceEqual(RollSequence(replay));
         });

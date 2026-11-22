@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>true</EnableAotAnalyzer>
+    <Version>1.0.0</Version>
+    <PackageId>d20tek-dicenotation-mathnet</PackageId>
+    <Title>d20Tek DiceNotation Math.NET Die Roller</Title>
+    <Product>DiceNotation Math.NET Die Roller</Product>
+    <Description>Adds a die roller for d20Tek.DiceNotation that uses Math.NET Numerics random sources, including a seeded, replayable Mersenne Twister roller.</Description>
+    <PackageTags>Dice DiceNotation d20 DiceRolls DiceRoller MathNet Random</PackageTags>
+    <PackageReleaseNotes>
+      Current release:
+      * MathNetDieRoller moved here from the d20tek-dicenotation package.
+      * UseMathNetDieRoller and UseSeededMathNetDieRoller builder extensions.
+      * MathNetSeededDieRollerProvider and AddMathNetSeededDieRollerProvider for replaying MathNet tokens.
+    </PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>package-icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\d20Tek.DiceNotation\d20Tek.DiceNotation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PackageReadme.md">
+      <Pack>True</Pack>
+      <PackagePath>\README.md</PackagePath>
+    </None>
+    <None Include="..\..\package-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

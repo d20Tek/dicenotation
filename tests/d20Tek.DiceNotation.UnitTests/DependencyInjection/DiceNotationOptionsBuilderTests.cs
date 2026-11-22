@@ -205,7 +205,7 @@ public partial class DiceNotationOptionsBuilderTests
         var token = new ReplayToken(DieRollerAlgorithm.MathNetMersenneTwister, 77);
 
         // Act
-        services.AddDiceNotation(opt => opt.UseReplayDieRoller(token));
+        services.AddDiceNotation(opt => opt.AddMathNetSeededDieRollerProvider().UseReplayDieRoller(token));
         using var provider = services.BuildServiceProvider();
         var roller = provider.GetRequiredService<IDieRoller>();
 

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\d20Tek.DiceNotation\d20Tek.DiceNotation.csproj" />
+    <ProjectReference Include="..\..\src\d20Tek.DiceNotation.MathNet\d20Tek.DiceNotation.MathNet.csproj" />
   </ItemGroup>
 
 </Project>

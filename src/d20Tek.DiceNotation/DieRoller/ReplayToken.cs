@@ -13,7 +13,8 @@ public enum DieRollerAlgorithm
     Random = 0,
 
     /// <summary>
-    /// The Math.NET Numerics Mersenne Twister random source.
+    /// The Math.NET Numerics Mersenne Twister random source. Seeded rolling and replay for this algorithm
+    /// need the d20tek-dicenotation-mathnet package and its seeded die roller provider.
     /// </summary>
     MathNetMersenneTwister = 1,
 }

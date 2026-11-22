@@ -1,10 +1,11 @@
 # Release Notes 
 These are the release notes for our various updates. You can see how the library has evolved and the latest capabilities. 
 
-### Current Release (5.1.10):
+### Current Release (5.2.1):
 - Converted test projects to be MSTest.Sdk based, which allows for running tests in Visual Studio Test Explorer without needing to install the MSTest.TestAdapter package.
 - Ensure DiceNotation and DiceNotation.Blazor packages are both AOT trimmable and compatible with .NET 10 AOT.
 - Added a test project to validate that the DiceNotation.Blazor package is fully trimmable and compatible with .NET 10 AOT.
+- Move MathNetDieRoller to a separate package `d20Tek.DiceNotation.MathNet` to avoid bringing in the MathNet.Numerics dependency for consumers that don't need it. The MathNetDieRoller is now registered with `UseMathNetDieRoller()` on the `DiceNotationOptionsBuilder` fluent API.
 
 ### Release (5.1.9):
 - Added the `d20Tek.DiceNotation.Blazor` package with the `VisualDiceRoller` component, which animates a completed `DiceResult` in a two-dimensional tray drawn on an HTML canvas. The component never rolls dice, so the faces that come to rest always match the result the application already calculated.

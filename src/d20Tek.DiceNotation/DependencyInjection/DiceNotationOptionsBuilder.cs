@@ -59,13 +59,6 @@ public sealed class DiceNotationOptionsBuilder
         UseDieRoller(sp => new CryptoDieRoller(sp.GetService<IAllowRollTrackerEntry>()));
 
     /// <summary>
-    /// Configures the default die roller to use the Math.NET based <see cref="MathNetDieRoller"/>.
-    /// </summary>
-    /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
-    public DiceNotationOptionsBuilder UseMathNetDieRoller() =>
-        UseDieRoller(sp => new MathNetDieRoller(sp.GetService<IAllowRollTrackerEntry>()));
-
-    /// <summary>
     /// Configures the default die roller to use a seeded <see cref="RandomDieRoller"/> that produces a
     /// reproducible, replayable sequence of rolls.
     /// </summary>
@@ -73,15 +66,6 @@ public sealed class DiceNotationOptionsBuilder
     /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
     public DiceNotationOptionsBuilder UseSeededDieRoller(int seed) =>
         UseDieRoller(sp => new RandomDieRoller(seed, sp.GetService<IAllowRollTrackerEntry>()));
-
-    /// <summary>
-    /// Configures the default die roller to use a seeded <see cref="MathNetDieRoller"/> that produces a
-    /// reproducible, replayable sequence of rolls.
-    /// </summary>
-    /// <param name="seed">The seed used to initialize the Math.NET generator.</param>
-    /// <returns>The current <see cref="DiceNotationOptionsBuilder"/> instance for chaining.</returns>
-    public DiceNotationOptionsBuilder UseSeededMathNetDieRoller(int seed) =>
-        UseDieRoller(sp => new MathNetDieRoller(seed, sp.GetService<IAllowRollTrackerEntry>()));
 
     /// <summary>
     /// Configures the default die roller to reproduce a previously captured roll sequence from a

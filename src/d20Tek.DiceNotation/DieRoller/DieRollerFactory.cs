@@ -7,7 +7,8 @@ namespace d20Tek.DiceNotation.DieRoller;
 public static class DieRollerFactory
 {
     private const string UnsupportedAlgorithmMessage =
-        "Unsupported die roller algorithm for seeded rolling. Register an ISeededDieRollerProvider for it.";
+        "Unsupported die roller algorithm for seeded rolling. Register an ISeededDieRollerProvider for it " +
+        "(for MathNetMersenneTwister, add the d20tek-dicenotation-mathnet package).";
 
     /// <summary>
     /// Creates a seeded, replayable die roller that produces a reproducible sequence of rolls.
@@ -99,7 +100,6 @@ public static class DieRollerFactory
         algorithm switch
         {
             DieRollerAlgorithm.Random => new RandomDieRoller(seed, tracker),
-            DieRollerAlgorithm.MathNetMersenneTwister => new MathNetDieRoller(seed, tracker),
             _ => null,
         };
 

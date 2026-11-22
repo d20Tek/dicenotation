@@ -24,16 +24,29 @@ public class DieRollerFactoryTests
     }
 
     [TestMethod]
-    public void CreateSeeded_WithMathNetAlgorithm_ReturnsMathNetRoller()
+    public void CreateSeeded_WithMathNetProvider_ReturnsMathNetRoller()
     {
         // Arrange
+        ISeededDieRollerProvider[] providers = [new MathNetSeededDieRollerProvider()];
 
         // Act
-        var die = DieRollerFactory.CreateSeeded(_seed, DieRollerAlgorithm.MathNetMersenneTwister);
+        var die = DieRollerFactory.CreateSeeded(_seed, DieRollerAlgorithm.MathNetMersenneTwister, null, providers);
 
         // Assert
         Assert.IsInstanceOfType<MathNetDieRoller>(die);
         Assert.AreEqual(DieRollerAlgorithm.MathNetMersenneTwister, die.ReplayToken!.Algorithm);
+    }
+
+    [TestMethod]
+    public void CreateSeeded_WithMathNetAlgorithmAndNoProvider_ThrowsWithPackageHint()
+    {
+        // Arrange
+        // Act / Assert
+        var ex = Assert.ThrowsExactly<ArgumentOutOfRangeException>(Act);
+        Assert.Contains("d20tek-dicenotation-mathnet", ex.Message);
+
+        [ExcludeFromCodeCoverage]
+        static void Act() => DieRollerFactory.CreateSeeded(_seed, DieRollerAlgorithm.MathNetMersenneTwister);
     }
 
     [TestMethod]
@@ -70,14 +83,15 @@ public class DieRollerFactoryTests
     }
 
     [TestMethod]
-    public void CreateFromReplayToken_WithMathNetToken_ReproducesOriginalSequence()
+    public void CreateFromReplayToken_WithMathNetTokenAndProvider_ReproducesOriginalSequence()
     {
         // Arrange
         var original = new MathNetDieRoller(_seed);
         var expected = RollSequence(original);
 
         // Act
-        var replayed = DieRollerFactory.CreateFromReplayToken(original.ReplayToken!);
+        var replayed = DieRollerFactory.CreateFromReplayToken(
+            original.ReplayToken!, null, [new MathNetSeededDieRollerProvider()]);
         var actual = RollSequence(replayed);
 
         // Assert
