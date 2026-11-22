@@ -3,8 +3,8 @@ These are the release notes for our various updates. You can see how the library
 
 ### Current Release (5.2.1):
 - Converted test projects to be MSTest.Sdk based, which allows for running tests in Visual Studio Test Explorer without needing to install the MSTest.TestAdapter package.
-- Ensure DiceNotation and DiceNotation.Blazor packages are both AOT trimmable and compatible with .NET 10 AOT.
-- Added a test project to validate that the DiceNotation.Blazor package is fully trimmable and compatible with .NET 10 AOT.
+- Ensure the DiceNotation package is trimmable and compatible with .NET 10 Native AOT, and the DiceNotation.Blazor package is trimmable, so its JS interop types keep their properties when a Blazor WebAssembly app is trimmed.
+- Added an AOT smoke test project, run on pull requests, that publishes the DiceNotation and DiceNotation.MathNet packages with Native AOT and checks their public API at runtime. Added unit tests that verify every DiceNotation.Blazor JS interop type is preserved for trimming.
 - **Breaking change:** Moved `MathNetDieRoller` and the MathNet.Numerics dependency out of the core library into the new `d20tek-dicenotation-mathnet` package, so applications that don't use it no longer download MathNet.Numerics (about 440 KB compressed in a Blazor WebAssembly app). To keep using it:
   - Add the `d20tek-dicenotation-mathnet` package. `UseMathNetDieRoller()` and `UseSeededMathNetDieRoller()` are now extension methods in that package, so existing calls compile unchanged once it is added.
   - Rebuild your application. Binaries compiled against an earlier version that use `MathNetDieRoller` or those builder methods fail at runtime until they are rebuilt with the new package.

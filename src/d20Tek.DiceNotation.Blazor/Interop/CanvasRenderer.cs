@@ -16,6 +16,8 @@ namespace d20Tek.DiceNotation.Blazor.Interop;
 internal sealed class CanvasRenderer : IAsyncDisposable
 {
     private const string ModulePath = "./_content/d20Tek.DiceNotation.Blazor/js/dice-roller.js";
+    private const DynamicallyAccessedMemberTypes InteropMembers =
+        DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties;
 
     private readonly IJSRuntime _jsRuntime;
     private IJSObjectReference? _module;
@@ -68,13 +70,15 @@ internal sealed class CanvasRenderer : IAsyncDisposable
     /// <returns>A task that completes when the scene has been sent to the renderer.</returns>
     /// <remarks>
     /// JavaScript interop serializes the scene with reflection, so every type in the payload
-    /// is listed here to keep its properties when the consuming application is trimmed.
+    /// is listed here to keep its properties and constructors when the consuming application
+    /// is trimmed. System.Text.Json also reads the constructor parameter names, which the
+    /// trimmer otherwise removes.
     /// </remarks>
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderScene))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderTray))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderDie))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(RenderVisuals))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(DiceTheme))]
+    [DynamicDependency(InteropMembers, typeof(RenderScene))]
+    [DynamicDependency(InteropMembers, typeof(RenderTray))]
+    [DynamicDependency(InteropMembers, typeof(RenderDie))]
+    [DynamicDependency(InteropMembers, typeof(RenderVisuals))]
+    [DynamicDependency(InteropMembers, typeof(DiceTheme))]
     public async ValueTask RenderAsync(
         DiceSceneState scene,
         DiceTraySize traySize,

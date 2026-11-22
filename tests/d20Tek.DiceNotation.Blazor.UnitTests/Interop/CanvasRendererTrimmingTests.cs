@@ -61,9 +61,12 @@ public class CanvasRendererTrimmingTests
     }
 
     [TestMethod]
-    public void RenderAsync_DynamicDependencies_KeepPublicProperties()
+    public void RenderAsync_DynamicDependencies_KeepPublicConstructorsAndProperties()
     {
         // Arrange
+        const DynamicallyAccessedMemberTypes expected =
+            DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties;
+
         // Act
         var dependencies = GetRenderAsyncDependencies();
 
@@ -71,7 +74,7 @@ public class CanvasRendererTrimmingTests
         Assert.IsNotEmpty(dependencies);
         foreach (var dependency in dependencies)
         {
-            Assert.AreEqual(DynamicallyAccessedMemberTypes.PublicProperties, dependency.MemberTypes);
+            Assert.AreEqual(expected, dependency.MemberTypes);
         }
     }
 }
